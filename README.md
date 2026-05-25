@@ -154,11 +154,12 @@ vercel deploy
 ```
 
 #### Backend (Hugging Face Spaces)
-```bash
-# Create a new Space with Docker runtime
-# Push this repository
-# Dockerfile is in the root directory
-```
+1. Go to https://huggingface.co/spaces
+2. Create a new Space with Docker runtime
+3. Clone the Space locally
+4. Copy the Dockerfile from this repository
+5. Push to the Space
+6. The Space will automatically build and deploy the Go backend
 
 **Note**: C++ inference and Rust telemetry are macOS-specific and not included in web deployment. The web version uses Ollama API for generation.
 

@@ -62,23 +62,48 @@ export default function Chat() {
     setInput('')
     setIsLoading(true)
 
-    // Simulate AI response
-    setTimeout(() => {
+    // Try to call backend API
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:7749'
+      const response = await fetch(`${apiUrl}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: input })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.response || 'No response from backend',
+          timestamp: Date.now()
+        }
+        setSessions(prev => prev.map(session => {
+          if (session.id === activeSessionId) {
+            return { ...session, messages: [...session.messages, assistantMessage] }
+          }
+          return session
+        }))
+      } else {
+        throw new Error('Backend not available')
+      }
+    } catch (error) {
+      // Fallback to simulated response
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I'm the OverLLM AI assistant. I can help you with:\n\n• Vector search and retrieval\n• Model training and optimization\n• Trading data analysis\n• System telemetry\n\nHow can I assist you today?`,
+        content: `I'm the OverLLM AI assistant. Backend not connected. Configure VITE_API_URL to connect to deployed backend.\n\nI can help you with:\n\n• Vector search and retrieval\n• Model training and optimization\n• Trading data analysis\n• System telemetry\n\nHow can I assist you today?`,
         timestamp: Date.now()
       }
-
       setSessions(prev => prev.map(session => {
         if (session.id === activeSessionId) {
           return { ...session, messages: [...session.messages, assistantMessage] }
         }
         return session
       }))
-      setIsLoading(false)
-    }, 1000)
+    }
+    setIsLoading(false)
   }
 
   const handleNewChat = () => {
