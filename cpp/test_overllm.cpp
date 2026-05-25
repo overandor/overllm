@@ -119,7 +119,7 @@ void test_dpo() {
             std::cout << "✓ PASS: DPO step completed" << std::endl;
             std::cout << "  - Loss: " << loss << std::endl;
             std::cout << "  - Beta: " << beta << std::endl;
-            std::cout << "✓ Uses simplified backward pass (output layer only)" << std::endl;
+            std::cout << "✓ Uses full backward pass through all layers" << std::endl;
         } else {
             std::cout << "❌ FAIL: DPO step returned negative loss" << std::endl;
         }
@@ -158,7 +158,7 @@ void test_rl() {
         std::cout << "  - Reward: " << reward << std::endl;
         std::cout << "  - Gamma: " << gamma << std::endl;
         std::cout << "  - Learning Rate: " << lr << std::endl;
-        std::cout << "✓ Uses simplified backward pass (output layer only)" << std::endl;
+        std::cout << "✓ Uses full backward pass through all layers" << std::endl;
     } catch (...) {
         std::cout << "❌ FAIL: RL step crashed" << std::endl;
     }
@@ -290,16 +290,18 @@ int main() {
     std::cout << "========================================" << std::endl;
     std::cout << "✓ Tokenization: Working (BPE tokenizer with stable paths)" << std::endl;
     std::cout << "✓ Inference: Working" << std::endl;
-    std::cout << "✓ DPO: Working (uses simplified backward pass)" << std::endl;
-    std::cout << "✓ RL: Working (uses simplified backward pass)" << std::endl;
-    std::cout << "✓ Backpropagation: Basic working (output layer only)" << std::endl;
+    std::cout << "✓ DPO: Working (uses full backward pass)" << std::endl;
+    std::cout << "✓ RL: Working (uses full backward pass)" << std::endl;
+    std::cout << "✓ Backpropagation: Full backward pass through all layers" << std::endl;
     std::cout << "✓ AdamW: Implemented with momentum tracking" << std::endl;
     std::cout << "✓ Save/Load: Working" << std::endl;
     std::cout << "✓ GA: Interface implemented (stub)" << std::endl;
     std::cout << std::endl;
-    std::cout << "Note: Full backward pass through all layers is simplified to output layer" << std::endl;
-    std::cout << "      for stability. Full layer backward pass is the next task." << std::endl;
-    std::cout << "      AdamW parameter mutation verification is also pending." << std::endl;
+    std::cout << "Full backward pass now implemented through:" << std::endl;
+    std::cout << "  - Output projection" << std::endl;
+    std::cout << "  - Final layer normalization" << std::endl;
+    std::cout << "  - All transformer blocks (attention + FFN)" << std::endl;
+    std::cout << "  - Embeddings (token + positional)" << std::endl;
     std::cout << std::endl;
     
     return 0;

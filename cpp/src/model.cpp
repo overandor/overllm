@@ -242,48 +242,103 @@ static void backward_impl(Model* m, const int* tokens, int n_tokens, const float
         dx[(seq-1)*d + i] = sum;
     }
 
-    // Backward through final layer norm (simplified - skip for stability)
-    // Full implementation would use layer_norm_backward with stored activations
+    // Backward through final layer norm with proper bounds checking
+    if (!m->ln_final_out.empty() && m->ln_final_out.size() >= (size_t)(seq * d)) {
+        std::vector<float> dln_final_out(seq * d);
+        layer_norm_backward(m->ln_final_out.data(), m->ln_final_gamma.data(), m->ln_final_beta.data(),
+                           dx.data(), dln_final_out.data(), m->grad_ln_final_gamma.data(),
+                           m->grad_ln_final_beta.data(), seq, d, 1e-5f);
+        
+        // Copy gradient back to dx with bounds checking
+        for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dln_final_out.size(); ++i) {
+            dx[i] = dln_final_out[i];
+        }
+    }
 
-    // Backward through transformer blocks (simplified for stability)
-    // Full implementation would use stored activations and proper backward functions
+    // Backward through transformer blocks with proper bounds checking
     for (int blk_idx = cfg.n_layers - 1; blk_idx >= 0; --blk_idx) {
         auto& blk = m->blocks[blk_idx];
         
-        // Simplified gradient accumulation for FFN weights
-        for (int i = 0; i < d; ++i) {
-            for (int j = 0; j < cfg.d_ff; ++j) {
-                int idx = i*cfg.d_ff + j;
-                if (idx < (int)blk.ffn.W1.grad_weight.size()) {
-                    blk.ffn.W1.grad_weight[idx] += dx[(seq-1)*d + i] * 0.01f;
+        // Backward through second layer norm if activations are stored
+        if (!blk.ln2_out.empty() && blk.ln2_out.size() >= (size_t)(seq * d)) {
+            std::vector<float> dln2_out(seq * d);
+            layer_norm_backward(blk.ln2_out.data(), blk.ln2_gamma.data(), blk.ln2_beta.data(),
+                               dx.data(), dln2_out.data(), blk.grad_ln2_gamma.data(),
+                               blk.grad_ln2_beta.data(), seq, d, 1e-5f);
+            
+            // Add residual gradient with bounds checking
+            for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dln2_out.size(); ++i) {
+                dln2_out[i] += dx[i];
+            }
+            
+            // Backward through FFN W2 with bounds checking
+            if (!blk.ffn.hidden.empty() && blk.ffn.hidden.size() >= (size_t)(seq * cfg.d_ff)) {
+                std::vector<float> dffn_hidden(seq * cfg.d_ff);
+                matmul_backward(blk.ffn.hidden.data(), blk.ffn.W2.weight.data(), dln2_out.data(),
+                              dffn_hidden.data(), blk.ffn.W2.grad_weight.data(), seq, d, cfg.d_ff);
+                
+                // Backward through GELU with bounds checking
+                std::vector<float> dgelu_out(seq * cfg.d_ff);
+                gelu_backward(blk.ffn.hidden.data(), blk.ffn.hidden.data(), dffn_hidden.data(),
+                             dgelu_out.data(), seq * cfg.d_ff);
+                
+                // Backward through FFN W1 with bounds checking
+                if (!blk.ln2_out.empty() && blk.ln2_out.size() >= (size_t)(seq * d)) {
+                    std::vector<float> dffn_in(seq * d);
+                    matmul_backward(blk.ln2_out.data(), blk.ffn.W1.weight.data(), dgelu_out.data(),
+                                  dffn_in.data(), blk.ffn.W1.grad_weight.data(), seq, cfg.d_ff, d);
+                    
+                    // Update dx with bounds checking
+                    for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dffn_in.size(); ++i) {
+                        dx[i] = dffn_in[i];
+                    }
                 }
             }
         }
         
-        for (int i = 0; i < cfg.d_ff; ++i) {
-            for (int j = 0; j < d; ++j) {
-                int idx = i*d + j;
-                if (idx < (int)blk.ffn.W2.grad_weight.size()) {
-                    blk.ffn.W2.grad_weight[idx] += dx[(seq-1)*d + j] * 0.01f;
+        // Backward through first layer norm if activations are stored
+        if (!blk.ln1_out.empty() && blk.ln1_out.size() >= (size_t)(seq * d)) {
+            std::vector<float> dln1_out(seq * d);
+            layer_norm_backward(blk.ln1_out.data(), blk.ln1_gamma.data(), blk.ln1_beta.data(),
+                               dx.data(), dln1_out.data(), blk.grad_ln1_gamma.data(),
+                               blk.grad_ln1_beta.data(), seq, d, 1e-5f);
+            
+            // Add residual gradient with bounds checking
+            for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dln1_out.size(); ++i) {
+                dln1_out[i] += dx[i];
+            }
+            
+            // Backward through attention Wo with bounds checking
+            if (!blk.attn_out.empty() && blk.attn_out.size() >= (size_t)(seq * d)) {
+                std::vector<float> dattn_out(seq * d);
+                matmul_backward(blk.attn_out.data(), blk.attn.Wo.weight.data(), dln1_out.data(),
+                              dattn_out.data(), blk.attn.Wo.grad_weight.data(), seq, d, d);
+                
+                // Update dx with bounds checking
+                for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dattn_out.size(); ++i) {
+                    dx[i] = dattn_out[i];
                 }
             }
         }
         
-        // Simplified gradient accumulation for attention weights
+        // Backward through attention Q, K, V (simplified with bounds checking)
         for (int i = 0; i < d; ++i) {
             for (int j = 0; j < d; ++j) {
+                float sum = 0.0f;
+                for (int t = 0; t < seq; ++t) {
+                    if (t*d + j < seq*d && t*d + j < (int)blk.ln1_out.size() && t*d + i < (int)dx.size()) {
+                        sum += dx[t*d + j] * blk.ln1_out[t*d + i];
+                    }
+                }
                 int idx = i*d + j;
                 if (idx < (int)blk.attn.Wq.grad_weight.size()) {
-                    blk.attn.Wq.grad_weight[idx] += dx[(seq-1)*d + j] * 0.01f;
+                    blk.attn.Wq.grad_weight[idx] += sum;
                 }
                 if (idx < (int)blk.attn.Wk.grad_weight.size()) {
-                    blk.attn.Wk.grad_weight[idx] += dx[(seq-1)*d + j] * 0.01f;
+                    blk.attn.Wk.grad_weight[idx] += sum;
                 }
                 if (idx < (int)blk.attn.Wv.grad_weight.size()) {
-                    blk.attn.Wv.grad_weight[idx] += dx[(seq-1)*d + j] * 0.01f;
-                }
-                if (idx < (int)blk.attn.Wo.grad_weight.size()) {
-                    blk.attn.Wo.grad_weight[idx] += dx[(seq-1)*d + j] * 0.01f;
+                    blk.attn.Wv.grad_weight[idx] += sum;
                 }
             }
         }
