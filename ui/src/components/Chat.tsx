@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Send, Plus, MessageSquare, Trash2, Settings, User, Bot } from 'lucide-react'
+import { Send, Plus, MessageSquare, Trash2, Settings, User, Bot, Sparkles, Terminal, FileCode, Zap } from 'lucide-react'
 
 interface Message {
   id: string
@@ -62,7 +62,6 @@ export default function Chat() {
     setInput('')
     setIsLoading(true)
 
-    // Try to call Vercel serverless API
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -99,11 +98,10 @@ export default function Chat() {
         throw new Error('API not available')
       }
     } catch (error) {
-      // Fallback to simulated response
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I'm the OverLLM AI assistant. API not available. Make sure OPENAI_API_KEY is configured in Vercel environment variables.\n\nI can help you with:\n\n• Vector search and retrieval\n• Model training and optimization\n• Trading data analysis\n• System telemetry\n\nHow can I assist you today?`,
+        content: `I'm the Devin AI assistant. I can help you with:\n\n• **Terminal Commands**: Execute shell commands and automate tasks\n• **File Operations**: Explore, analyze, and manage your files\n• **Code Analysis**: Understand codebases and suggest improvements\n• **Task Automation**: Break down complex tasks into executable steps\n• **Programming**: Write, debug, and optimize code\n\nTry asking me to:\n- "List all files in the current directory"\n- "Analyze the project structure"\n- "Help me build a React component"\n- "Debug this error"`,
         timestamp: Date.now()
       }
       setSessions(prev => prev.map(session => {
@@ -135,40 +133,46 @@ export default function Chat() {
     }
   }
 
+  const quickActions = [
+    { icon: <Terminal className="w-4 h-4" />, label: 'Run Command', prompt: 'Help me run a terminal command to...' },
+    { icon: <FileCode className="w-4 h-4" />, label: 'Analyze Code', prompt: 'Analyze the code in...' },
+    { icon: <Zap className="w-4 h-4" />, label: 'Automate Task', prompt: 'Automate the task of...' },
+  ]
+
   return (
-    <div className="flex h-screen bg-gray-900">
-      {/* Sidebar */}
-      <div className="w-64 bg-gray-950 flex flex-col border-r border-gray-800">
-        <div className="p-4">
+    <div className="flex h-[calc(100vh-96px)] relative z-10">
+      {/* Glassmorphic Sidebar */}
+      <div className="w-72 bg-amber-950/30 backdrop-blur-xl border-r border-amber-700/30 flex flex-col">
+        <div className="p-6">
           <button
             onClick={handleNewChat}
-            className="w-full flex items-center gap-2 px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 rounded-2xl text-amber-950 font-bold transition-all duration-300 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40"
           >
             <Plus className="w-5 h-5" />
             New Chat
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2">
+        <div className="flex-1 overflow-y-auto px-4 space-y-2">
           {sessions.map(session => (
             <div
               key={session.id}
-              className={`group flex items-center gap-2 px-3 py-3 rounded-lg cursor-pointer transition-colors ${
+              className={`group flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all duration-300 ${
                 activeSessionId === session.id
-                  ? 'bg-gray-800 text-white'
-                  : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
+                  ? 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30'
+                  : 'text-amber-300/70 hover:bg-amber-900/30 hover:text-amber-200'
               }`}
               onClick={() => setActiveSessionId(session.id)}
             >
               <MessageSquare className="w-4 h-4 flex-shrink-0" />
-              <span className="flex-1 truncate text-sm">{session.title}</span>
+              <span className="flex-1 truncate text-sm font-medium">{session.title}</span>
               {sessions.length > 1 && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     handleDeleteSession(session.id)
                   }}
-                  className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded transition-all"
+                  className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-amber-800/50 rounded-xl transition-all"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -177,50 +181,60 @@ export default function Chat() {
           ))}
         </div>
 
-        <div className="p-4 border-t border-gray-800">
-          <button className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white transition-colors">
+        <div className="p-4 border-t border-amber-700/30">
+          <button className="w-full flex items-center justify-center gap-2 px-4 py-3 text-amber-300/70 hover:text-amber-200 hover:bg-amber-900/30 rounded-2xl transition-all duration-300">
             <Settings className="w-5 h-5" />
-            <span className="text-sm">Settings</span>
+            <span className="text-sm font-medium">Settings</span>
           </button>
         </div>
       </div>
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="h-14 border-b border-gray-800 flex items-center px-6 bg-gray-900">
-          <h1 className="text-white font-semibold">OverLLM</h1>
-        </div>
-
         {/* Messages */}
         <div className="flex-1 overflow-y-auto">
           {activeSession.messages.length === 0 ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center">
-                <Bot className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h2 className="text-xl text-white font-semibold mb-2">OverLLM AI Assistant</h2>
-                <p className="text-gray-400">Start a conversation to begin</p>
+                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-amber-500/25">
+                  <Sparkles className="w-10 h-10 text-amber-950" />
+                </div>
+                <h2 className="text-2xl font-bold text-amber-200 mb-2">Devin AI Assistant</h2>
+                <p className="text-amber-400/70 mb-6">Your AI-powered development companion</p>
+                
+                <div className="flex flex-wrap justify-center gap-3">
+                  {quickActions.map((action, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setInput(action.prompt)}
+                      className="flex items-center gap-2 px-4 py-3 bg-amber-900/30 border border-amber-700/50 rounded-xl text-amber-300/80 hover:bg-amber-900/50 hover:text-amber-200 transition-all"
+                    >
+                      {action.icon}
+                      <span className="text-sm">{action.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto py-8 px-4">
+            <div className="max-w-4xl mx-auto py-8 px-6">
               {activeSession.messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex gap-4 mb-6 ${
+                  className={`flex gap-4 mb-8 ${
                     message.role === 'user' ? 'justify-end' : 'justify-start'
                   }`}
                 >
                   {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-                      <Bot className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-500/25">
+                      <Bot className="w-6 h-6 text-amber-950" />
                     </div>
                   )}
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                    className={`max-w-[85%] rounded-3xl px-6 py-4 shadow-xl ${
                       message.role === 'user'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-800 text-gray-100'
+                        ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-amber-950'
+                        : 'bg-amber-900/30 backdrop-blur-xl border border-amber-700/30 text-amber-100'
                     }`}
                   >
                     <div className="whitespace-pre-wrap text-sm leading-relaxed">
@@ -228,22 +242,22 @@ export default function Chat() {
                     </div>
                   </div>
                   {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
-                      <User className="w-5 h-5 text-gray-300" />
+                    <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 flex items-center justify-center flex-shrink-0">
+                      <User className="w-6 h-6 text-gray-300" />
                     </div>
                   )}
                 </div>
               ))}
               {isLoading && (
-                <div className="flex gap-4 mb-6">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-                    <Bot className="w-5 h-5 text-white" />
+                <div className="flex gap-4 mb-8">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-500/25">
+                    <Bot className="w-6 h-6 text-amber-950" />
                   </div>
-                  <div className="bg-gray-800 rounded-2xl px-4 py-3">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
+                  <div className="bg-amber-900/30 backdrop-blur-xl border border-amber-700/30 rounded-3xl px-6 py-4">
+                    <div className="flex gap-2">
+                      <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce delay-100" />
+                      <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce delay-200" />
                     </div>
                   </div>
                 </div>
@@ -254,9 +268,9 @@ export default function Chat() {
         </div>
 
         {/* Input Area */}
-        <div className="border-t border-gray-800 p-4 bg-gray-900">
-          <div className="max-w-3xl mx-auto">
-            <div className="relative flex items-center bg-gray-800 rounded-xl border border-gray-700 focus-within:border-gray-600">
+        <div className="p-6 bg-amber-950/30 backdrop-blur-xl border-t border-amber-700/30">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative flex items-center bg-amber-900/30 backdrop-blur-xl rounded-3xl border border-amber-700/50 focus-within:border-amber-500/50 transition-all duration-300">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -266,21 +280,21 @@ export default function Chat() {
                     handleSend()
                   }
                 }}
-                placeholder="Message OverLLM..."
-                className="flex-1 bg-transparent text-white placeholder-gray-500 px-4 py-3 resize-none outline-none text-sm"
+                placeholder="Message Devin AI..."
+                className="flex-1 bg-transparent text-amber-100 placeholder-amber-400/50 px-6 py-4 resize-none outline-none text-sm"
                 rows={1}
-                style={{ minHeight: '48px', maxHeight: '200px' }}
+                style={{ minHeight: '56px', maxHeight: '200px' }}
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
-                className="m-2 p-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-500 rounded-lg transition-colors"
+                className="m-2 p-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 disabled:from-amber-800 disabled:to-amber-800 disabled:opacity-50 rounded-2xl transition-all duration-300 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40"
               >
-                <Send className="w-5 h-5 text-white" />
+                <Send className="w-5 h-5 text-amber-950" />
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              OverLLM can make mistakes. Consider checking important information.
+            <p className="text-xs text-amber-400/50 mt-3 text-center">
+              Devin AI can make mistakes. Consider checking important information.
             </p>
           </div>
         </div>

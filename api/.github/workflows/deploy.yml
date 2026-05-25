@@ -1,0 +1,42 @@
+name: Deploy OverLLM API
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'api/**'
+      - 'cpp/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'api/**'
+      - 'cpp/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        tags: overllm-api:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Test API
+      run: |
+        docker run -d --name test-api -p 8001:8001 overllm-api:latest
+        sleep 15
+        curl -f http://localhost:8001/ || exit 1
+        curl -f http://localhost:8001/health || exit 1
+        docker stop test-api
