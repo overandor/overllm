@@ -175,25 +175,67 @@ static void forward_impl(Model* m, const int* tokens, int n_tokens, float* out_l
 }
 
 static void backward_impl(Model* m, const int* tokens, int n_tokens, const float* dlogits) {
+    if (!m || !tokens || !dlogits || n_tokens <= 0) return;
+
     const auto& cfg = m->config;
     int d = cfg.d_model, seq = n_tokens;
     int vocab = cfg.vocab_size;
-    
+
+    // Safety checks
+    if (seq > cfg.max_seq_len) seq = cfg.max_seq_len;
+    int last_token = tokens[seq-1];
+    if (last_token < 0 || last_token >= vocab) return;
+
     // Simplified backward pass - only update output projection for now
     // This avoids the bus error from complex backward pass through all layers
-    
+
     // Backward through output projection
     std::vector<float> dlast_token(d, 0.0f);
-    
+    std::vector<float> dW_out(d * vocab, 0.0f);
+
     // dW_out = x_last^T * dlogits
-    matmul_backward(m->embedding.data() + tokens[seq-1]*d, dlogits, dlast_token.data(),
-                   m->output_proj.grad_weight.data(), m->output_proj.grad_bias.data(), 1, vocab, d);
-    
+    // x_last is [1, d], dlogits is [1, vocab], dW_out is [d, vocab]
+    const float* x_last = m->embedding.data() + last_token*d;
+    for (int i = 0; i < d; ++i) {
+        for (int j = 0; j < vocab; ++j) {
+            if (i*vocab + j < d*vocab && i < d && j < vocab) {
+                dW_out[i*vocab + j] = x_last[i] * dlogits[j];
+            }
+        }
+    }
+
+    // dlast_token = dlogits * W_out^T
+    // dlogits is [1, vocab], W_out is [d, vocab], dlast_token is [1, d]
+    for (int i = 0; i < d; ++i) {
+        float sum = 0.0f;
+        for (int j = 0; j < vocab; ++j) {
+            if (i*vocab + j < d*vocab && j < vocab) {
+                sum += dlogits[j] * m->output_proj.weight[i*vocab + j];
+            }
+        }
+        if (i < d) dlast_token[i] = sum;
+    }
+
+    // Accumulate gradients
+    for (int i = 0; i < d * vocab; ++i) {
+        if (i < (int)m->output_proj.grad_weight.size()) {
+            m->output_proj.grad_weight[i] += dW_out[i];
+        }
+    }
+    for (int j = 0; j < vocab; ++j) {
+        if (j < (int)m->output_proj.grad_bias.size()) {
+            m->output_proj.grad_bias[j] += dlogits[j];
+        }
+    }
+
     // Accumulate gradient for the last token's embedding
     for (int j = 0; j < d; ++j) {
-        m->grad_embedding[tokens[seq-1]*d+j] += dlast_token[j];
+        int idx = last_token*d+j;
+        if (idx < (int)m->grad_embedding.size()) {
+            m->grad_embedding[idx] += dlast_token[j];
+        }
     }
-    
+
     // Note: Full backward pass through all layers would go here
     // but is disabled to avoid bus error for now
 }

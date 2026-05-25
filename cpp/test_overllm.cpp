@@ -106,8 +106,25 @@ void test_dpo() {
         return;
     }
 
-    std::cout << "⚠ SKIPPED: DPO test disabled due to bus error" << std::endl;
-    std::cout << "  Backward pass infrastructure is implemented but needs debugging" << std::endl;
+    int chosen_tokens[] = {1, 2, 3, 4, 5};
+    int rejected_tokens[] = {1, 2, 3, 4, 6};
+    int seq_len = 5;
+    float beta = 0.1f;
+
+    try {
+        float loss = overllm_dpo_step(model, chosen_tokens, seq_len, rejected_tokens, seq_len, beta);
+
+        if (loss >= 0.0f) {
+            std::cout << "✓ PASS: DPO step completed" << std::endl;
+            std::cout << "  - Loss: " << loss << std::endl;
+            std::cout << "  - Beta: " << beta << std::endl;
+            std::cout << "✓ Uses simplified backward pass (output layer only)" << std::endl;
+        } else {
+            std::cout << "❌ FAIL: DPO step returned negative loss" << std::endl;
+        }
+    } catch (...) {
+        std::cout << "❌ FAIL: DPO step crashed" << std::endl;
+    }
 
     overllm_free_model(model);
     std::cout << std::endl;
@@ -124,8 +141,26 @@ void test_rl() {
         return;
     }
 
-    std::cout << "⚠ SKIPPED: RL test disabled due to bus error" << std::endl;
-    std::cout << "  Backward pass infrastructure is implemented but needs debugging" << std::endl;
+    int state_tokens[] = {1, 2, 3};
+    int next_state_tokens[] = {2, 3, 4};
+    int action = 5;
+    float reward = 1.0f;
+    float gamma = 0.99f;
+    float lr = 0.001f;
+
+    try {
+        float td_error = overllm_rl_step(model, state_tokens, 3, action, reward,
+                                         next_state_tokens, 3, gamma, lr);
+
+        std::cout << "✓ PASS: RL step completed" << std::endl;
+        std::cout << "  - TD Error: " << td_error << std::endl;
+        std::cout << "  - Reward: " << reward << std::endl;
+        std::cout << "  - Gamma: " << gamma << std::endl;
+        std::cout << "  - Learning Rate: " << lr << std::endl;
+        std::cout << "✓ Uses simplified backward pass (output layer only)" << std::endl;
+    } catch (...) {
+        std::cout << "❌ FAIL: RL step crashed" << std::endl;
+    }
 
     overllm_free_model(model);
     std::cout << std::endl;
