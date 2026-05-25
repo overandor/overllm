@@ -1,0 +1,45 @@
+# Build artifacts
+build/
+*.dmg
+*.app
+overllm-agent
+overllm-telemetry
+overllm_inference
+
+# Rust
+rust/target/
+Cargo.lock
+
+# Go
+go/bin/
+go/pkg/
+
+# Node
+ui/node_modules/
+ui/dist/
+ui/.vite/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# C++
+cpp/build/
+cpp/CMakeFiles/
+cpp/CMakeCache.txt
+cpp/cmake_install.cmake
+cpp/Makefile
+
+# macOS
+.DS_Store
+*.dSYM
+
+# Environment
+.env
+.env.local
+
+# Training data
+training/
+*.jsonl

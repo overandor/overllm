@@ -1,0 +1,221 @@
+#!/bin/bash
+set -e
+
+APP_NAME="OverLLM"
+APP_VERSION="1.0.0"
+DMG_NAME="OverLLM-RL-GA-DAG-${APP_VERSION}"
+BUILD_DIR="build"
+APP_DIR="${BUILD_DIR}/${APP_NAME}.app"
+CONTENTS_DIR="${APP_DIR}/Contents"
+MACOS_DIR="${CONTENTS_DIR}/MacOS"
+RESOURCES_DIR="${CONTENTS_DIR}/Resources"
+DMG_TEMP_DIR="${BUILD_DIR}/dmg"
+
+echo "🚀 Building OverLLM RL-GA-DAG Vector Search System..."
+
+# Clean previous builds
+rm -rf "${BUILD_DIR}"
+mkdir -p "${BUILD_DIR}"
+
+# Build C++ components
+echo "📦 Building C++ inference engine..."
+cd cpp
+mkdir -p build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j$(sysctl -n hw.ncpu)
+cd ../..
+
+# Build Rust components
+echo "📦 Building Rust telemetry daemon..."
+cd rust
+cargo build --release
+cd ..
+
+# Build Go agent
+echo "📦 Building Go orchestrator..."
+cd go
+go build -o ../${BUILD_DIR}/overllm-agent ./cmd/overllm-agent
+cd ..
+
+# Build UI
+echo "📦 Building React UI with neomorphic design..."
+cd ui
+npm install
+npm run build
+cd ..
+
+# Create .app structure
+echo "📁 Creating macOS .app bundle..."
+mkdir -p "${MACOS_DIR}"
+mkdir -p "${RESOURCES_DIR}"
+
+# Copy binaries
+echo "📋 Copying binaries..."
+cp cpp/build/overllm_inference "${RESOURCES_DIR}/"
+cp rust/target/release/overllm-telemetry "${RESOURCES_DIR}/"
+cp ${BUILD_DIR}/overllm-agent "${RESOURCES_DIR}/" 2>/dev/null || cp overllm-agent "${RESOURCES_DIR}/"
+cp -r ui/dist "${RESOURCES_DIR}/ui"
+
+# Copy models and data
+echo "📋 Copying models and data..."
+mkdir -p "${RESOURCES_DIR}/models"
+mkdir -p "${RESOURCES_DIR}/data"
+if [ -d "models" ]; then
+    cp -r models/* "${RESOURCES_DIR}/models/" 2>/dev/null || true
+fi
+cp vocab.txt "${RESOURCES_DIR}/"
+
+# Create Info.plist
+echo "📝 Creating Info.plist..."
+cat > "${CONTENTS_DIR}/Info.plist" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDisplayName</key>
+    <string>${APP_NAME}</string>
+    <key>CFBundleExecutable</key>
+    <string>OverLLM</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.overllm.rlgadag</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>${APP_NAME}</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>${APP_VERSION}</string>
+    <key>CFBundleVersion</key>
+    <string>${APP_VERSION}</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.15</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSRequiresAquaSystemAppearance</key>
+    <false/>
+</dict>
+</plist>
+EOF
+
+# Create native ARM64 launcher (C compiled)
+echo "🔧 Creating native launcher..."
+cat > /tmp/launcher.c << 'EOF'
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdio.h>
+
+int main() {
+    const char* resources = "../Resources";
+    const char* agent = "../Resources/overllm-agent";
+
+    // Launch Go agent in background
+    pid_t pid = fork();
+    if (pid == 0) {
+        chdir(resources);
+        execl(agent, agent, NULL);
+        exit(1);
+    }
+
+    // Wait a moment for agent to start
+    sleep(2);
+
+    // Open UI in default browser at localhost:7749
+    pid_t ui_pid = fork();
+    if (ui_pid == 0) {
+        execlp("open", "open", "http://localhost:7749", NULL);
+        exit(1);
+    }
+
+    // Wait for agent
+    int status;
+    waitpid(pid, &status, 0);
+
+    return 0;
+}
+EOF
+
+clang -o "${MACOS_DIR}/OverLLM" /tmp/launcher.c -arch arm64
+rm /tmp/launcher.c
+
+# Create launch script for manual control
+cat > "${RESOURCES_DIR}/launch.sh" << 'EOF'
+#!/bin/bash
+cd "$(dirname "$0")"
+
+# Start telemetry daemon
+./overllm-telemetry &
+TELEMETRY_PID=$!
+
+# Start Go agent
+./overllm-agent &
+AGENT_PID=$!
+
+# Open UI
+open ui/index.html
+
+# Function to cleanup on exit
+cleanup() {
+    kill $TELEMETRY_PID 2>/dev/null || true
+    kill $AGENT_PID 2>/dev/null || true
+}
+
+trap cleanup EXIT
+
+# Keep script running
+wait
+EOF
+
+chmod +x "${RESOURCES_DIR}/launch.sh"
+
+# Create DMG
+echo "💿 Creating DMG image..."
+rm -rf "${DMG_TEMP_DIR}"
+mkdir -p "${DMG_TEMP_DIR}"
+cp -R "${APP_DIR}" "${DMG_TEMP_DIR}/"
+
+# Create symbolic link to Applications in the temp directory
+ln -s /Applications "${DMG_TEMP_DIR}/Applications"
+
+# Create read-write DMG
+hdiutil create -volname "${APP_NAME}" \
+    -srcfolder "${DMG_TEMP_DIR}" \
+    -ov -format UDRW \
+    "${BUILD_DIR}/${DMG_NAME}.dmg" \
+    >/dev/null
+
+# Mount and configure
+MOUNT_DIR="/Volumes/${APP_NAME}"
+hdiutil attach "${BUILD_DIR}/${DMG_NAME}.dmg" -readwrite -mountpoint "${MOUNT_DIR}" >/dev/null
+
+# Unmount
+hdiutil detach "${MOUNT_DIR}" >/dev/null
+
+# Convert to read-only compressed DMG
+hdiutil convert "${BUILD_DIR}/${DMG_NAME}.dmg" \
+    -format UDZO \
+    -imagekey zlib-level=9 \
+    -o "${BUILD_DIR}/${DMG_NAME}-final.dmg" \
+    >/dev/null
+
+# Replace with final DMG
+mv "${BUILD_DIR}/${DMG_NAME}-final.dmg" "${BUILD_DIR}/${DMG_NAME}.dmg"
+
+# Cleanup
+rm -rf "${DMG_TEMP_DIR}"
+
+echo "✅ Build complete!"
+echo "📦 DMG created: ${BUILD_DIR}/${DMG_NAME}.dmg"
+echo ""
+echo "To install:"
+echo "  1. Double-click ${DMG_NAME}.dmg"
+echo "  2. Drag ${APP_NAME}.app to Applications"
+echo "  3. Launch from Applications"
+echo ""
+echo "The app will:"
+echo "  - Start the C++ inference engine"
+echo "  - Start the Rust telemetry daemon"
+echo "  - Start the Go orchestrator agent"
+echo "  - Open the neomorphic UI in your browser"
