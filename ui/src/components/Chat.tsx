@@ -62,21 +62,31 @@ export default function Chat() {
     setInput('')
     setIsLoading(true)
 
-    // Try to call backend API
+    // Try to call Vercel serverless API
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:7749'
-      const response = await fetch(`${apiUrl}/api/generate`, {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: input })
       })
 
       if (response.ok) {
-        const data = await response.json()
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
+        let fullResponse = ''
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullResponse += decoder.decode(value)
+          }
+        }
+
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: data.response || 'No response from backend',
+          content: fullResponse || 'No response from AI',
           timestamp: Date.now()
         }
         setSessions(prev => prev.map(session => {
@@ -86,14 +96,14 @@ export default function Chat() {
           return session
         }))
       } else {
-        throw new Error('Backend not available')
+        throw new Error('API not available')
       }
     } catch (error) {
       // Fallback to simulated response
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I'm the OverLLM AI assistant. Backend not connected. Configure VITE_API_URL to connect to deployed backend.\n\nI can help you with:\n\n• Vector search and retrieval\n• Model training and optimization\n• Trading data analysis\n• System telemetry\n\nHow can I assist you today?`,
+        content: `I'm the OverLLM AI assistant. API not available. Make sure OPENAI_API_KEY is configured in Vercel environment variables.\n\nI can help you with:\n\n• Vector search and retrieval\n• Model training and optimization\n• Trading data analysis\n• System telemetry\n\nHow can I assist you today?`,
         timestamp: Date.now()
       }
       setSessions(prev => prev.map(session => {
