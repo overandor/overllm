@@ -1,10 +1,15 @@
 #pragma once
 namespace overllm {
 void matmul(const float* A, const float* B, float* C, int M, int N, int K);
+void matmul_backward(const float* A, const float* B, const float* dC, float* dA, float* dB, int M, int N, int K);
 void add_bias(float* dst, const float* bias, int M, int N);
+void add_bias_backward(const float* dbias, float* ddst, int M, int N);
 void gelu(float* dst, const float* src, int n);
+void gelu_backward(const float* dst, const float* src, const float* ddst, float* dsrc, int n);
 void layer_norm(float* dst, const float* src, const float* gamma, const float* beta, int rows, int cols, float eps);
+void layer_norm_backward(const float* src, const float* gamma, const float* beta, const float* ddst, float* dsrc, float* dgamma, float* dbeta, int rows, int cols, float eps);
 void softmax(float* dst, const float* src, int rows, int cols);
+void softmax_backward(const float* dst, const float* ddst, float* dsrc, int rows, int cols);
 void add(float* dst, const float* a, const float* b, int n);
 void mul(float* dst, const float* a, const float* b, int n);
 void copy(float* dst, const float* src, int n);

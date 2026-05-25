@@ -82,4 +82,83 @@ int sample_temperature(const float* logits, int vocab_size, float temp, unsigned
     return vocab_size-1;
 }
 
+void matmul_backward(const float* A, const float* B, const float* dC, float* dA, float* dB, int M, int N, int K) {
+    // dA = dC * B^T
+    for (int i = 0; i < M; ++i) {
+        for (int k = 0; k < K; ++k) {
+            float sum = 0.0f;
+            for (int j = 0; j < N; ++j) sum += dC[i*N+j] * B[k*N+j];
+            dA[i*K+k] = sum;
+        }
+    }
+    // dB = A^T * dC
+    for (int k = 0; k < K; ++k) {
+        for (int j = 0; j < N; ++j) {
+            float sum = 0.0f;
+            for (int i = 0; i < M; ++i) sum += A[i*K+k] * dC[i*N+j];
+            dB[k*N+j] = sum;
+        }
+    }
+}
+
+void add_bias_backward(const float* dbias, float* ddst, int M, int N) {
+    for (int i = 0; i < M; ++i) {
+        for (int j = 0; j < N; ++j) {
+            ddst[i*N+j] += dbias[j];
+        }
+    }
+}
+
+void gelu_backward(const float* dst, const float* src, const float* ddst, float* dsrc, int n) {
+    const float c = 0.7978845608f;
+    for (int i = 0; i < n; ++i) {
+        float x = src[i];
+        float tanh_arg = c * (x + 0.044715f * x*x*x);
+        float sech = 1.0f / std::cosh(tanh_arg);
+        float gelu_grad = 0.5f * (1.0f + std::tanh(tanh_arg)) + x * 0.5f * sech * sech * c * (1.0f + 0.134145f * x*x);
+        dsrc[i] = ddst[i] * gelu_grad;
+    }
+}
+
+void layer_norm_backward(const float* src, const float* gamma, const float* beta, const float* ddst, float* dsrc, float* dgamma, float* dbeta, int rows, int cols, float eps) {
+    for (int i = 0; i < rows; ++i) {
+        float mean = 0.0f;
+        for (int j = 0; j < cols; ++j) mean += src[i*cols+j];
+        mean /= cols;
+        float var = 0.0f;
+        for (int j = 0; j < cols; ++j) { float d = src[i*cols+j]-mean; var += d*d; }
+        var /= cols;
+        float inv = 1.0f / std::sqrt(var + eps);
+        float inv3 = inv * inv * inv;
+        
+        // dgamma and dbeta
+        for (int j = 0; j < cols; ++j) {
+            dgamma[j] += ddst[i*cols+j] * (src[i*cols+j] - mean) * inv;
+            dbeta[j] += ddst[i*cols+j];
+        }
+        
+        // dsrc
+        float dmean = 0.0f, dvar = 0.0f;
+        for (int j = 0; j < cols; ++j) {
+            dmean += -gamma[j] * ddst[i*cols+j] * inv;
+            dvar += -0.5f * gamma[j] * ddst[i*cols+j] * (src[i*cols+j] - mean) * inv3;
+        }
+        for (int j = 0; j < cols; ++j) {
+            dsrc[i*cols+j] = gamma[j] * ddst[i*cols+j] * inv + dvar * 2.0f * (src[i*cols+j] - mean) / cols + dmean / cols;
+        }
+    }
+}
+
+void softmax_backward(const float* dst, const float* ddst, float* dsrc, int rows, int cols) {
+    for (int i = 0; i < rows; ++i) {
+        float sum = 0.0f;
+        for (int j = 0; j < cols; ++j) {
+            sum += dst[i*cols+j] * ddst[i*cols+j];
+        }
+        for (int j = 0; j < cols; ++j) {
+            dsrc[i*cols+j] = dst[i*cols+j] * (ddst[i*cols+j] - sum);
+        }
+    }
+}
+
 } // namespace overllm

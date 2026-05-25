@@ -82,24 +82,26 @@ struct RLTrainer {
     std::vector<Experience> sample_batch() {
         std::vector<Experience> batch;
         int n = std::min(batch_size, (int)replay_buffer.size());
-        
+
         // Simple random sampling (in production, use proper reservoir sampling)
         std::vector<Experience> temp;
         while (!replay_buffer.empty()) {
             temp.push_back(replay_buffer.front());
             replay_buffer.pop();
         }
-        
-        std::random_shuffle(temp.begin(), temp.end());
+
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(temp.begin(), temp.end(), g);
         for (int i = 0; i < n; ++i) {
             batch.push_back(temp[i]);
         }
-        
+
         // Put back remaining
         for (const auto& exp : temp) {
             replay_buffer.push(exp);
         }
-        
+
         return batch;
     }
     

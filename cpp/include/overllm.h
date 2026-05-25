@@ -24,6 +24,7 @@ void overllm_free_model(OverLLMModel* model);
 
 // Inference
 int overllm_forward(OverLLMModel* model, const int* tokens, int n_tokens, float* logits);
+int overllm_backward(OverLLMModel* model, const int* tokens, int n_tokens, const float* dlogits);
 int overllm_sample_argmax(const float* logits, int vocab_size);
 int overllm_sample_temperature(const float* logits, int vocab_size, float temp);
 
