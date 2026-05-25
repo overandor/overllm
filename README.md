@@ -144,9 +144,23 @@ This stack compiles to ~50MB total and runs entirely offline on your Mac.
 ## Deployment
 
 ### Web Version
-- **Frontend**: Deployed on Vercel (`ui/` directory)
-- **Backend**: Deployed on Hugging Face Spaces (Go agent)
-- **Note**: C++ inference and Rust telemetry are macOS-specific and not included in web deployment
+
+#### Frontend (Vercel)
+```bash
+cd ui
+cp .env.example .env.local
+# Set VITE_API_URL to your deployed backend URL
+vercel deploy
+```
+
+#### Backend (Hugging Face Spaces)
+```bash
+# Create a new Space with Docker runtime
+# Push this repository
+# Dockerfile is in the root directory
+```
+
+**Note**: C++ inference and Rust telemetry are macOS-specific and not included in web deployment. The web version uses Ollama API for generation.
 
 ### macOS Desktop
 - Build DMG: `./build_dmg.sh`
