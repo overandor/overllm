@@ -4,12 +4,35 @@
 #include <algorithm>
 #include <unordered_map>
 #include <iostream>
+#include <cstdlib>
 
 namespace overllm {
 
 BPETokenizer::BPETokenizer() : vocab_size_(0) {}
 
 BPETokenizer::~BPETokenizer() {}
+
+bool BPETokenizer::load_default() {
+    // Try multiple default locations
+    std::vector<std::string> default_paths = {
+        "./vocab.txt",
+        "../vocab.txt",
+        "../../vocab.txt",
+        "/Users/alep/Downloads/overllm/cpp/vocab.txt",
+        std::string(std::getenv("HOME") ? std::getenv("HOME") : "") + "/.overllm/vocab.txt"
+    };
+    
+    for (const auto& path : default_paths) {
+        if (path.empty()) continue;
+        if (load(path)) {
+            std::cout << "Loaded vocab from: " << path << std::endl;
+            return true;
+        }
+    }
+    
+    std::cerr << "Failed to load vocab from any default location" << std::endl;
+    return false;
+}
 
 bool BPETokenizer::load(const std::string& vocab_path) {
     std::ifstream f(vocab_path);

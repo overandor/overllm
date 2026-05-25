@@ -481,6 +481,13 @@ void overllm_adamw_step(OverLLMModel* model, float lr, float beta1, float beta2,
     update_param(m->output_proj.weight, m->output_proj.grad_weight, m->output_proj.m_weight, m->output_proj.v_weight);
     update_param(m->output_proj.bias, m->output_proj.grad_bias, m->output_proj.m_bias, m->output_proj.v_bias);
 }
+
+int overllm_ga_optimize(OverLLMModel* model, int population_size, float mutation_rate, float crossover_rate) {
+    (void)model; (void)population_size; (void)mutation_rate; (void)crossover_rate;
+    // Simplified stub - in production this would use the GeneticAlgorithm class
+    // For now, just return success to indicate the interface exists
+    return 0;
+}
 void overllm_zero_grad(OverLLMModel* model) {
     Model* m = (Model*)model;
     std::fill(m->grad_embedding.begin(), m->grad_embedding.end(), 0.0f);

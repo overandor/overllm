@@ -47,6 +47,9 @@ void overllm_set_epsilon(OverLLMModel* model, float epsilon);
 void overllm_adamw_step(OverLLMModel* model, float lr, float beta1, float beta2, float eps, float weight_decay);
 void overllm_zero_grad(OverLLMModel* model);
 
+// Genetic Algorithm
+int overllm_ga_optimize(OverLLMModel* model, int population_size, float mutation_rate, float crossover_rate);
+
 // Weights
 int overllm_save_weights(OverLLMModel* model, const char* path);
 int overllm_load_vector_index(OverLLMModel* model, const char* path);

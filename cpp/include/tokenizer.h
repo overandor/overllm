@@ -15,6 +15,9 @@ public:
     // Load vocabulary from file
     bool load(const std::string& vocab_path);
     
+    // Load vocabulary from default locations
+    bool load_default();
+    
     // Encode text to token IDs
     std::vector<int> encode(const std::string& text);
     
