@@ -1,49 +1,51 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
-import Landing from './components/Landing'
-import Chat from './components/Chat'
-import Terminal from './components/Terminal'
-import FileExplorer from './components/FileExplorer'
+import { Activity, Brain, BarChart3, Zap, Globe } from 'lucide-react'
+import ProofHome from './components/ProofHome'
 import Dashboard from './components/Dashboard'
+import TrainingDashboard from './components/TrainingDashboard'
+import LiveTrainingDashboard from './components/LiveTrainingDashboard'
+import CrawlerDashboard from './components/CrawlerDashboard'
 
 function Navigation() {
   const location = useLocation()
   const navItems = [
-    { path: '/', label: 'Home', icon: '🏠' },
-    { path: '/chat', label: 'AI Chat', icon: '💬' },
-    { path: '/terminal', label: 'Terminal', icon: '⚡' },
-    { path: '/files', label: 'Files', icon: '📁' },
-    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+    { path: '/', label: 'OverLLM', icon: Brain },
+    { path: '/dashboard', label: 'Monitor', icon: Activity },
+    { path: '/training', label: 'Training', icon: BarChart3 },
+    { path: '/live-training', label: 'Live', icon: Zap },
+    { path: '/crawler', label: 'Crawler', icon: Globe },
   ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-amber-950/90 to-amber-900/80 backdrop-blur-xl border-b border-amber-700/30">
-      <div className="max-w-7xl mx-auto px-6 py-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#060612]/90 backdrop-blur-xl border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-              <span className="text-xl">✨</span>
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 flex items-center justify-center">
+              <Brain className="w-4 h-4 text-emerald-400" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
-              Devin Terminal
-            </h1>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                  location.pathname === item.path
-                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-amber-950 shadow-lg shadow-amber-500/30'
-                    : 'text-amber-200/70 hover:text-amber-100 hover:bg-amber-800/30'
-                }`}
-              >
-                <span className="mr-2">{item.icon}</span>
-                {item.label}
-              </Link>
-            ))}
+            <span className="text-sm font-bold text-white">OverLLM</span>
+          </Link>
+          <div className="flex items-center gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              const active = location.pathname === item.path
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                    active
+                      ? 'bg-white/10 text-white border border-white/10'
+                      : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {item.label}
+                </Link>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -54,14 +56,14 @@ function Navigation() {
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-br from-amber-950 via-amber-900 to-yellow-950">
+      <div className="min-h-screen bg-[#060612]">
         <Navigation />
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/terminal" element={<Terminal />} />
-          <Route path="/files" element={<FileExplorer />} />
+          <Route path="/" element={<ProofHome />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/training" element={<TrainingDashboard />} />
+          <Route path="/live-training" element={<LiveTrainingDashboard />} />
+          <Route path="/crawler" element={<CrawlerDashboard />} />
         </Routes>
       </div>
     </Router>
