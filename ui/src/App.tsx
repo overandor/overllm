@@ -1,11 +1,12 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { Activity, Brain, BarChart3, Zap, Globe } from 'lucide-react'
+import { Activity, Brain, BarChart3, Zap, Globe, Dna } from 'lucide-react'
 import ProofHome from './components/ProofHome'
 import Dashboard from './components/Dashboard'
 import TrainingDashboard from './components/TrainingDashboard'
 import LiveTrainingDashboard from './components/LiveTrainingDashboard'
 import CrawlerDashboard from './components/CrawlerDashboard'
+import OverAgentDashboard from './components/OverAgentDashboard'
 
 function Navigation() {
   const location = useLocation()
@@ -15,6 +16,7 @@ function Navigation() {
     { path: '/training', label: 'Training', icon: BarChart3 },
     { path: '/live-training', label: 'Live', icon: Zap },
     { path: '/crawler', label: 'Crawler', icon: Globe },
+    { path: '/overagent', label: 'OverAgent', icon: Dna },
   ]
 
   return (
@@ -64,6 +66,7 @@ function App() {
           <Route path="/training" element={<TrainingDashboard />} />
           <Route path="/live-training" element={<LiveTrainingDashboard />} />
           <Route path="/crawler" element={<CrawlerDashboard />} />
+          <Route path="/overagent" element={<OverAgentDashboard />} />
         </Routes>
       </div>
     </Router>
