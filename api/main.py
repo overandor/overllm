@@ -22,9 +22,9 @@ from overllm.gateio_alpha.engine import AlphaEngine
 from overllm.gateio_alpha import api as alpha_api
 
 app = FastAPI(
-    title="Devin Terminal API",
-    description="AI-powered terminal with file operations and task execution",
-    version="2.0.0"
+    title="OverLLM Alpha Engine API",
+    description="Self-judging 3-minute alpha engine for Gate.io futures. 322 dynamic KPIs, online Q-learning, cryptographic receipts.",
+    version="2.1.0"
 )
 
 # Enable CORS
@@ -150,7 +150,7 @@ async def root():
         return FileResponse(str(index_file))
     return {
         "service": "OverLLM Alpha Engine API",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "status": "ready",
         "endpoints": {
             "/api/status": "Alpha engine status + truth labels",
@@ -616,14 +616,17 @@ async def gate_markets():
 
 @app.on_event("startup")
 async def startup_event():
-    """Start the C++ live training system on startup"""
+    """Start systems on startup"""
     if overllm_lib:
         print("C++ backend loaded - ready for live training")
     else:
         print("C++ backend not loaded - running in API-only mode")
     if alpha_engine:
-        alpha_engine.start()
-        print("Alpha engine auto-started")
+        try:
+            alpha_engine.start()
+            print("Alpha engine auto-started")
+        except Exception as e:
+            print(f"Alpha engine auto-start failed: {e}")
 
 
 # Serve built UI

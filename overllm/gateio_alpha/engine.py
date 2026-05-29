@@ -123,7 +123,10 @@ class AlphaEngine:
     # Manual / API helpers
     # ------------------------------------------------------------------
     def predict_once(self, symbol: str) -> dict[str, Any]:
-        features = self.features.build(symbol)
+        try:
+            features = self.features.build(symbol)
+        except Exception as exc:
+            return {"veto": True, "reason": f"FEATURE_ERROR:{exc}", "features": {}}
         action, confidence = self.policy.select_action(features, symbol)
         side = self._action_to_side(action)
         allowed, veto_reason = self.risk.check(symbol, features, confidence)
