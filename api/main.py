@@ -143,19 +143,21 @@ class GenerateRequest(BaseModel):
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
+    """Root endpoint — serve UI if built, otherwise API info"""
+    ui_dist_path = Path(__file__).parent.parent / "ui" / "dist"
+    index_file = ui_dist_path / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
     return {
-        "service": "Devin Terminal API",
+        "service": "OverLLM Alpha Engine API",
         "version": "2.0.0",
         "status": "ready",
         "endpoints": {
-            "/health": "Health check",
-            "/inference": "Text generation",
-            "/train": "Online training",
-            "/test": "Run test suite",
-            "/terminal": "Execute terminal commands",
-            "/files": "List files",
-            "/generate": "AI text generation"
+            "/api/status": "Alpha engine status + truth labels",
+            "/api/predictions/live": "Live predictions",
+            "/api/performance": "Performance stats",
+            "/api/receipts": "Receipt explorer",
+            "/health": "Health check"
         }
     }
 
@@ -627,11 +629,12 @@ async def startup_event():
 # Serve built UI
 ui_dist_path = Path(__file__).parent.parent / "ui" / "dist"
 if ui_dist_path.exists():
-    app.mount("/static", StaticFiles(directory=str(ui_dist_path / "assets"), check_dir=False), name="static")
+    app.mount("/assets", StaticFiles(directory=str(ui_dist_path / "assets"), check_dir=False), name="assets")
+
     @app.get("/{full_path:path}")
     async def serve_ui(full_path: str):
-        # API routes take precedence; this is a fallback for SPA routing
-        if full_path.startswith("api/") or full_path in ("docs", "openapi.json", "health"):
+        # API routes and assets take precedence
+        if full_path.startswith("api/") or full_path.startswith("assets/") or full_path in ("docs", "openapi.json", "health"):
             raise HTTPException(status_code=404, detail="Not found")
         index_file = ui_dist_path / "index.html"
         if index_file.exists():
