@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: overllm-alpha
+    runtime: python
+    plan: starter
+    buildCommand: "cd ui && npm install && npm run build && cd ../api && pip install -r requirements.txt"
+    startCommand: "cd /opt/render/project/src && PYTHONPATH=/opt/render/project/src uvicorn api.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+      - key: OVERLLM_MODE
+        value: paper
+      - key: LIVE_TRADING
+        value: disabled
+      - key: LIVE_TRADING_ENABLED
+        value: "false"

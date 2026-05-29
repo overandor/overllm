@@ -4,6 +4,8 @@ OverLLM API - Public endpoint for C++ transformer model with terminal and file o
 
 from fastapi import FastAPI, HTTPException, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional, List
 import ctypes
@@ -15,8 +17,9 @@ import requests
 from pathlib import Path
 from urllib.parse import urlparse
 import asyncio
-from live_training import trainer, websocket_handler, start_websocket_server
-from web_crawler import crawler
+
+from overllm.gateio_alpha.engine import AlphaEngine
+from overllm.gateio_alpha import api as alpha_api
 
 app = FastAPI(
     title="Devin Terminal API",
@@ -41,6 +44,19 @@ if not os.path.exists(LIB_PATH):
 try:
     overllm_lib = ctypes.CDLL(LIB_PATH)
     print(f"✓ Loaded OverLLM library from {LIB_PATH}")
+    
+    # Define C function signatures for live training
+    overllm_lib.overllm_create_replay_buffer.argtypes = [ctypes.c_int]
+    overllm_lib.overllm_create_replay_buffer.restype = ctypes.c_void_p
+    
+    overllm_lib.overllm_free_replay_buffer.argtypes = [ctypes.c_void_p]
+    overllm_lib.overllm_free_replay_buffer.restype = None
+    
+    overllm_lib.overllm_add_experience.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+    overllm_lib.overllm_add_experience.restype = None
+    
+    overllm_lib.overllm_get_buffer_size.argtypes = [ctypes.c_void_p]
+    overllm_lib.overllm_get_buffer_size.restype = ctypes.c_int
     
     # Define C function signatures for token sequence management
     overllm_lib.overllm_create_token_sequence.argtypes = [ctypes.c_int]
@@ -73,13 +89,29 @@ try:
     
     overllm_lib.overllm_default_config.restype = ctypes.c_void_p
     
+    # Create replay buffer for training
+    replay_buffer = overllm_lib.overllm_create_replay_buffer(10000)
+    print("✓ Created replay buffer for training")
+    
 except Exception as e:
     print(f"✗ Failed to load OverLLM library: {e}")
     overllm_lib = None
+    replay_buffer = None
 
 # Ollama configuration
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
+
+# Alpha engine
+try:
+    alpha_engine = AlphaEngine(interval_seconds=60.0)
+    alpha_api.set_engine(alpha_engine)
+    print("✓ Alpha engine initialized")
+except Exception as e:
+    print(f"✗ Failed to initialize Alpha engine: {e}")
+    alpha_engine = None
+
+app.include_router(alpha_api.router, prefix="/api")
 
 
 class InferenceRequest(BaseModel):
@@ -107,13 +139,6 @@ class GenerateRequest(BaseModel):
     generate_poi: Optional[bool] = False
     # Include token sequences in response for PoI generation
     include_tokens: Optional[bool] = False
-
-
-class CrawlerRequest(BaseModel):
-    seed_urls: List[str]
-    max_pages: Optional[int] = 100
-    max_depth: Optional[int] = 3
-    follow_external: Optional[bool] = False
 
 
 @app.get("/")
@@ -147,144 +172,29 @@ async def health():
 @app.get("/api/status")
 async def status():
     """System status for dashboard"""
+    buffer_size = 0
+    if overllm_lib and replay_buffer:
+        buffer_size = overllm_lib.overllm_get_buffer_size(replay_buffer)
+
+    alpha_status = alpha_engine.status() if alpha_engine else {"initialized": False}
+
     return {
-        "cpu_usage": 45.2,
-        "memory_usage": 62.8,
-        "active_connections": 12,
-        "inference_count": 1234,
-        "training_loss": 0.0234
-    }
-
-
-@app.get("/api/training/status")
-async def training_status():
-    """Get current training status"""
-    return trainer.get_current_kpis()
-
-
-@app.post("/api/training/start")
-async def start_training():
-    """Start live training"""
-    if not trainer.is_training:
-        asyncio.create_task(trainer.start_training())
-    return {"status": "training_started"}
-
-
-@app.post("/api/training/stop")
-async def stop_training():
-    """Stop live training"""
-    trainer.stop_training()
-    return {"status": "training_stopped"}
-
-
-@app.websocket("/ws/training")
-async def websocket_training(websocket: WebSocket):
-    """WebSocket endpoint for real-time training KPIs"""
-    await websocket.accept()
-    trainer.add_websocket_client(websocket)
-    
-    try:
-        # Send current state immediately
-        await websocket.send_json({
-            "type": "state",
-            "data": trainer.get_current_kpis()
-        })
-        
-        # Keep connection alive
-        while True:
-            data = await websocket.receive_text()
-            message = json.loads(data)
-            
-            if message.get("action") == "start_training":
-                if not trainer.is_training:
-                    asyncio.create_task(trainer.start_training())
-                    
-            elif message.get("action") == "stop_training":
-                trainer.stop_training()
-                
-            elif message.get("action") == "get_state":
-                await websocket.send_json({
-                    "type": "state",
-                    "data": trainer.get_current_kpis()
-                })
-                
-    except Exception as e:
-        print(f"WebSocket error: {e}")
-    finally:
-        trainer.remove_websocket_client(websocket)
-
-
-@app.post("/api/crawler/start")
-async def start_crawler(request: CrawlerRequest):
-    """Start web crawling with iframe vision"""
-    try:
-        # Update crawler config
-        from web_crawler import CrawlerConfig
-        config = CrawlerConfig(
-            max_pages_per_domain=request.max_pages,
-            max_depth=request.max_depth,
-            follow_external_links=request.follow_external
-        )
-        
-        # Start crawler if not already started
-        if not crawler.session:
-            await crawler.start()
-            
-        # Start crawling in background
-        asyncio.create_task(crawler.crawl_seed_urls(request.seed_urls))
-        
-        return {
-            "status": "crawling_started",
-            "seed_urls": request.seed_urls,
-            "config": {
-                "max_pages": request.max_pages,
-                "max_depth": request.max_depth,
-                "follow_external": request.follow_external
-            }
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Crawler error: {str(e)}")
-
-
-@app.post("/api/crawler/stop")
-async def stop_crawler():
-    """Stop web crawling"""
-    crawler.is_crawling = False
-    return {"status": "crawling_stopped"}
-
-
-@app.get("/api/crawler/status")
-async def crawler_status():
-    """Get crawler status and statistics"""
-    return crawler.get_crawl_stats()
-
-
-@app.get("/api/crawler/data")
-async def get_crawled_data():
-    """Get crawled training data"""
-    return {
-        "training_data": crawler.get_training_data(),
-        "stats": crawler.get_crawl_stats()
-    }
-
-
-@app.get("/api/crawler/pages")
-async def get_crawled_pages():
-    """Get list of crawled pages"""
-    return {
-        "pages": [
-            {
-                "url": page.url,
-                "title": page.title,
-                "domain": urlparse(page.url).netloc,
-                "timestamp": page.timestamp,
-                "content_hash": page.content_hash,
-                "text_length": len(page.text_content),
-                "visual_features": page.visual_data
-            }
-            for page in crawler.crawled_pages
-        ],
-        "total": len(crawler.crawled_pages)
+        "status": "ready",
+        "library_loaded": overllm_lib is not None,
+        "replay_buffer_size": buffer_size,
+        "cpp_backend": True,
+        "alpha_engine": alpha_status,
+        "truth_labels": {
+            "runtime": "real",
+            "telemetry": "real",
+            "gateio_data": "real if fetched live",
+            "prediction_mode": "paper",
+            "live_trading": "disabled",
+            "model_quality": "experimental",
+            "tunnel": "demo-grade unless named production tunnel",
+            "receipts": "real only if hashes are generated and stored",
+            "devnet_settlement": "real only if transaction signatures are produced",
+        },
     }
 
 
@@ -679,12 +589,54 @@ async def generate_poi_receipt(prompt: str, generated_text: str, model: str, tok
         }
 
 
+@app.get("/api/gate/markets")
+async def gate_markets():
+    """List Gate.io futures markets"""
+    if not alpha_engine:
+        raise HTTPException(status_code=503, detail="Alpha engine not initialized")
+    try:
+        tickers = alpha_engine.client.list_tickers()
+        return {
+            "markets": [
+                {
+                    "contract": t.get("contract"),
+                    "last": t.get("last"),
+                    "change_percentage": t.get("change_percentage"),
+                    "volume_24h": t.get("volume_24h"),
+                }
+                for t in tickers[:50]
+            ],
+            "count": len(tickers),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Gate.io fetch failed: {e}")
+
+
 @app.on_event("startup")
 async def startup_event():
-    """Start the WebSocket server on startup"""
-    # Start WebSocket server in background
-    asyncio.create_task(start_websocket_server(host="0.0.0.0", port=8765))
+    """Start the C++ live training system on startup"""
+    if overllm_lib:
+        print("C++ backend loaded - ready for live training")
+    else:
+        print("C++ backend not loaded - running in API-only mode")
+    if alpha_engine:
+        alpha_engine.start()
+        print("Alpha engine auto-started")
 
+
+# Serve built UI
+ui_dist_path = Path(__file__).parent.parent / "ui" / "dist"
+if ui_dist_path.exists():
+    app.mount("/static", StaticFiles(directory=str(ui_dist_path / "assets"), check_dir=False), name="static")
+    @app.get("/{full_path:path}")
+    async def serve_ui(full_path: str):
+        # API routes take precedence; this is a fallback for SPA routing
+        if full_path.startswith("api/") or full_path in ("docs", "openapi.json", "health"):
+            raise HTTPException(status_code=404, detail="Not found")
+        index_file = ui_dist_path / "index.html"
+        if index_file.exists():
+            return FileResponse(str(index_file))
+        raise HTTPException(status_code=404, detail="UI not built")
 
 if __name__ == "__main__":
     import uvicorn
