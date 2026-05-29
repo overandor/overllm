@@ -43,3 +43,6 @@ cpp/Makefile
 # Training data
 training/
 *.jsonl
+.vercel
+lib/*.dylib
+models/*.bin
