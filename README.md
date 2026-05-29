@@ -2,7 +2,7 @@
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/overandor/overllm)
 
-**Live Alpha Engine**: `https://overllm-alpha.onrender.com` *(update after first deploy)*
+**Live Alpha Engine**: `https://huggingface.co/spaces/josephrw/overllm-pro` *(update after first deploy)*
 
 OverLLM is a local coding agent where every answer, command, code diff, and test result can produce a cryptographic proof-of-truth receipt.
 A personal-contextual LLM built from scratch in **C++**, **Go**, and **Rust**.
