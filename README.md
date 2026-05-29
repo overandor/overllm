@@ -1,5 +1,10 @@
 # OverLLM
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/overandor/overllm)
+
+**Live Alpha Engine**: `https://overllm-alpha.onrender.com` *(update after first deploy)*
+
+OverLLM is a local coding agent where every answer, command, code diff, and test result can produce a cryptographic proof-of-truth receipt.
 A personal-contextual LLM built from scratch in **C++**, **Go**, and **Rust**.
 
 ## Architecture
@@ -166,6 +171,26 @@ vercel deploy
 ### macOS Desktop
 - Build DMG: `./build_dmg.sh`
 - Requires macOS ARM64 with Ollama installed
+
+## Deploy to Render
+
+One-click deploy the Gate.io Alpha Engine (paper trading only):
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/overandor/overllm)
+
+Or manual steps:
+1. Go to [render.com](https://dashboard.render.com) → **New +** → **Web Service**
+2. Connect GitHub repo `overandor/overllm`
+3. Select branch `feat/overagent-autonomous`
+4. Render auto-detects `render.yaml` — click **Create Web Service**
+5. After deploy, update the Live URL in this README
+
+**Public endpoints**:
+- Dashboard: `/`
+- Status + Truth Labels: `/api/status`
+- Live Predictions: `/api/predictions/live`
+- Performance: `/api/performance`
+- Receipts: `/api/receipts`
 
 ## License
 
