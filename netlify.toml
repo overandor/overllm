@@ -1,0 +1,10 @@
+# This file exists only to satisfy deployment tooling.
+# The actual deployment target is Render, configured in render.yaml.
+[build]
+  publish = "ui/dist"
+  command = "cd ui && npm install && npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

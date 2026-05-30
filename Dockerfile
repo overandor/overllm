@@ -1,33 +1,32 @@
-# Use official Go image as base
-FROM golang:1.21-alpine AS builder
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Copy go mod files
-COPY go/go.mod go/go.sum* ./
+# Install Node.js 20.x, git, and build essentials
+RUN apt-get update && apt-get install -y curl git ca-certificates && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
-# Download dependencies
-RUN go mod download
+# Verify Node.js version
+RUN node --version && npm --version
 
-# Copy source code
-COPY go/ ./go/
+# Copy and install Python deps first (better caching)
+COPY api/requirements.txt ./api/
+RUN pip install --no-cache-dir -r api/requirements.txt
 
-# Build the application
-WORKDIR /app/go
-RUN CGO_ENABLED=0 GOOS=linux go build -o overllm-agent ./cmd/overllm-agent
+# Copy full repo
+COPY . .
 
-# Use alpine for final image
-FROM alpine:latest
+# Build React UI
+RUN cd ui && npm ci && npm run build
 
-RUN apk --no-cache add ca-certificates
+# Set environment
+ENV PYTHONPATH=/app
+ENV PORT=7860
+ENV OVERLLM_MODE=paper
+ENV LIVE_TRADING_ENABLED=false
 
-WORKDIR /root/
+EXPOSE 7860
 
-# Copy the binary from builder
-COPY --from=builder /app/go/overllm-agent .
-
-# Expose port
-EXPOSE 7749
-
-# Run the application
-CMD ["./overllm-agent"]
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860", "--proxy-headers"]
