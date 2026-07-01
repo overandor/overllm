@@ -5,7 +5,8 @@ Tier-3 Value Packet Demo
 Purpose:
     Demonstrate the smallest runnable OverLLM market primitive:
     a claim becomes financeable only after it has evidence, provenance,
-    a settlement rule, a bond field, and a receipt.
+    a settlement rule, a bond field, a measurable underwriting score, and
+    a receipt.
 
 Honest evidence label:
     Tier 3 candidate: stable internal proof.
@@ -28,6 +29,7 @@ import argparse
 import dataclasses
 import hashlib
 import json
+import math
 import platform
 import sys
 import time
@@ -101,8 +103,32 @@ class ResolutionRule:
     fail_condition: str
 
 
+@dataclasses.dataclass(frozen=True)
+class HotTensorInput:
+    evidence_score: float
+    evidence_tier: int
+    stake_usd: float
+    claimed_value_usd: float
+    prior_art_risk: float
+    adjudication_cost_usd: float
+    reproducibility_runs: int
+    external_reproductions: int
+    claim_specificity: float
+    resolution_clarity: float
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def clamp(x: float, lo: float = 0.0, hi: float = 1.0) -> float:
+    return max(lo, min(hi, x))
+
+
+def safe_ratio(numerator: float, denominator: float) -> float:
+    if denominator <= 0:
+        return 0.0
+    return numerator / denominator
 
 
 def canonical_json(obj: Any) -> str:
@@ -132,6 +158,114 @@ def evidence_tier(evidence: List[Evidence]) -> Dict[str, Any]:
         else:
             break
     return {"tier": current["tier"], "name": current["name"]}
+
+
+def evidence_entropy(evidence: List[Evidence]) -> float:
+    """Normalized Shannon entropy over evidence-kind weights.
+
+    More diverse evidence kinds produce a higher entropy value. Repeating the
+    same evidence type should not create a false sense of underwriting depth.
+    """
+    weights = [EVIDENCE_WEIGHTS[item.kind] for item in evidence if item.kind in EVIDENCE_WEIGHTS]
+    total = sum(weights)
+    if total <= 0 or len(weights) <= 1:
+        return 0.0
+    probs = [w / total for w in weights]
+    entropy = -sum(p * math.log(p, 2) for p in probs if p > 0)
+    max_entropy = math.log(len(weights), 2)
+    return round(clamp(entropy / max_entropy), 6)
+
+
+def sigmoid(x: float) -> float:
+    return 1.0 / (1.0 + math.exp(-x))
+
+
+def hot_tensor_underwrite(inp: HotTensorInput) -> Dict[str, Any]:
+    """Deterministic underwriting math for a bondable claim.
+
+    This is not ML and not a scientific result. It is a transparent scoring
+    kernel that turns claim evidence into an inspectable financeability score.
+
+    Vector x:
+        x0 = evidence_score / 100
+        x1 = evidence_tier / 8
+        x2 = min(stake / claimed_value, 1)
+        x3 = 1 - prior_art_risk
+        x4 = 1 - min(adjudication_cost / stake, 1)
+        x5 = log1p(reproducibility_runs) / log1p(10)
+        x6 = min(external_reproductions / 3, 1)
+        x7 = claim_specificity
+        x8 = resolution_clarity
+
+    Heat H is a bounded weighted sum. Risk R penalizes vague, expensive,
+    weakly reproduced, high-prior-art-risk claims. Final underwrite score U
+    is the bounded difference H - R.
+    """
+    stake_coverage = clamp(safe_ratio(inp.stake_usd, inp.claimed_value_usd))
+    adjudication_efficiency = 1.0 - clamp(safe_ratio(inp.adjudication_cost_usd, max(inp.stake_usd, 1.0)))
+    reproducibility_signal = clamp(math.log1p(max(inp.reproducibility_runs, 0)) / math.log1p(10))
+    external_signal = clamp(inp.external_reproductions / 3.0)
+
+    x = {
+        "evidence_strength": clamp(inp.evidence_score / 100.0),
+        "tier_strength": clamp(inp.evidence_tier / 8.0),
+        "stake_coverage": stake_coverage,
+        "novelty_safety": 1.0 - clamp(inp.prior_art_risk),
+        "adjudication_efficiency": adjudication_efficiency,
+        "reproducibility_signal": reproducibility_signal,
+        "external_signal": external_signal,
+        "claim_specificity": clamp(inp.claim_specificity),
+        "resolution_clarity": clamp(inp.resolution_clarity),
+    }
+
+    weights = {
+        "evidence_strength": 0.18,
+        "tier_strength": 0.14,
+        "stake_coverage": 0.12,
+        "novelty_safety": 0.10,
+        "adjudication_efficiency": 0.10,
+        "reproducibility_signal": 0.12,
+        "external_signal": 0.08,
+        "claim_specificity": 0.08,
+        "resolution_clarity": 0.08,
+    }
+
+    heat = sum(x[k] * weights[k] for k in weights)
+    heat = clamp(heat)
+
+    risk_terms = {
+        "prior_art_risk": 0.22 * clamp(inp.prior_art_risk),
+        "weak_stake": 0.18 * (1.0 - stake_coverage),
+        "adjudication_drag": 0.16 * (1.0 - adjudication_efficiency),
+        "low_reproducibility": 0.16 * (1.0 - reproducibility_signal),
+        "no_external_reproduction": 0.10 * (1.0 - external_signal),
+        "claim_vagueness": 0.09 * (1.0 - clamp(inp.claim_specificity)),
+        "resolution_vagueness": 0.09 * (1.0 - clamp(inp.resolution_clarity)),
+    }
+    risk = clamp(sum(risk_terms.values()))
+    underwrite_score = clamp(heat - 0.55 * risk)
+
+    if underwrite_score >= 0.75:
+        decision = "underwritable_subject_to_review"
+    elif underwrite_score >= 0.50:
+        decision = "conditionally_underwritable"
+    elif underwrite_score >= 0.30:
+        decision = "weak_underwriting_candidate"
+    else:
+        decision = "not_underwritable_yet"
+
+    return {
+        "schema": "overllm.hot_tensor_underwriting.v1",
+        "input_vector": x,
+        "weights": weights,
+        "heat": round(heat, 6),
+        "risk_terms": {k: round(v, 6) for k, v in risk_terms.items()},
+        "risk": round(risk, 6),
+        "underwrite_score": round(underwrite_score, 6),
+        "decision": decision,
+        "formula": "U = clamp(sum_i(w_i*x_i) - 0.55*sum_j(r_j), 0, 1)",
+        "interpretation": "Transparent deterministic scoring, not a learned model and not external validation.",
+    }
 
 
 def firewall(wording: str, tier: int) -> Dict[str, Any]:
@@ -175,6 +309,7 @@ def build_value_packet(args: argparse.Namespace) -> Dict[str, Any]:
 
     score = evidence_score(evidence)
     tier = evidence_tier(evidence)
+    entropy = evidence_entropy(evidence)
 
     bond = Bond(
         stake_usd=args.stake_usd,
@@ -189,6 +324,21 @@ def build_value_packet(args: argparse.Namespace) -> Dict[str, Any]:
         procedure=args.procedure,
         pass_condition=args.pass_condition,
         fail_condition=args.fail_condition,
+    )
+
+    hot_tensor = hot_tensor_underwrite(
+        HotTensorInput(
+            evidence_score=score,
+            evidence_tier=tier["tier"],
+            stake_usd=args.stake_usd,
+            claimed_value_usd=args.claimed_value_usd,
+            prior_art_risk=args.prior_art_risk,
+            adjudication_cost_usd=args.adjudication_cost_usd,
+            reproducibility_runs=args.reproducibility_runs,
+            external_reproductions=args.external_reproductions,
+            claim_specificity=args.claim_specificity,
+            resolution_clarity=args.resolution_clarity,
+        )
     )
 
     public_wording = args.public_wording
@@ -211,7 +361,9 @@ def build_value_packet(args: argparse.Namespace) -> Dict[str, Any]:
         "resolution_rule": dataclasses.asdict(resolution),
         "evidence": [dataclasses.asdict(item) for item in evidence],
         "evidence_score": score,
+        "evidence_entropy": entropy,
         "evidence_tier": tier,
+        "hot_tensor_underwriting": hot_tensor,
         "provenance": {
             "runtime": "python",
             "python_version": platform.python_version(),
@@ -224,6 +376,7 @@ def build_value_packet(args: argparse.Namespace) -> Dict[str, Any]:
             "No prior-art search was performed by this file.",
             "No baseline comparison was performed by this file.",
             "No ablation or repeated-seed study was performed by this file.",
+            "HotTensor underwriting is deterministic scoring, not a learned model.",
             "No public scientific breakthrough claim is allowed from this evidence tier.",
         ],
     }
@@ -240,6 +393,7 @@ def build_value_packet(args: argparse.Namespace) -> Dict[str, Any]:
             {"step": "bond", "hash": hash_object(packet_body["bond"])},
             {"step": "resolution_rule", "hash": hash_object(packet_body["resolution_rule"])},
             {"step": "evidence", "hash": hash_object(packet_body["evidence"])},
+            {"step": "hot_tensor_underwriting", "hash": hash_object(packet_body["hot_tensor_underwriting"])},
             {"step": "packet", "hash": packet_hash},
         ],
     }
@@ -252,7 +406,7 @@ def build_value_packet(args: argparse.Namespace) -> Dict[str, Any]:
         "appraisal_note": {
             "status": "runnable_demo_artifact",
             "tier": tier,
-            "market_meaning": "Demonstrates receipted exchange primitive: claim + evidence + bond + settlement rule + provenance + hash receipt.",
+            "market_meaning": "Demonstrates receipted exchange primitive: claim + evidence + bond + settlement rule + provenance + HotTensor underwriting + hash receipt.",
             "not_allowed_claim": "This file is not a scientific breakthrough.",
         },
     }
@@ -267,13 +421,20 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--technical-claim",
-        default="This single-file demo deterministically emits a JSON value packet and hash-chained receipt containing claim, evidence, bond, resolution, and provenance fields.",
+        default="This single-file demo deterministically emits a JSON value packet and hash-chained receipt containing claim, evidence, bond, resolution, HotTensor underwriting, and provenance fields.",
     )
     parser.add_argument(
         "--public-wording",
-        default="Internally stable single-file demo of a receipted value packet primitive.",
+        default="Internally stable single-file demo of a receipted value packet primitive with deterministic HotTensor underwriting.",
     )
     parser.add_argument("--stake-usd", type=float, default=100.0)
+    parser.add_argument("--claimed-value-usd", type=float, default=1000.0)
+    parser.add_argument("--prior-art-risk", type=float, default=0.50)
+    parser.add_argument("--adjudication-cost-usd", type=float, default=25.0)
+    parser.add_argument("--reproducibility-runs", type=int, default=1)
+    parser.add_argument("--external-reproductions", type=int, default=0)
+    parser.add_argument("--claim-specificity", type=float, default=0.82)
+    parser.add_argument("--resolution-clarity", type=float, default=0.88)
     parser.add_argument("--claimant", default="claimant")
     parser.add_argument("--counterparty", default="counterparty")
     parser.add_argument("--resolver", default="human reviewer using the stated procedure")
@@ -284,7 +445,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--pass-condition",
-        default="Program exits successfully and emits packet, receipt, packet_hash, receipt_hash, evidence tier, and firewall result.",
+        default="Program exits successfully and emits packet, receipt, packet_hash, receipt_hash, evidence tier, HotTensor underwriting, and firewall result.",
     )
     parser.add_argument(
         "--fail-condition",
