@@ -18,14 +18,16 @@ import (
 	"github.com/overllm/overllm-agent/pkg/agent"
 	"github.com/overllm/overllm-agent/pkg/localmodel"
 	"github.com/overllm/overllm-agent/pkg/proof"
+	"github.com/overllm/overllm-agent/pkg/venture"
 	"github.com/overllm/overllm-agent/pkg/webcrawler"
 )
 
 type Server struct {
-	Agent         *agent.Agent
-	Addr          string
-	ProofHandlers *proof.Handlers
-	Model         *localmodel.Runner
+	Agent           *agent.Agent
+	Addr            string
+	ProofHandlers   *proof.Handlers
+	VentureHandlers *venture.Handlers
+	Model           *localmodel.Runner
 }
 
 func New(a *agent.Agent, addr string) *Server {
@@ -41,10 +43,11 @@ func New(a *agent.Agent, addr string) *Server {
 	}
 
 	return &Server{
-		Agent:         a,
-		Addr:          addr,
-		ProofHandlers: proof.NewHandlers(proofDaemonURL),
-		Model:         model,
+		Agent:           a,
+		Addr:            addr,
+		ProofHandlers:   proof.NewHandlers(proofDaemonURL),
+		VentureHandlers: venture.NewHandlers(a.DataDir),
+		Model:           model,
 	}
 }
 
@@ -77,6 +80,14 @@ func (s *Server) RegisterRoutes() {
 	http.HandleFunc("/api/proof/market", s.ProofHandlers.HandleMemoryMarket)
 	http.HandleFunc("/api/proof/ipfs/", s.ProofHandlers.HandleUploadToIPFS)
 	http.HandleFunc("/api/proof/solana/", s.ProofHandlers.HandleAnchorToSolana)
+
+	// VentureChain deal-formation endpoints
+	http.HandleFunc("/api/venture/deals", s.VentureHandlers.HandleDealsRoot)
+	http.HandleFunc("/api/venture/deals/", s.VentureHandlers.HandleDealsSubtree)
+
+	// Breakthrough Verification Engine endpoints
+	http.HandleFunc("/api/venture/claims", s.VentureHandlers.HandleClaimsRoot)
+	http.HandleFunc("/api/venture/claims/", s.VentureHandlers.HandleClaimsSubtree)
 
 	// OverAgent autonomous agent endpoints
 	http.HandleFunc("/api/overagent", s.handleOverAgent)
