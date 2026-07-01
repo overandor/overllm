@@ -5,10 +5,12 @@ on:
     paths:
       - "tools/value_packet_demo.py"
       - "tools/overgpt_diligence_gate.py"
+      - "tools/run_overgpt_quality_gate.py"
       - "tests/test_value_packet_demo.py"
       - "tests/test_overgpt_diligence_gate.py"
       - ".github/workflows/overgpt-value-packet.yml"
       - "docs/OVERGPT.md"
+      - "docs/OVERGPT_DILIGENCE_ROADMAP.md"
   push:
     branches:
       - main
@@ -16,10 +18,12 @@ on:
     paths:
       - "tools/value_packet_demo.py"
       - "tools/overgpt_diligence_gate.py"
+      - "tools/run_overgpt_quality_gate.py"
       - "tests/test_value_packet_demo.py"
       - "tests/test_overgpt_diligence_gate.py"
       - ".github/workflows/overgpt-value-packet.yml"
       - "docs/OVERGPT.md"
+      - "docs/OVERGPT_DILIGENCE_ROADMAP.md"
 
 jobs:
   value-packet-quality:
@@ -45,6 +49,9 @@ jobs:
       - name: Validate diligence report JSON
         run: python3 -m json.tool diligence_report.json > /dev/null
 
+      - name: Run one-command quality chain
+        run: python3 tools/run_overgpt_quality_gate.py --out-dir receipts/overgpt-ci
+
       - name: Run unit tests
         run: python3 -m unittest discover -s tests -p "test_*.py" -v
 
@@ -55,3 +62,4 @@ jobs:
           path: |
             value_packet_output.json
             diligence_report.json
+            receipts/overgpt-ci/*.json
