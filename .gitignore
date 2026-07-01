@@ -12,7 +12,6 @@ Cargo.lock
 
 # Go
 go/bin/
-go/pkg/
 
 # Node
 ui/node_modules/
