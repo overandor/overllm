@@ -1,0 +1,87 @@
+name: OverGPT Value Packet Quality Gate
+
+on:
+  pull_request:
+    paths:
+      - "tools/value_packet_demo.py"
+      - "tools/overgpt_diligence_gate.py"
+      - "tools/run_overgpt_quality_gate.py"
+      - "tools/overgpt_ml_functionality_planner.py"
+      - "tools/overgpt_viral_repo_lab.py"
+      - "tests/test_value_packet_demo.py"
+      - "tests/test_overgpt_diligence_gate.py"
+      - "tests/test_overgpt_ml_functionality_planner.py"
+      - "tests/test_overgpt_viral_repo_lab.py"
+      - ".github/workflows/overgpt-value-packet.yml"
+      - "docs/OVERGPT.md"
+      - "docs/OVERGPT_DILIGENCE_ROADMAP.md"
+  push:
+    branches:
+      - main
+      - tier3-value-packet-demo
+    paths:
+      - "tools/value_packet_demo.py"
+      - "tools/overgpt_diligence_gate.py"
+      - "tools/run_overgpt_quality_gate.py"
+      - "tools/overgpt_ml_functionality_planner.py"
+      - "tools/overgpt_viral_repo_lab.py"
+      - "tests/test_value_packet_demo.py"
+      - "tests/test_overgpt_diligence_gate.py"
+      - "tests/test_overgpt_ml_functionality_planner.py"
+      - "tests/test_overgpt_viral_repo_lab.py"
+      - ".github/workflows/overgpt-value-packet.yml"
+      - "docs/OVERGPT.md"
+      - "docs/OVERGPT_DILIGENCE_ROADMAP.md"
+
+jobs:
+  value-packet-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run demo smoke test
+        run: python3 tools/value_packet_demo.py > value_packet_output.json
+
+      - name: Validate JSON output
+        run: python3 -m json.tool value_packet_output.json > /dev/null
+
+      - name: Run enterprise diligence gate
+        run: python3 tools/overgpt_diligence_gate.py value_packet_output.json --target-valuation-usd 3000000 > diligence_report.json
+
+      - name: Validate diligence report JSON
+        run: python3 -m json.tool diligence_report.json > /dev/null
+
+      - name: Run ML functionality planner
+        run: python3 tools/overgpt_ml_functionality_planner.py > ml_functionality_plan.json
+
+      - name: Validate ML functionality plan JSON
+        run: python3 -m json.tool ml_functionality_plan.json > /dev/null
+
+      - name: Run safe ViralRepoLab
+        run: python3 tools/overgpt_viral_repo_lab.py --idea "single-file AI repo receipt generator with tests and CI" > viral_repo_score.json
+
+      - name: Validate ViralRepoLab JSON
+        run: python3 -m json.tool viral_repo_score.json > /dev/null
+
+      - name: Run one-command quality chain
+        run: python3 tools/run_overgpt_quality_gate.py --out-dir receipts/overgpt-ci
+
+      - name: Run unit tests
+        run: python3 -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Upload value packet receipt artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: overgpt-value-packet-output
+          path: |
+            value_packet_output.json
+            diligence_report.json
+            ml_functionality_plan.json
+            viral_repo_score.json
+            receipts/overgpt-ci/*.json
