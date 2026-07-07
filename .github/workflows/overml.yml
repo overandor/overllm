@@ -1,0 +1,67 @@
+name: OverML Language Tests
+
+on:
+  pull_request:
+    paths:
+      - "lang/overml/**"
+      - ".github/workflows/overml.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "lang/overml/**"
+      - ".github/workflows/overml.yml"
+
+jobs:
+  overml-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lang/overml
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            lang/overml/target
+          key: overml-cargo-${{ runner.os }}-${{ hashFiles('lang/overml/Cargo.toml') }}
+
+      - name: cargo build
+        run: cargo build --all-targets
+
+      - name: cargo test
+        run: cargo test
+
+      - name: Build release library for the Python binding smoke test
+        run: cargo build --release
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python binding smoke test
+        working-directory: lang/overml/bindings/python
+        run: |
+          python3 -c "
+          import overml
+          r = overml.eval('seed(1); print(1 + 1);')
+          assert r.stdout.strip() == '2', r.stdout
+          assert len(r.provenance) == 16
+          try:
+              overml.eval('let x: Tensor<f32, [2]> = tensor([1, 2, 3]);')
+              raise SystemExit('expected a shape error')
+          except overml.OverMlError:
+              pass
+          print('python binding smoke test OK')
+          "
+
+      - name: omlpkg package demo smoke test
+        run: cargo run --bin omlpkg -- run --manifest examples/pkg_demo

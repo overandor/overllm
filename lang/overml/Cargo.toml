@@ -1,0 +1,24 @@
+[package]
+name = "overml"
+version = "0.1.0"
+edition = "2021"
+description = "OverML: a statically shape-checked, deterministic-by-default language for ML, embeddable as a C-ABI package from any host language."
+license = "MIT"
+
+[lib]
+name = "overml"
+# rlib: used by the omlc/omlpkg binaries below.
+# cdylib: liboverml.so/.dylib/.dll — the artifact other languages import.
+crate-type = ["rlib", "cdylib"]
+
+[[bin]]
+name = "omlc"
+path = "src/bin/omlc.rs"
+
+[[bin]]
+name = "omlpkg"
+path = "src/bin/omlpkg.rs"
+
+[dependencies]
+# Small, dependency-light on purpose: the whole point of OverML is to not
+# drag a fragmented dependency tree into every project that imports it.

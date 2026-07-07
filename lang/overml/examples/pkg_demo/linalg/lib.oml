@@ -1,0 +1,4 @@
+// A tiny reusable module: functions here become `linalg::name` for importers.
+fn dot2(a: Tensor<f32, [2]>, b: Tensor<f32, [2]>) -> f64 {
+    return a[0] * b[0] + a[1] * b[1];
+}

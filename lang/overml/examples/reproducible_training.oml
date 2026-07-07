@@ -1,0 +1,24 @@
+// Demonstrates OverML's reproducibility guarantee: `seed(...)` drives a
+// deterministic PRNG with no OS entropy involved, so `rand_tensor` produces
+// the exact same numbers on every machine, every run, forever. The
+// provenance hash printed by `omlc run` lets you *prove* two runs were
+// observationally identical without diffing raw output by hand.
+seed(1234);
+
+let w: Tensor<f32, [2, 2]> = rand_tensor("f32", 2, 2);
+print(w);
+
+fn train_step(w: Tensor<f32, [2, 2]>, x: Tensor<f32, [2, 2]>) -> Tensor<f32, [2, 2]> {
+    return w @ x;
+}
+
+let x: Tensor<f32, [2, 2]> = tensor([[1, 0], [0, 1]]);
+let mut_i = 0;
+let steps = 3;
+while mut_i < steps {
+    let w2 = train_step(w, x);
+    print(w2);
+    mut_i = mut_i + 1;
+}
+
+print(provenance_hash());

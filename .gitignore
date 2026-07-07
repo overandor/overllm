@@ -9,6 +9,8 @@ overllm_inference
 # Rust
 rust/target/
 Cargo.lock
+lang/overml/target/
+lang/overml/Cargo.lock
 
 # Go
 go/bin/

@@ -70,6 +70,13 @@ This telemetry is injected into every prompt, making OverLLM hyper-aware of your
 - `generate.py`: Manual Ollama data generation
 - `dpo_trainer.py`: NumPy-based DPO trainer that exports to C++ weight format
 
+### OverML — ML Language & Package (`lang/overml/`)
+- Statically shape/dtype-checked language for ML (`Tensor<f32, [M, N]>`, checked at compile time)
+- Deterministic-by-default: seeded PRNG + run provenance hashing, no OS entropy
+- Compiles to a C-ABI shared library any host language can `import`/`dlopen`, with a reference Python (`ctypes`) binding included
+- `omlc` (single-file compiler/runner) and `omlpkg` (package manager: `oml.toml`/`oml.lock`)
+- See [`lang/overml/README.md`](lang/overml/README.md) and [`lang/overml/docs/DESIGN.md`](lang/overml/docs/DESIGN.md)
+
 ## Build
 
 ```bash
