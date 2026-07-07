@@ -41,6 +41,19 @@ fn reproducible_training_is_deterministic_across_two_runs() {
 }
 
 #[test]
+fn kv_cache_window_stays_bounded_and_is_deterministic() {
+    let a = run("examples/kv_cache_window.oml");
+    let b = run("examples/kv_cache_window.oml");
+    assert_eq!(a, b, "same seed must reproduce identical cache contents");
+    let lines: Vec<&str> = a.lines().collect();
+    // First printed line is kv_cache_len after 5 pushes into a capacity-3
+    // cache: must read 3, never 5 — that's the bloat-bound guarantee.
+    assert_eq!(lines[0], "3");
+    // len line + 3 retrieved steps + provenance line.
+    assert_eq!(lines.len(), 5);
+}
+
+#[test]
 fn manifest_driven_import_resolves_and_runs() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/pkg_demo");
     let manifest_src = std::fs::read_to_string(dir.join("oml.toml")).unwrap();

@@ -62,6 +62,13 @@ pub enum Type {
     Str,
     Unit,
     Tensor(Dtype, Vec<DimExpr>),
+    /// A fixed-capacity ring buffer over per-step `[heads, head_dim]`
+    /// entries: `KvCache<dtype, [heads, capacity, head_dim]>`. Pushing past
+    /// `capacity` overwrites the oldest entry instead of growing, so the
+    /// type alone is a static bound on memory — see `docs/DESIGN.md`.
+    /// Unlike `Tensor`, all three dims must be concrete literals: capacity
+    /// is a fixed compile-time budget, not a generic parameter, in v0.1.
+    KvCache(Dtype, Vec<DimExpr>),
 }
 
 impl std::fmt::Display for Type {
@@ -75,6 +82,10 @@ impl std::fmt::Display for Type {
             Type::Tensor(dt, dims) => {
                 let dims_s: Vec<String> = dims.iter().map(|d| d.to_string()).collect();
                 write!(f, "Tensor<{}, [{}]>", dt.name(), dims_s.join(", "))
+            }
+            Type::KvCache(dt, dims) => {
+                let dims_s: Vec<String> = dims.iter().map(|d| d.to_string()).collect();
+                write!(f, "KvCache<{}, [{}]>", dt.name(), dims_s.join(", "))
             }
         }
     }
@@ -164,4 +175,14 @@ pub struct Program {
 }
 
 /// Names reserved for builtins; user-defined functions may not shadow them.
-pub const BUILTIN_NAMES: &[&str] = &["seed", "zeros", "ones", "rand_tensor", "provenance_hash"];
+pub const BUILTIN_NAMES: &[&str] = &[
+    "seed",
+    "zeros",
+    "ones",
+    "rand_tensor",
+    "provenance_hash",
+    "kv_cache_new",
+    "kv_push",
+    "kv_cache_len",
+    "kv_cache_get",
+];

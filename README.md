@@ -7,6 +7,19 @@
 OverLLM is a local coding agent where every answer, command, code diff, and test result can produce a cryptographic proof-of-truth receipt.
 A personal-contextual LLM built from scratch in **C++**, **Go**, and **Rust**.
 
+## Two Modes: Local vs. Cloud Demo
+
+This repo ships two independent things — don't confuse one for the other:
+
+| | **Local agent** (this README, below) | **Cloud demo** (`ui/` + `api/`) |
+|---|---|---|
+| What it is | The core OverLLM system: telemetry → DPO → C++ inference | A deployable web UI/backend, internally named "Devin Terminal" — see [`NO_MOCK_FUNCTIONALITY.md`](NO_MOCK_FUNCTIONALITY.md) |
+| Network access | **None.** Compiles to ~50MB, runs entirely offline against a local Ollama instance | Calls the OpenAI API server-side; requires `OPENAI_API_KEY` |
+| Where it runs | macOS ARM64, on your machine | Vercel (frontend) + Hugging Face Spaces / Render (backend) |
+| Data | Stays on disk (`~/.overllm/data/`) | Passes through your deployed backend and OpenAI |
+
+If you're evaluating "does this run fully offline?", the answer is **yes for the local agent, no for the cloud demo** — they're separate deployment targets sharing one repo, not one product with two settings.
+
 ## Architecture
 
 ```
@@ -72,6 +85,7 @@ This telemetry is injected into every prompt, making OverLLM hyper-aware of your
 
 ### OverML — ML Language & Package (`lang/overml/`)
 - Statically shape/dtype-checked language for ML (`Tensor<f32, [M, N]>`, checked at compile time)
+- `KvCache<dtype, [heads, capacity, head_dim]>`: a fixed-capacity ring buffer for attention caches — bounds KV memory by type instead of letting it grow with sequence length
 - Deterministic-by-default: seeded PRNG + run provenance hashing, no OS entropy
 - Compiles to a C-ABI shared library any host language can `import`/`dlopen`, with a reference Python (`ctypes`) binding included
 - `omlc` (single-file compiler/runner) and `omlpkg` (package manager: `oml.toml`/`oml.lock`)
@@ -140,7 +154,7 @@ Unlike frameworks that hide internals, OverLLM exposes every layer:
 - **Go orchestration**: Native concurrency, tiny binary, no Python runtime
 - **Rust telemetry**: Zero-cost abstractions, safe system access
 
-This stack compiles to ~50MB total and runs entirely offline on your Mac.
+This stack — the local agent described above — compiles to ~50MB total and runs entirely offline on your Mac. (The separate cloud demo in `ui/`+`api/` does not; see "Two Modes" above.)
 
 ## Roadmap
 
@@ -156,6 +170,8 @@ This stack compiles to ~50MB total and runs entirely offline on your Mac.
 ## Deployment
 
 ### Web Version
+
+This is the cloud demo from "Two Modes" above — full endpoint/feature list in [`NO_MOCK_FUNCTIONALITY.md`](NO_MOCK_FUNCTIONALITY.md). It requires `OPENAI_API_KEY` and is not the offline local agent.
 
 #### Frontend (Vercel)
 ```bash

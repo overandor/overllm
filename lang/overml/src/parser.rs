@@ -147,6 +147,49 @@ impl Parser {
                 self.expect(Token::Gt)?;
                 Ok(Type::Tensor(dtype, dims))
             }
+            "KvCache" => {
+                self.expect(Token::Lt)?;
+                let dtype_name = self.expect_ident()?;
+                let dtype = Dtype::from_str(&dtype_name)
+                    .ok_or_else(|| self.err(format!("unknown tensor dtype '{}'", dtype_name)))?;
+                self.expect(Token::Comma)?;
+                self.expect(Token::LBracket)?;
+                let mut dims = Vec::new();
+                while *self.cur() != Token::RBracket {
+                    match self.cur().clone() {
+                        Token::Int(n) => {
+                            if n <= 0 {
+                                return Err(self.err("KvCache dimensions must be positive integers"));
+                            }
+                            self.bump();
+                            dims.push(DimExpr::Lit(n as usize));
+                        }
+                        Token::Ident(s) => {
+                            return Err(self.err(format!(
+                                "KvCache dimensions must be concrete integers (found symbolic '{}'): capacity is a fixed compile-time bound, not a generic parameter",
+                                s
+                            )));
+                        }
+                        other => {
+                            return Err(self.err(format!("expected a positive integer dimension, found {:?}", other)))
+                        }
+                    };
+                    if *self.cur() == Token::Comma {
+                        self.bump();
+                    } else {
+                        break;
+                    }
+                }
+                self.expect(Token::RBracket)?;
+                self.expect(Token::Gt)?;
+                if dims.len() != 3 {
+                    return Err(self.err(format!(
+                        "KvCache requires exactly 3 dimensions [heads, capacity, head_dim], found {}",
+                        dims.len()
+                    )));
+                }
+                Ok(Type::KvCache(dtype, dims))
+            }
             other => Err(self.err(format!("unknown type '{}'", other))),
         }
     }

@@ -136,7 +136,7 @@ mod tests {
     #[test]
     fn generic_function_binds_symbolic_dims() {
         let src = r#"
-            fn dot(a: Tensor<f32, [N]>, b: Tensor<f32, [N]>) -> f32 {
+            fn dot(a: Tensor<f32, [N]>, b: Tensor<f32, [N]>) -> f64 {
                 return 0.0;
             }
             let v: Tensor<f32, [3]> = tensor([1, 2, 3]);
@@ -145,7 +145,87 @@ mod tests {
         "#;
         // N is bound to 3 by the first argument and to 4 by the second — a
         // genuine mismatch the checker must catch, not a runtime crash.
+        let err = run_source(src).unwrap_err().to_string();
+        assert!(
+            err.contains("already bound to 3") && err.contains('4'),
+            "expected a dimension-binding conflict, got: {}",
+            err
+        );
+    }
+
+    #[test]
+    fn generic_function_with_consistent_dims_runs() {
+        let src = r#"
+            fn dot(a: Tensor<f32, [N]>, b: Tensor<f32, [N]>) -> f64 {
+                return 0.0;
+            }
+            let v: Tensor<f32, [3]> = tensor([1, 2, 3]);
+            let w: Tensor<f32, [3]> = tensor([4, 5, 6]);
+            print(dot(v, w));
+        "#;
+        let (out, _) = run_source(src).unwrap();
+        assert_eq!(out.trim(), "0");
+    }
+
+    #[test]
+    fn kv_cache_length_is_bounded_by_capacity() {
+        // Pushing 5 steps into a capacity-3 cache must never leave the
+        // cache holding more than 3 — that bound is the whole point.
+        let src = r#"
+            let cache = kv_cache_new("f32", 2, 3, 4);
+            let i = 0;
+            while i < 5 {
+                cache = kv_push(cache, zeros("f32", 2, 4));
+                i = i + 1;
+            }
+            print(kv_cache_len(cache));
+        "#;
+        let (out, _) = run_source(src).unwrap();
+        assert_eq!(out.trim(), "3");
+    }
+
+    #[test]
+    fn kv_cache_evicts_oldest_first() {
+        // heads=1, cap=2, head_dim=1. Push 0.0, 1.0, 2.0: 0.0 should be
+        // evicted, leaving [1.0, 2.0] in chronological (oldest-first) order.
+        let src = r#"
+            let cache = kv_cache_new("f32", 1, 2, 1);
+            cache = kv_push(cache, tensor([[0]]));
+            cache = kv_push(cache, tensor([[1]]));
+            cache = kv_push(cache, tensor([[2]]));
+            print(kv_cache_get(cache, 0));
+            print(kv_cache_get(cache, 1));
+        "#;
+        let (out, _) = run_source(src).unwrap();
+        assert_eq!(out, "[[1]]\n[[2]]\n");
+    }
+
+    #[test]
+    fn kv_cache_get_out_of_bounds_is_a_runtime_error() {
+        let src = r#"
+            let cache = kv_cache_new("f32", 1, 4, 1);
+            cache = kv_push(cache, tensor([[1]]));
+            print(kv_cache_get(cache, 1));
+        "#;
         assert!(run_source(src).is_err());
+    }
+
+    #[test]
+    fn kv_push_rejects_wrong_step_shape_at_check_time() {
+        let src = r#"
+            let cache = kv_cache_new("f32", 2, 4, 3);
+            cache = kv_push(cache, zeros("f32", 2, 4));
+        "#;
+        assert!(run_source(src).is_err());
+    }
+
+    #[test]
+    fn kv_cache_symbolic_dims_are_rejected_at_parse_time() {
+        let src = r#"
+            fn f(c: KvCache<f32, [H, 4, D]>) -> i64 { return 0; }
+        "#;
+        let err = run_source(src).unwrap_err().to_string();
+        assert!(err.contains("compile-time bound"), "got: {}", err);
     }
 
     #[test]

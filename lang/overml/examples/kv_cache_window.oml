@@ -1,0 +1,33 @@
+// Demonstrates OverML's fixed-capacity KvCache: the language-level answer
+// to "KV bloat" in autoregressive inference, where an attention cache
+// growing with every decoded token is a classic memory blowup on long
+// sequences. A KvCache<dtype, [heads, capacity, head_dim]> is a ring
+// buffer — kv_push never grows it, it overwrites the oldest step once
+// full, so the type itself is a static bound on memory: heads * capacity *
+// head_dim, forever, no matter how many tokens you decode.
+seed(7);
+
+// heads=2, capacity=3 (only the last 3 steps are ever kept), head_dim=3.
+let cache = kv_cache_new("f32", 2, 3, 3);
+
+let i = 0;
+let total_steps = 5;
+while i < total_steps {
+    // Stand-in for "this token's per-head key (or value) vectors."
+    let this_step = rand_tensor("f32", 2, 3);
+    cache = kv_push(cache, this_step);
+    i = i + 1;
+}
+
+// 5 pushes into a capacity-3 cache: length caps at 3, not 5 — the two
+// oldest steps were evicted, not accumulated.
+print(kv_cache_len(cache));
+
+// Read back what actually survived, oldest to newest.
+let j = 0;
+while j < kv_cache_len(cache) {
+    print(kv_cache_get(cache, j));
+    j = j + 1;
+}
+
+print(provenance_hash());

@@ -15,6 +15,11 @@ let w: Tensor<f32, [3, 2]> = tensor([[1, 0], [0, 1], [1, 1]]);
 print(matmul_relu(x, w));   // shape/dtype mismatches are compile errors, not runtime crashes
 ```
 
+Also includes `KvCache<dtype, [heads, capacity, head_dim]>`, a fixed-capacity
+ring buffer for attention caches — `kv_push` evicts the oldest step once full
+instead of growing, so a cache's memory is bounded by its type, not by how
+long the sequence runs (see `examples/kv_cache_window.oml`).
+
 See [`docs/DESIGN.md`](docs/DESIGN.md) for the full language design, type
 system, reproducibility model, and packaging format.
 
