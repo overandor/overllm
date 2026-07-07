@@ -15,6 +15,23 @@ pub struct TensorVal {
     pub data: Vec<f64>,
 }
 
+/// A fixed-capacity ring buffer over `[heads, head_dim]` steps. `data` is
+/// laid out as `[heads][cap][head_dim]` row-major and is allocated once, at
+/// `heads * cap * head_dim`, and never resized — `kv_push` always writes
+/// into that same backing array, wrapping `cursor` back to 0 once full. This
+/// is the whole mechanism: the array's size is fixed at construction, so no
+/// sequence of pushes can ever make it bigger.
+#[derive(Debug, Clone)]
+pub struct KvCacheVal {
+    pub dtype: Dtype,
+    pub heads: usize,
+    pub cap: usize,
+    pub head_dim: usize,
+    pub data: Vec<f64>,
+    pub cursor: usize,
+    pub filled: usize,
+}
+
 #[derive(Debug, Clone)]
 pub enum Value {
     I64(i64),
@@ -23,6 +40,7 @@ pub enum Value {
     Str(String),
     Unit,
     Tensor(TensorVal),
+    KvCache(KvCacheVal),
 }
 
 impl Value {
@@ -374,6 +392,97 @@ impl<'a> Interp<'a> {
                 Ok(Value::Tensor(TensorVal { dtype, shape, data }))
             }
             "provenance_hash" => Ok(Value::Str(self.trace.finish_hex())),
+            "kv_cache_new" => {
+                let dtype = match self.eval_expr(&args[0])? {
+                    Value::Str(s) => Dtype::from_str(&s).unwrap(),
+                    _ => unreachable!(),
+                };
+                let heads = self.eval_expr(&args[1])?.as_i64() as usize;
+                let cap = self.eval_expr(&args[2])?.as_i64() as usize;
+                let head_dim = self.eval_expr(&args[3])?.as_i64() as usize;
+                Ok(Value::KvCache(KvCacheVal {
+                    dtype,
+                    heads,
+                    cap,
+                    head_dim,
+                    data: vec![0.0; heads * cap * head_dim],
+                    cursor: 0,
+                    filled: 0,
+                }))
+            }
+            "kv_push" => {
+                let cache = match self.eval_expr(&args[0])? {
+                    Value::KvCache(c) => c,
+                    _ => unreachable!(),
+                };
+                let step = match self.eval_expr(&args[1])? {
+                    Value::Tensor(t) => t,
+                    _ => unreachable!(),
+                };
+                let KvCacheVal {
+                    dtype,
+                    heads,
+                    cap,
+                    head_dim,
+                    mut data,
+                    cursor,
+                    filled,
+                } = cache;
+                // Overwrite the slot at `cursor` across every head — this is
+                // the sliding-window eviction: once full, the oldest step is
+                // exactly the one `cursor` is about to clobber.
+                for h in 0..heads {
+                    for d in 0..head_dim {
+                        data[h * cap * head_dim + cursor * head_dim + d] = step.data[h * head_dim + d];
+                    }
+                }
+                Ok(Value::KvCache(KvCacheVal {
+                    dtype,
+                    heads,
+                    cap,
+                    head_dim,
+                    data,
+                    cursor: (cursor + 1) % cap,
+                    filled: (filled + 1).min(cap),
+                }))
+            }
+            "kv_cache_len" => match self.eval_expr(&args[0])? {
+                Value::KvCache(c) => Ok(Value::I64(c.filled as i64)),
+                _ => unreachable!(),
+            },
+            "kv_cache_get" => {
+                let cache = match self.eval_expr(&args[0])? {
+                    Value::KvCache(c) => c,
+                    _ => unreachable!(),
+                };
+                let i = self.eval_expr(&args[1])?.as_i64();
+                if i < 0 || i as usize >= cache.filled {
+                    return Err(OverMlError::detached(format!(
+                        "kv_cache_get: index {} out of bounds for {} filled entries",
+                        i, cache.filled
+                    )));
+                }
+                let i = i as usize;
+                // Chronological index -> ring position. Before the buffer
+                // wraps, oldest-first order *is* array order. Once full, the
+                // oldest entry sits at `cursor` (next slot to be overwritten).
+                let pos = if cache.filled < cache.cap {
+                    i
+                } else {
+                    (cache.cursor + i) % cache.cap
+                };
+                let mut out = Vec::with_capacity(cache.heads * cache.head_dim);
+                for h in 0..cache.heads {
+                    for d in 0..cache.head_dim {
+                        out.push(cache.data[h * cache.cap * cache.head_dim + pos * cache.head_dim + d]);
+                    }
+                }
+                Ok(Value::Tensor(TensorVal {
+                    dtype: cache.dtype,
+                    shape: vec![cache.heads, cache.head_dim],
+                    data: out,
+                }))
+            }
             _ => {
                 let f: &FnDecl = self
                     .fns
@@ -433,6 +542,15 @@ fn values_equal(a: &Value, b: &Value) -> bool {
         (Value::Str(x), Value::Str(y)) => x == y,
         (Value::Unit, Value::Unit) => true,
         (Value::Tensor(x), Value::Tensor(y)) => x.shape == y.shape && x.data == y.data,
+        (Value::KvCache(x), Value::KvCache(y)) => {
+            x.dtype == y.dtype
+                && x.heads == y.heads
+                && x.cap == y.cap
+                && x.head_dim == y.head_dim
+                && x.cursor == y.cursor
+                && x.filled == y.filled
+                && x.data == y.data
+        }
         _ => false,
     }
 }
@@ -470,6 +588,14 @@ fn format_value(v: &Value) -> String {
         Value::Str(s) => s.clone(),
         Value::Unit => "()".to_string(),
         Value::Tensor(t) => format_tensor(t),
+        Value::KvCache(c) => format!(
+            "KvCache<{}, heads={}, cap={}, head_dim={}, filled={}>",
+            c.dtype.name(),
+            c.heads,
+            c.cap,
+            c.head_dim,
+            c.filled
+        ),
     }
 }
 

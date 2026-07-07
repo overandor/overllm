@@ -431,6 +431,79 @@ impl TypeChecker {
                 self.check_builtin_arity(name, args, 0)?;
                 Ok(Type::Str)
             }
+            "kv_cache_new" => {
+                self.check_builtin_arity(name, args, 4)?;
+                let dtype = match &args[0] {
+                    Expr::Str(s) => Dtype::from_str(s)
+                        .ok_or_else(|| OverMlError::detached(format!("unknown dtype '{}'", s)))?,
+                    _ => {
+                        return Err(OverMlError::detached(
+                            "kv_cache_new: the dtype argument must be a string literal, e.g. \"f32\"".to_string(),
+                        ))
+                    }
+                };
+                let mut dims = Vec::with_capacity(3);
+                for a in &args[1..4] {
+                    match a {
+                        Expr::Int(n) if *n > 0 => dims.push(DimExpr::Lit(*n as usize)),
+                        _ => {
+                            return Err(OverMlError::detached(
+                                "kv_cache_new(dtype, heads, capacity, head_dim): heads/capacity/head_dim must be positive integer literals".to_string(),
+                            ))
+                        }
+                    }
+                }
+                Ok(Type::KvCache(dtype, dims))
+            }
+            "kv_push" => {
+                self.check_builtin_arity(name, args, 2)?;
+                let cache_ty = self.type_of(&args[0])?;
+                let step_ty = self.type_of(&args[1])?;
+                match &cache_ty {
+                    Type::KvCache(dt, dims) => {
+                        let expected_step = Type::Tensor(*dt, vec![dims[0].clone(), dims[2].clone()]);
+                        if !types_equal(&expected_step, &step_ty) {
+                            return Err(OverMlError::detached(format!(
+                                "kv_push: expected a {} step (one [heads, head_dim] slice), found {}",
+                                expected_step, step_ty
+                            )));
+                        }
+                        Ok(cache_ty)
+                    }
+                    other => Err(OverMlError::detached(format!(
+                        "kv_push: first argument must be a KvCache, found {}",
+                        other
+                    ))),
+                }
+            }
+            "kv_cache_len" => {
+                self.check_builtin_arity(name, args, 1)?;
+                match self.type_of(&args[0])? {
+                    Type::KvCache(_, _) => Ok(Type::I64),
+                    other => Err(OverMlError::detached(format!(
+                        "kv_cache_len: expected a KvCache, found {}",
+                        other
+                    ))),
+                }
+            }
+            "kv_cache_get" => {
+                self.check_builtin_arity(name, args, 2)?;
+                let cache_ty = self.type_of(&args[0])?;
+                let idx_ty = self.type_of(&args[1])?;
+                if idx_ty != Type::I64 {
+                    return Err(OverMlError::detached(format!(
+                        "kv_cache_get: index must be i64, found {}",
+                        idx_ty
+                    )));
+                }
+                match cache_ty {
+                    Type::KvCache(dt, dims) => Ok(Type::Tensor(dt, vec![dims[0].clone(), dims[2].clone()])),
+                    other => Err(OverMlError::detached(format!(
+                        "kv_cache_get: expected a KvCache, found {}",
+                        other
+                    ))),
+                }
+            }
             _ => {
                 let sig = self
                     .fns

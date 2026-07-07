@@ -15,7 +15,7 @@ v0.1.
 
 ## Why another language
 
-Three specific, well-known ML-tooling pain points motivated the design:
+Four specific, well-known ML-tooling pain points motivated the design:
 
 1. **Weak type safety around tensors.** In most ML stacks, a shape or dtype
    mismatch (`(2, 3) @ (4, 5)`, `float32` vs `float64`) is a runtime
@@ -34,6 +34,15 @@ Three specific, well-known ML-tooling pain points motivated the design:
    splitmix64 implementation with no OS entropy involved, and every run can
    produce a provenance fingerprint (`provenance_hash()`) that two runs will
    only share if they were observationally identical.
+4. **Unbounded KV cache growth ("KV bloat") during autoregressive
+   inference.** A naive attention cache grows by one step every token
+   decoded, with no ceiling — the classic long-context memory blowup.
+   OverML's `KvCache` type is a fixed-capacity ring buffer: its *type*
+   (`KvCache<dtype, [heads, capacity, head_dim]>`) fixes the backing
+   allocation at construction, and pushing past capacity evicts the oldest
+   step instead of growing. There is no sequence of `kv_push` calls that
+   makes a `KvCache` bigger than its declared capacity — see "Bounded
+   memory" below.
 
 ## Language tour
 
@@ -64,7 +73,9 @@ shape inferred from the literal and validated for raggedness), and indexing
 (`t[i]`, rank-1 tensors only in v0.1).
 
 Builtins: `seed(n)`, `zeros(dtype, dims...)`, `ones(dtype, dims...)`,
-`rand_tensor(dtype, dims...)`, `provenance_hash()`.
+`rand_tensor(dtype, dims...)`, `provenance_hash()`, `kv_cache_new(dtype,
+heads, capacity, head_dim)`, `kv_push(cache, step)`, `kv_cache_len(cache)`,
+`kv_cache_get(cache, i)` — see "Bounded memory" below.
 
 ## Type system
 
@@ -91,6 +102,57 @@ code executes:
   resolve them. Intermediate `let`s *inside* a generic function are allowed
   to stay symbolic (see `tests/examples.rs` and `typecheck.rs` for the
   `in_fn` distinction).
+
+## Bounded memory: `KvCache` (reducing KV bloat)
+
+```
+// examples/kv_cache_window.oml
+let cache = kv_cache_new("f32", 2, 3, 3);  // heads=2, capacity=3, head_dim=3
+
+let i = 0;
+while i < 5 {                              // 5 pushes...
+    cache = kv_push(cache, rand_tensor("f32", 2, 3));
+    i = i + 1;
+}
+print(kv_cache_len(cache));                 // ...but this prints 3, not 5
+```
+
+`KvCache<dtype, [heads, capacity, head_dim]>` (`src/interp.rs::KvCacheVal`) is
+a fixed-capacity ring buffer over per-step `[heads, head_dim]` tensors. The
+backing storage — `heads * capacity * head_dim` elements — is allocated once,
+by `kv_cache_new`, and never resized. `kv_push` always writes into that same
+array at a rotating cursor; once the cursor has wrapped, each write overwrites
+the oldest surviving step (sliding-window / FIFO eviction, the same idea
+behind "streaming" attention caches). `kv_cache_len` reports how many steps
+are currently held (`<= capacity`, monotonically increasing until it hits the
+ceiling, then constant forever), and `kv_cache_get(cache, i)` reads back the
+`i`-th step in oldest-to-newest order, transparently accounting for the
+wraparound.
+
+The guarantee this buys you: **a `KvCache`'s memory footprint is fixed by its
+type, not by how long the sequence runs.** There is no OverML program that
+grows a `KvCache` past its declared capacity — `kv_push` is total (it always
+returns a same-shaped `KvCache`, by construction, not by convention), so the
+type checker doesn't even need a special rule to enforce the bound; the
+ring-buffer semantics make it structurally impossible to violate. Contrast
+with appending to a growing list/tensor every decode step, which has no such
+ceiling and is exactly how KV caches balloon on long sequences in practice.
+
+Deliberate v0.1 scope, consistent with the rest of the language:
+- **Not generic.** All three `KvCache` dims (including `capacity`) must be
+  concrete integer literals — capacity is a fixed compile-time budget, not a
+  parameter a caller can leave symbolic. Using a symbol (e.g. `KvCache<f32,
+  [H, 4, D]>`) is a parse error with a message explaining why.
+- **Value semantics, like everything else in OverML.** `kv_push` returns an
+  *updated* `KvCache`; it does not mutate its argument in place (OverML has
+  no references). The idiom is the same as any other stateful loop in the
+  language: `cache = kv_push(cache, step);`, mirroring `mut_i = mut_i + 1;`.
+- **No dtype-driven memory savings yet.** Like `Tensor`, `KvCache` elements
+  are stored as `f64` internally regardless of declared dtype (see "Honest
+  limitations"). Pairing a narrower runtime representation with an `i8`/`i4`
+  quantized `KvCache` dtype — a second, complementary way real systems cut KV
+  memory — is natural future work once narrower tensor storage lands; it
+  isn't implemented now rather than half-implemented.
 
 ## Reproducibility
 
@@ -191,7 +253,7 @@ calls work from Node's `ffi-napi`, Go's `cgo`, or C++ directly.
 | `src/ast.rs` | AST + type grammar |
 | `src/parser.rs` | tokens -> AST (recursive descent) |
 | `src/typecheck.rs` | static shape/dtype checking, symbolic dim binding |
-| `src/interp.rs` | tree-walking evaluator, tensor ops, provenance hashing |
+| `src/interp.rs` | tree-walking evaluator, tensor ops, `KvCache` ring buffer, provenance hashing |
 | `src/rng.rs` | deterministic PRNG + FNV-1a hash |
 | `src/modules.rs` | `import` resolution, function-name qualification |
 | `src/pkg.rs` | `oml.toml`/`oml.lock` parsing and writing |

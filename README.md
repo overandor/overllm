@@ -85,6 +85,7 @@ This telemetry is injected into every prompt, making OverLLM hyper-aware of your
 
 ### OverML — ML Language & Package (`lang/overml/`)
 - Statically shape/dtype-checked language for ML (`Tensor<f32, [M, N]>`, checked at compile time)
+- `KvCache<dtype, [heads, capacity, head_dim]>`: a fixed-capacity ring buffer for attention caches — bounds KV memory by type instead of letting it grow with sequence length
 - Deterministic-by-default: seeded PRNG + run provenance hashing, no OS entropy
 - Compiles to a C-ABI shared library any host language can `import`/`dlopen`, with a reference Python (`ctypes`) binding included
 - `omlc` (single-file compiler/runner) and `omlpkg` (package manager: `oml.toml`/`oml.lock`)
