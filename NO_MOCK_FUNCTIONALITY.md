@@ -1,5 +1,12 @@
 # Devin Terminal - No-Mock Functionality Documentation
 
+> **Scope note**: "Devin Terminal" is the internal name for OverLLM's cloud
+> demo (the `ui/` + `api/` web app: React frontend, FastAPI backend, OpenAI
+> integration, Vercel deployment). It is a separate deployment target from
+> the offline macOS local agent described in the repo's main
+> [`README.md`](README.md) — see that file's "Two Modes" section. This
+> document covers only the cloud demo.
+
 ## Overview
 Devin Terminal is a fully functional AI-powered development environment with real capabilities, not mock implementations. This document lists all genuine functionality available in the system.
 
