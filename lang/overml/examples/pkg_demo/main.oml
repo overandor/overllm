@@ -1,0 +1,7 @@
+// Demonstrates omlpkg-resolved imports: `linalg` is declared in oml.toml
+// and its functions are reachable as `linalg::name`.
+import linalg;
+
+let a: Tensor<f32, [2]> = tensor([3, 4]);
+let b: Tensor<f32, [2]> = tensor([1, 2]);
+print(linalg::dot2(a, b));

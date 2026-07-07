@@ -1,0 +1,18 @@
+// Demonstrates compile-time shape checking: `matmul` is generic over
+// dimensions M, N, P, and the checker verifies every call site's shapes
+// unify *before* the program runs — there is no way to hit a runtime
+// "shapes (2,3) and (4,5) not aligned" error in OverML.
+fn matmul_relu(a: Tensor<f32, [M, N]>, b: Tensor<f32, [N, P]>) -> Tensor<f32, [M, P]> {
+    let raw = a @ b;
+    return raw;
+}
+
+let x: Tensor<f32, [2, 3]> = tensor([[1, 2, 3], [4, 5, 6]]);
+let w: Tensor<f32, [3, 2]> = tensor([[1, 0], [0, 1], [1, 1]]);
+let y = matmul_relu(x, w);
+print(y);
+
+// Uncommenting the next two lines is a *compile-time* type error, not a
+// runtime crash: w2's inner dimension (4) can't unify with x's (3).
+// let w2: Tensor<f32, [4, 2]> = tensor([[1, 0], [0, 1], [1, 1], [1, 1]]);
+// print(matmul_relu(x, w2));
