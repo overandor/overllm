@@ -56,6 +56,13 @@ RSTF_OWN_PATHS_PREFIXES = (
     "tests/test_rstf_benchmark.py",
     "tests/test_rstf_token_cost.py",
     "tests/test_rstf_adversarial_eval.py",
+    "tests/test_rstf_dogfood_scan.py",
+    "tools/bpe_tokenizer.py",
+    "tools/bpe_parity_check.py",
+    "tools/rstf_bpe_token_cost.py",
+    "tests/test_bpe_tokenizer.py",
+    "tests/test_bpe_parity_check.py",
+    "tests/test_rstf_bpe_token_cost.py",
 )
 
 

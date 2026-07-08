@@ -166,6 +166,61 @@ correctness check. If canonicalizing a purely-reordered string ever showed
 nonzero byte savings, that would indicate a bug in `_decode_upside_down`-style
 character substitution leaking into the reversal path, not a token saving.
 
+## Real tokenizer measurement (not a proxy)
+
+The byte-cost benchmark above uses UTF-8 byte length because no production
+tokenizer vocabulary host is reachable from this environment (confirmed:
+both `openaipublic.blob.core.windows.net` and `huggingface.co` return 403
+through the sandbox's egress proxy, and the Anthropic SDK dropped its local
+tokenizer years ago — token counting now requires a live API call). Rather
+than stop at a proxy, `tools/bpe_tokenizer.py` trains a real byte-level BPE
+tokenizer — the same algorithm GPT-2/3.5/4, Claude, and Llama use — on this
+repo's own docs (`README.md`, `DEPLOY.md`, `NO_MOCK_FUNCTIONALITY.md`,
+`docs/*.md`; 65,948 bytes, 1,244 learned merges, 1,500-token vocabulary).
+
+**Scope honesty**: this is OverLLM's own tokenizer, trained on a few tens of
+KB of this repo's own text, not GPT-4/Claude/Llama's production tokenizer.
+Absolute token counts here don't represent what a production API bills.
+What's real: the algorithm itself, genuinely trained and genuinely applied,
+and the measurement methodology — not a proxy.
+
+The implementation exists in two places that must agree: `tools/bpe_tokenizer.py`
+(Python trainer + reference encoder/decoder) and `cpp/src/tokenizer.cpp`
+(the real BPE implementation that replaced this repo's earlier
+single-character-lookup stub — see git history). `tools/bpe_parity_check.py`
+compiles the C++ mirror and asserts byte-for-byte identical token ID
+sequences against the Python reference across 13+ test cases, including
+RSTF-transformed text.
+
+```bash
+python tools/bpe_tokenizer.py train --corpus-glob "README.md" "docs/*.md" --vocab-size 1500 --out-dir cpp/tokenizer_data
+python tools/bpe_parity_check.py
+python tools/rstf_bpe_token_cost.py --out-md benchmark/rstf/bpe_token_cost_report.md
+```
+
+Committed runs: `benchmark/rstf/bpe_token_cost_report.md` / `.json`,
+`benchmark/rstf/bpe_parity_report.json`.
+
+| Transform | Token savings ratio |
+|---|---|
+| `homoglyph` | 78.8% |
+| `upside_down` | 75.0% |
+| `bidi_override` | 43.0% |
+| `reversed` | **39.0%** |
+| **Overall** | **66.4%** |
+
+**The key finding this real tokenizer reveals that the byte proxy structurally
+cannot**: `reversed` shows real, substantial token savings (39.0%), not 0%.
+UTF-8 byte length cannot change under reordering — that's simple arithmetic.
+But BPE token count *can*, because merges are learned from forward-reading
+corpus text (common substrings like "the", " to", "tion"). Reversing a
+string breaks those learned merges, so the reversed text tokenizes into many
+more, smaller tokens than the correctly-ordered canonical text. This is a
+genuine property of real tokenizers that a byte-length proxy is
+mathematically incapable of demonstrating, and it directly supports the
+"canonicalization reduces token spend" claim in a way the proxy alone could
+not for the `reversed` transform class.
+
 ## Independent adversarial eval (non-circular)
 
 `tools/rstf_adversarial_eval.py` runs against `benchmark/rstf/adversarial_corpus.json`,

@@ -1,0 +1,1323 @@
+{
+  "examples": [
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 34,
+      "source_id": 0,
+      "token_savings_ratio": 0.6176,
+      "tokens_saved": 21,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 65,
+      "source_id": 0,
+      "token_savings_ratio": 0.8,
+      "tokens_saved": 52,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 26,
+      "source_id": 0,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 13,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 77,
+      "source_id": 0,
+      "token_savings_ratio": 0.8312,
+      "tokens_saved": 64,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 26,
+      "raw_tokens": 26,
+      "source_id": 1,
+      "token_savings_ratio": 0.0,
+      "tokens_saved": 0,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 60,
+      "source_id": 1,
+      "token_savings_ratio": 0.7667,
+      "tokens_saved": 46,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 26,
+      "source_id": 1,
+      "token_savings_ratio": 0.4615,
+      "tokens_saved": 12,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 66,
+      "source_id": 1,
+      "token_savings_ratio": 0.7879,
+      "tokens_saved": 52,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 23,
+      "source_id": 2,
+      "token_savings_ratio": 0.4348,
+      "tokens_saved": 10,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 56,
+      "source_id": 2,
+      "token_savings_ratio": 0.7679,
+      "tokens_saved": 43,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 25,
+      "source_id": 2,
+      "token_savings_ratio": 0.48,
+      "tokens_saved": 12,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 59,
+      "source_id": 2,
+      "token_savings_ratio": 0.7797,
+      "tokens_saved": 46,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 26,
+      "source_id": 3,
+      "token_savings_ratio": 0.5385,
+      "tokens_saved": 14,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 66,
+      "source_id": 3,
+      "token_savings_ratio": 0.8182,
+      "tokens_saved": 54,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 24,
+      "source_id": 3,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 12,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 72,
+      "source_id": 3,
+      "token_savings_ratio": 0.8333,
+      "tokens_saved": 60,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 19,
+      "raw_tokens": 32,
+      "source_id": 4,
+      "token_savings_ratio": 0.4062,
+      "tokens_saved": 13,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 19,
+      "raw_tokens": 66,
+      "source_id": 4,
+      "token_savings_ratio": 0.7121,
+      "tokens_saved": 47,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 19,
+      "raw_tokens": 32,
+      "source_id": 4,
+      "token_savings_ratio": 0.4062,
+      "tokens_saved": 13,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 19,
+      "raw_tokens": 76,
+      "source_id": 4,
+      "token_savings_ratio": 0.75,
+      "tokens_saved": 57,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 11,
+      "raw_tokens": 20,
+      "source_id": 5,
+      "token_savings_ratio": 0.45,
+      "tokens_saved": 9,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 11,
+      "raw_tokens": 44,
+      "source_id": 5,
+      "token_savings_ratio": 0.75,
+      "tokens_saved": 33,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 11,
+      "raw_tokens": 24,
+      "source_id": 5,
+      "token_savings_ratio": 0.5417,
+      "tokens_saved": 13,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 11,
+      "raw_tokens": 47,
+      "source_id": 5,
+      "token_savings_ratio": 0.766,
+      "tokens_saved": 36,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 24,
+      "source_id": 6,
+      "token_savings_ratio": 0.4167,
+      "tokens_saved": 10,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 47,
+      "source_id": 6,
+      "token_savings_ratio": 0.7021,
+      "tokens_saved": 33,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 26,
+      "source_id": 6,
+      "token_savings_ratio": 0.4615,
+      "tokens_saved": 12,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 65,
+      "source_id": 6,
+      "token_savings_ratio": 0.7846,
+      "tokens_saved": 51,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 25,
+      "source_id": 7,
+      "token_savings_ratio": 0.36,
+      "tokens_saved": 9,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 49,
+      "source_id": 7,
+      "token_savings_ratio": 0.6735,
+      "tokens_saved": 33,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 26,
+      "source_id": 7,
+      "token_savings_ratio": 0.3846,
+      "tokens_saved": 10,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 65,
+      "source_id": 7,
+      "token_savings_ratio": 0.7538,
+      "tokens_saved": 49,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 27,
+      "raw_tokens": 27,
+      "source_id": 8,
+      "token_savings_ratio": 0.0,
+      "tokens_saved": 0,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 65,
+      "source_id": 8,
+      "token_savings_ratio": 0.8154,
+      "tokens_saved": 53,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 27,
+      "source_id": 8,
+      "token_savings_ratio": 0.5556,
+      "tokens_saved": 15,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 63,
+      "source_id": 8,
+      "token_savings_ratio": 0.8095,
+      "tokens_saved": 51,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 28,
+      "source_id": 9,
+      "token_savings_ratio": 0.4643,
+      "tokens_saved": 13,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 65,
+      "source_id": 9,
+      "token_savings_ratio": 0.7692,
+      "tokens_saved": 50,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 24,
+      "source_id": 9,
+      "token_savings_ratio": 0.375,
+      "tokens_saved": 9,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 74,
+      "source_id": 9,
+      "token_savings_ratio": 0.7973,
+      "tokens_saved": 59,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 31,
+      "raw_tokens": 31,
+      "source_id": 10,
+      "token_savings_ratio": 0.0,
+      "tokens_saved": 0,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 57,
+      "source_id": 10,
+      "token_savings_ratio": 0.7719,
+      "tokens_saved": 44,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 28,
+      "source_id": 10,
+      "token_savings_ratio": 0.5357,
+      "tokens_saved": 15,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 73,
+      "source_id": 10,
+      "token_savings_ratio": 0.8219,
+      "tokens_saved": 60,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 27,
+      "source_id": 11,
+      "token_savings_ratio": 0.4444,
+      "tokens_saved": 12,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 51,
+      "source_id": 11,
+      "token_savings_ratio": 0.7059,
+      "tokens_saved": 36,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 26,
+      "source_id": 11,
+      "token_savings_ratio": 0.4231,
+      "tokens_saved": 11,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 68,
+      "source_id": 11,
+      "token_savings_ratio": 0.7794,
+      "tokens_saved": 53,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 29,
+      "source_id": 12,
+      "token_savings_ratio": 0.3793,
+      "tokens_saved": 11,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 62,
+      "source_id": 12,
+      "token_savings_ratio": 0.7097,
+      "tokens_saved": 44,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 29,
+      "source_id": 12,
+      "token_savings_ratio": 0.3793,
+      "tokens_saved": 11,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 72,
+      "source_id": 12,
+      "token_savings_ratio": 0.75,
+      "tokens_saved": 54,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 24,
+      "source_id": 13,
+      "token_savings_ratio": 0.4583,
+      "tokens_saved": 11,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 48,
+      "source_id": 13,
+      "token_savings_ratio": 0.7292,
+      "tokens_saved": 35,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 23,
+      "source_id": 13,
+      "token_savings_ratio": 0.4348,
+      "tokens_saved": 10,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 64,
+      "source_id": 13,
+      "token_savings_ratio": 0.7969,
+      "tokens_saved": 51,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 21,
+      "raw_tokens": 33,
+      "source_id": 14,
+      "token_savings_ratio": 0.3636,
+      "tokens_saved": 12,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 21,
+      "raw_tokens": 68,
+      "source_id": 14,
+      "token_savings_ratio": 0.6912,
+      "tokens_saved": 47,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 21,
+      "raw_tokens": 32,
+      "source_id": 14,
+      "token_savings_ratio": 0.3438,
+      "tokens_saved": 11,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 21,
+      "raw_tokens": 74,
+      "source_id": 14,
+      "token_savings_ratio": 0.7162,
+      "tokens_saved": 53,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 33,
+      "source_id": 15,
+      "token_savings_ratio": 0.5758,
+      "tokens_saved": 19,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 66,
+      "source_id": 15,
+      "token_savings_ratio": 0.7879,
+      "tokens_saved": 52,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 26,
+      "source_id": 15,
+      "token_savings_ratio": 0.4615,
+      "tokens_saved": 12,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 79,
+      "source_id": 15,
+      "token_savings_ratio": 0.8228,
+      "tokens_saved": 65,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 28,
+      "source_id": 16,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 14,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 54,
+      "source_id": 16,
+      "token_savings_ratio": 0.7407,
+      "tokens_saved": 40,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 24,
+      "source_id": 16,
+      "token_savings_ratio": 0.4167,
+      "tokens_saved": 10,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 66,
+      "source_id": 16,
+      "token_savings_ratio": 0.7879,
+      "tokens_saved": 52,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 30,
+      "source_id": 17,
+      "token_savings_ratio": 0.5667,
+      "tokens_saved": 17,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 55,
+      "source_id": 17,
+      "token_savings_ratio": 0.7636,
+      "tokens_saved": 42,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 25,
+      "source_id": 17,
+      "token_savings_ratio": 0.48,
+      "tokens_saved": 12,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 71,
+      "source_id": 17,
+      "token_savings_ratio": 0.8169,
+      "tokens_saved": 58,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 32,
+      "source_id": 18,
+      "token_savings_ratio": 0.4375,
+      "tokens_saved": 14,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 70,
+      "source_id": 18,
+      "token_savings_ratio": 0.7429,
+      "tokens_saved": 52,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 27,
+      "source_id": 18,
+      "token_savings_ratio": 0.3333,
+      "tokens_saved": 9,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 80,
+      "source_id": 18,
+      "token_savings_ratio": 0.775,
+      "tokens_saved": 62,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 28,
+      "source_id": 19,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 14,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 61,
+      "source_id": 19,
+      "token_savings_ratio": 0.7705,
+      "tokens_saved": 47,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 28,
+      "source_id": 19,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 14,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 71,
+      "source_id": 19,
+      "token_savings_ratio": 0.8028,
+      "tokens_saved": 57,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 26,
+      "source_id": 20,
+      "token_savings_ratio": 0.3462,
+      "tokens_saved": 9,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 52,
+      "source_id": 20,
+      "token_savings_ratio": 0.6731,
+      "tokens_saved": 35,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 25,
+      "source_id": 20,
+      "token_savings_ratio": 0.32,
+      "tokens_saved": 8,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 74,
+      "source_id": 20,
+      "token_savings_ratio": 0.7703,
+      "tokens_saved": 57,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 32,
+      "source_id": 21,
+      "token_savings_ratio": 0.625,
+      "tokens_saved": 20,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 63,
+      "source_id": 21,
+      "token_savings_ratio": 0.8095,
+      "tokens_saved": 51,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 26,
+      "source_id": 21,
+      "token_savings_ratio": 0.5385,
+      "tokens_saved": 14,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 73,
+      "source_id": 21,
+      "token_savings_ratio": 0.8356,
+      "tokens_saved": 61,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 26,
+      "raw_tokens": 26,
+      "source_id": 22,
+      "token_savings_ratio": 0.0,
+      "tokens_saved": 0,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 60,
+      "source_id": 22,
+      "token_savings_ratio": 0.7667,
+      "tokens_saved": 46,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 25,
+      "source_id": 22,
+      "token_savings_ratio": 0.44,
+      "tokens_saved": 11,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 70,
+      "source_id": 22,
+      "token_savings_ratio": 0.8,
+      "tokens_saved": 56,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 29,
+      "source_id": 23,
+      "token_savings_ratio": 0.4483,
+      "tokens_saved": 13,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 66,
+      "source_id": 23,
+      "token_savings_ratio": 0.7576,
+      "tokens_saved": 50,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 32,
+      "source_id": 23,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 16,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 70,
+      "source_id": 23,
+      "token_savings_ratio": 0.7714,
+      "tokens_saved": 54,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 30,
+      "source_id": 24,
+      "token_savings_ratio": 0.4333,
+      "tokens_saved": 13,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 68,
+      "source_id": 24,
+      "token_savings_ratio": 0.75,
+      "tokens_saved": 51,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 24,
+      "source_id": 24,
+      "token_savings_ratio": 0.2917,
+      "tokens_saved": 7,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 78,
+      "source_id": 24,
+      "token_savings_ratio": 0.7821,
+      "tokens_saved": 61,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 29,
+      "source_id": 25,
+      "token_savings_ratio": 0.5172,
+      "tokens_saved": 15,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 52,
+      "source_id": 25,
+      "token_savings_ratio": 0.7308,
+      "tokens_saved": 38,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 27,
+      "source_id": 25,
+      "token_savings_ratio": 0.4815,
+      "tokens_saved": 13,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 72,
+      "source_id": 25,
+      "token_savings_ratio": 0.8056,
+      "tokens_saved": 58,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 29,
+      "source_id": 26,
+      "token_savings_ratio": 0.4138,
+      "tokens_saved": 12,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 52,
+      "source_id": 26,
+      "token_savings_ratio": 0.6731,
+      "tokens_saved": 35,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 25,
+      "source_id": 26,
+      "token_savings_ratio": 0.32,
+      "tokens_saved": 8,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 71,
+      "source_id": 26,
+      "token_savings_ratio": 0.7606,
+      "tokens_saved": 54,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 11,
+      "raw_tokens": 26,
+      "source_id": 27,
+      "token_savings_ratio": 0.5769,
+      "tokens_saved": 15,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 11,
+      "raw_tokens": 59,
+      "source_id": 27,
+      "token_savings_ratio": 0.8136,
+      "tokens_saved": 48,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 11,
+      "raw_tokens": 24,
+      "source_id": 27,
+      "token_savings_ratio": 0.5417,
+      "tokens_saved": 13,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 11,
+      "raw_tokens": 65,
+      "source_id": 27,
+      "token_savings_ratio": 0.8308,
+      "tokens_saved": 54,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 28,
+      "source_id": 28,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 14,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 57,
+      "source_id": 28,
+      "token_savings_ratio": 0.7544,
+      "tokens_saved": 43,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 22,
+      "source_id": 28,
+      "token_savings_ratio": 0.3636,
+      "tokens_saved": 8,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 14,
+      "raw_tokens": 77,
+      "source_id": 28,
+      "token_savings_ratio": 0.8182,
+      "tokens_saved": 63,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 24,
+      "source_id": 29,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 12,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 50,
+      "source_id": 29,
+      "token_savings_ratio": 0.76,
+      "tokens_saved": 38,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 22,
+      "source_id": 29,
+      "token_savings_ratio": 0.4545,
+      "tokens_saved": 10,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 63,
+      "source_id": 29,
+      "token_savings_ratio": 0.8095,
+      "tokens_saved": 51,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 32,
+      "source_id": 30,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 16,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 63,
+      "source_id": 30,
+      "token_savings_ratio": 0.746,
+      "tokens_saved": 47,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 26,
+      "source_id": 30,
+      "token_savings_ratio": 0.3846,
+      "tokens_saved": 10,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 16,
+      "raw_tokens": 74,
+      "source_id": 30,
+      "token_savings_ratio": 0.7838,
+      "tokens_saved": 58,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 31,
+      "source_id": 31,
+      "token_savings_ratio": 0.4194,
+      "tokens_saved": 13,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 58,
+      "source_id": 31,
+      "token_savings_ratio": 0.6897,
+      "tokens_saved": 40,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 27,
+      "source_id": 31,
+      "token_savings_ratio": 0.3333,
+      "tokens_saved": 9,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 78,
+      "source_id": 31,
+      "token_savings_ratio": 0.7692,
+      "tokens_saved": 60,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 27,
+      "source_id": 32,
+      "token_savings_ratio": 0.3704,
+      "tokens_saved": 10,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 60,
+      "source_id": 32,
+      "token_savings_ratio": 0.7167,
+      "tokens_saved": 43,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 28,
+      "source_id": 32,
+      "token_savings_ratio": 0.3929,
+      "tokens_saved": 11,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 71,
+      "source_id": 32,
+      "token_savings_ratio": 0.7606,
+      "tokens_saved": 54,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 25,
+      "raw_tokens": 25,
+      "source_id": 33,
+      "token_savings_ratio": 0.0,
+      "tokens_saved": 0,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 58,
+      "source_id": 33,
+      "token_savings_ratio": 0.6897,
+      "tokens_saved": 40,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 25,
+      "source_id": 33,
+      "token_savings_ratio": 0.28,
+      "tokens_saved": 7,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 18,
+      "raw_tokens": 63,
+      "source_id": 33,
+      "token_savings_ratio": 0.7143,
+      "tokens_saved": 45,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 26,
+      "raw_tokens": 26,
+      "source_id": 34,
+      "token_savings_ratio": 0.0,
+      "tokens_saved": 0,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 10,
+      "raw_tokens": 47,
+      "source_id": 34,
+      "token_savings_ratio": 0.7872,
+      "tokens_saved": 37,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 10,
+      "raw_tokens": 21,
+      "source_id": 34,
+      "token_savings_ratio": 0.5238,
+      "tokens_saved": 11,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 10,
+      "raw_tokens": 60,
+      "source_id": 34,
+      "token_savings_ratio": 0.8333,
+      "tokens_saved": 50,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 24,
+      "source_id": 35,
+      "token_savings_ratio": 0.4583,
+      "tokens_saved": 11,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 54,
+      "source_id": 35,
+      "token_savings_ratio": 0.7593,
+      "tokens_saved": 41,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 22,
+      "source_id": 35,
+      "token_savings_ratio": 0.4091,
+      "tokens_saved": 9,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 67,
+      "source_id": 35,
+      "token_savings_ratio": 0.806,
+      "tokens_saved": 54,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 26,
+      "source_id": 36,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 13,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 58,
+      "source_id": 36,
+      "token_savings_ratio": 0.7759,
+      "tokens_saved": 45,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 23,
+      "source_id": 36,
+      "token_savings_ratio": 0.4348,
+      "tokens_saved": 10,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 13,
+      "raw_tokens": 59,
+      "source_id": 36,
+      "token_savings_ratio": 0.7797,
+      "tokens_saved": 46,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 29,
+      "source_id": 37,
+      "token_savings_ratio": 0.4138,
+      "tokens_saved": 12,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 65,
+      "source_id": 37,
+      "token_savings_ratio": 0.7385,
+      "tokens_saved": 48,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 23,
+      "source_id": 37,
+      "token_savings_ratio": 0.2609,
+      "tokens_saved": 6,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 17,
+      "raw_tokens": 69,
+      "source_id": 37,
+      "token_savings_ratio": 0.7536,
+      "tokens_saved": 52,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 28,
+      "raw_tokens": 28,
+      "source_id": 38,
+      "token_savings_ratio": 0.0,
+      "tokens_saved": 0,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 62,
+      "source_id": 38,
+      "token_savings_ratio": 0.8065,
+      "tokens_saved": 50,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 25,
+      "source_id": 38,
+      "token_savings_ratio": 0.52,
+      "tokens_saved": 13,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 12,
+      "raw_tokens": 64,
+      "source_id": 38,
+      "token_savings_ratio": 0.8125,
+      "tokens_saved": 52,
+      "transform": "homoglyph"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 30,
+      "source_id": 39,
+      "token_savings_ratio": 0.5,
+      "tokens_saved": 15,
+      "transform": "reversed"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 59,
+      "source_id": 39,
+      "token_savings_ratio": 0.7458,
+      "tokens_saved": 44,
+      "transform": "upside_down"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 26,
+      "source_id": 39,
+      "token_savings_ratio": 0.4231,
+      "tokens_saved": 11,
+      "transform": "bidi_override"
+    },
+    {
+      "canonical_tokens": 15,
+      "raw_tokens": 64,
+      "source_id": 39,
+      "token_savings_ratio": 0.7656,
+      "tokens_saved": 49,
+      "transform": "homoglyph"
+    }
+  ],
+  "fingerprint_version": "RSTF-1",
+  "metric": "overllm_bpe_token_count",
+  "metric_note": "Real token counts from OverLLM's own trained BPE tokenizer (tools/bpe_tokenizer.py, C++ mirror in cpp/src/tokenizer.cpp, parity-verified by tools/bpe_parity_check.py). This is OverLLM's own tokenizer trained on this repo's own docs (a few tens of KB), not GPT-4/Claude/Llama's production tokenizer - absolute counts do not represent production API billing, but the measurement method (a real, working byte-level BPE tokenizer) is genuine, not a byte-length proxy.",
+  "overall": {
+    "canonical_tokens_total": 2436,
+    "count": 160,
+    "raw_tokens_total": 7245,
+    "token_savings_ratio": 0.6638
+  },
+  "per_transform": {
+    "bidi_override": {
+      "canonical_tokens_total": 585,
+      "count": 40,
+      "raw_tokens_total": 1026,
+      "token_savings_ratio": 0.4298
+    },
+    "homoglyph": {
+      "canonical_tokens_total": 585,
+      "count": 40,
+      "raw_tokens_total": 2764,
+      "token_savings_ratio": 0.7884
+    },
+    "reversed": {
+      "canonical_tokens_total": 681,
+      "count": 40,
+      "raw_tokens_total": 1117,
+      "token_savings_ratio": 0.3903
+    },
+    "upside_down": {
+      "canonical_tokens_total": 585,
+      "count": 40,
+      "raw_tokens_total": 2338,
+      "token_savings_ratio": 0.7498
+    }
+  },
+  "report_version": "rstf-bpe-token-cost-v0.1",
+  "tokenizer_merge_count": 1244,
+  "tokenizer_vocab_size": 1500,
+  "truth_label": "real_tokenizer_measurement_small_repo_trained_vocab_not_production_scale"
+}
