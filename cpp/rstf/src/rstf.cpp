@@ -73,22 +73,20 @@ bool is_bidi_control(char32_t cp) {
 
 const std::unordered_map<char32_t, char32_t>& upside_down_map() {
   static const std::unordered_map<char32_t, char32_t> map = {
-      {U'ɐ', U'a'}, {U'ɑ', U'a'}, {U'ᵇ', U'b'}, {U'q', U'b'},
-      {U'ɔ', U'c'}, {U'p', U'd'}, {U'ǝ', U'e'}, {U'ɟ', U'f'},
-      {U'ƃ', U'g'}, {U'ɥ', U'h'}, {U'ᴉ', U'i'}, {U'ı', U'i'},
-      {U'ɾ', U'j'}, {U'ʞ', U'k'}, {U'l', U'l'}, {U'ɯ', U'm'},
-      {U'u', U'n'}, {U'o', U'o'}, {U'd', U'p'}, {U'b', U'q'},
-      {U'ɹ', U'r'}, {U's', U's'}, {U'ʇ', U't'}, {U'n', U'u'},
-      {U'ʌ', U'v'}, {U'ʍ', U'w'}, {U'x', U'x'}, {U'ʎ', U'y'},
-      {U'z', U'z'}, {U'∀', U'A'}, {U'ᗺ', U'B'}, {U'Ɔ', U'C'},
-      {U'ᗡ', U'D'}, {U'Ǝ', U'E'}, {U'Ⅎ', U'F'}, {U'⅁', U'G'},
-      {U'H', U'H'}, {U'I', U'I'}, {U'ſ', U'J'}, {U'Ʞ', U'K'},
-      {U'˥', U'L'}, {U'W', U'M'}, {U'N', U'N'}, {U'O', U'O'},
-      {U'Ԁ', U'P'}, {U'Ό', U'Q'}, {U'ᴚ', U'R'}, {U'S', U'S'},
-      {U'⊥', U'T'}, {U'∩', U'U'}, {U'Λ', U'V'}, {U'M', U'W'},
-      {U'X', U'X'}, {U'⅄', U'Y'}, {U'Z', U'Z'}, {U'¡', U'!'},
-      {U'¿', U'?'}, {U'˙', U'.'}, {U'ʻ', U','}, {U'(', U')'}, {U')', U'('},
-      {U'[', U']'}, {U']', U'['}, {U'{', U'}'}, {U'}', U'{'}
+      // Only non-ASCII rotated glyphs are included here. ASCII characters such
+      // as s, o, x, z, l, H, I, N, O, S and X may appear unchanged in an
+      // upside-down rendering, but treating them as transform evidence would
+      // create false positives on clean text.
+      {U'ɐ', U'a'}, {U'ɑ', U'a'}, {U'ᵇ', U'b'}, {U'ɔ', U'c'},
+      {U'ǝ', U'e'}, {U'ɟ', U'f'}, {U'ƃ', U'g'}, {U'ɥ', U'h'},
+      {U'ᴉ', U'i'}, {U'ı', U'i'}, {U'ɾ', U'j'}, {U'ʞ', U'k'},
+      {U'ɯ', U'm'}, {U'ɹ', U'r'}, {U'ʇ', U't'}, {U'ʌ', U'v'},
+      {U'ʍ', U'w'}, {U'ʎ', U'y'}, {U'∀', U'A'}, {U'ᗺ', U'B'},
+      {U'Ɔ', U'C'}, {U'ᗡ', U'D'}, {U'Ǝ', U'E'}, {U'Ⅎ', U'F'},
+      {U'⅁', U'G'}, {U'ſ', U'J'}, {U'Ʞ', U'K'}, {U'˥', U'L'},
+      {U'Ԁ', U'P'}, {U'Ό', U'Q'}, {U'ᴚ', U'R'}, {U'⊥', U'T'},
+      {U'∩', U'U'}, {U'Λ', U'V'}, {U'⅄', U'Y'}, {U'¡', U'!'},
+      {U'¿', U'?'}, {U'˙', U'.'}, {U'ʻ', U','}
   };
   return map;
 }
@@ -135,10 +133,6 @@ std::string escape_json(std::string_view input) {
     }
   }
   return oss.str();
-}
-
-bool contains_transform(const std::vector<std::string>& transforms, const std::string& name) {
-  return std::find(transforms.begin(), transforms.end(), name) != transforms.end();
 }
 
 }  // namespace
