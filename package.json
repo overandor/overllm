@@ -1,0 +1,17 @@
+{
+  "name": "overllm-serverless-rstf",
+  "version": "0.1.1",
+  "private": true,
+  "description": "Netlify and Vercel serverless functions for OverLLM RSTF canonicalization.",
+  "main": "lib/rstf-core.cjs",
+  "scripts": {
+    "test": "node tests/rstf-core.test.cjs",
+    "vercel:dev": "vercel dev",
+    "netlify:dev": "netlify dev"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
