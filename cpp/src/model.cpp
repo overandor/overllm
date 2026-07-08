@@ -518,6 +518,42 @@ int overllm_ga_optimize(OverLLMModel* model, int population_size, float mutation
     // For now, just return success to indicate the interface exists
     return 0;
 }
+float overllm_clip_gradients(OverLLMModel* model, float max_norm) {
+    Model* m = (Model*)model;
+
+    // Same gradient set overllm_zero_grad touches, gathered as references so
+    // both the norm computation and the rescale pass iterate identically.
+    std::vector<std::vector<float>*> grads = {
+        &m->grad_embedding, &m->grad_pos_embedding,
+        &m->grad_ln_final_gamma, &m->grad_ln_final_beta,
+        &m->output_proj.grad_weight, &m->output_proj.grad_bias,
+    };
+    for (auto& blk : m->blocks) {
+        grads.push_back(&blk.attn.Wq.grad_weight); grads.push_back(&blk.attn.Wq.grad_bias);
+        grads.push_back(&blk.attn.Wk.grad_weight); grads.push_back(&blk.attn.Wk.grad_bias);
+        grads.push_back(&blk.attn.Wv.grad_weight); grads.push_back(&blk.attn.Wv.grad_bias);
+        grads.push_back(&blk.attn.Wo.grad_weight); grads.push_back(&blk.attn.Wo.grad_bias);
+        grads.push_back(&blk.ffn.W1.grad_weight); grads.push_back(&blk.ffn.W1.grad_bias);
+        grads.push_back(&blk.ffn.W2.grad_weight); grads.push_back(&blk.ffn.W2.grad_bias);
+        grads.push_back(&blk.grad_ln1_gamma); grads.push_back(&blk.grad_ln1_beta);
+        grads.push_back(&blk.grad_ln2_gamma); grads.push_back(&blk.grad_ln2_beta);
+    }
+
+    double sum_sq = 0.0;
+    for (auto* g : grads) {
+        for (float v : *g) sum_sq += static_cast<double>(v) * v;
+    }
+    float total_norm = static_cast<float>(std::sqrt(sum_sq));
+
+    if (total_norm > max_norm && total_norm > 0.0f) {
+        float scale = max_norm / total_norm;
+        for (auto* g : grads) {
+            for (float& v : *g) v *= scale;
+        }
+    }
+    return total_norm;
+}
+
 void overllm_zero_grad(OverLLMModel* model) {
     Model* m = (Model*)model;
     std::fill(m->grad_embedding.begin(), m->grad_embedding.end(), 0.0f);

@@ -47,6 +47,13 @@ void overllm_set_epsilon(OverLLMModel* model, float epsilon);
 void overllm_adamw_step(OverLLMModel* model, float lr, float beta1, float beta2, float eps, float weight_decay);
 void overllm_zero_grad(OverLLMModel* model);
 
+// Clips the global L2 norm of all accumulated gradients to max_norm (a
+// no-op if the norm is already <= max_norm). Call after overllm_backward
+// and before overllm_adamw_step. Standard practice for transformer
+// training - without it, training can diverge to NaN over many steps,
+// which this implementation had no protection against.
+float overllm_clip_gradients(OverLLMModel* model, float max_norm);
+
 // Genetic Algorithm
 int overllm_ga_optimize(OverLLMModel* model, int population_size, float mutation_rate, float crossover_rate);
 

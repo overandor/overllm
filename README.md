@@ -108,6 +108,14 @@ Important truth label: the glyph and homoglyph tables are curated subsets, not e
 
 ---
 
+## Real transformer learning
+
+`cpp/src/model.cpp` has a real (non-stub) transformer implementation — attention, layer norm, FFN, a full backward pass, AdamW — but nothing previously verified it actually learns: the existing test suite only checks a single training step "completes," and `cpp/train_online.cpp`'s DPO loop trains on uniformly random token pairs, which have no learnable signal by construction. `cpp/tools/train_language_model.cpp` (run via `python tools/transformer_learning_check.py`) trains it as a real next-token language model on real BPE-tokenized text and mechanically checks the loss decreases: 7.41 → 5.20 over 30 epochs (29.8% reduction), no NaN.
+
+Building this found a real bug: run through this repo's actual `-O3 -ffast-math` CMake build (not a looser standalone compile), training diverged to NaN around epoch 15, because `model.cpp` had no gradient clipping anywhere in its training path — a standard safeguard every real transformer training setup uses. Added `overllm_clip_gradients()` to fix it. Full writeup, including the honest limits (tiny corpus, no held-out eval, memorization not generalization): [`docs/TRANSFORMER_LEARNING.md`](docs/TRANSFORMER_LEARNING.md).
+
+---
+
 ## Two modes: local agent vs. cloud demo
 
 This repo ships two related but separate deployment targets. Do not confuse them.
