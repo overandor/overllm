@@ -1,0 +1,106 @@
+name: Production Readiness Gate
+
+on:
+  pull_request:
+    paths:
+      - "PRODUCTION_READY.md"
+      - "SECURITY.md"
+      - ".env.example"
+      - "docs/OPERATIONS_RUNBOOK.md"
+      - "docs/THREAT_MODEL.md"
+      - "api/**"
+      - "tools/**"
+      - ".github/workflows/prod-readiness.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "PRODUCTION_READY.md"
+      - "SECURITY.md"
+      - ".env.example"
+      - "docs/OPERATIONS_RUNBOOK.md"
+      - "docs/THREAT_MODEL.md"
+      - "api/**"
+      - "tools/**"
+      - ".github/workflows/prod-readiness.yml"
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python syntax check
+        run: |
+          python -m compileall -q api tools tests
+
+      - name: Production claim guardrails
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          required = [
+              Path('PRODUCTION_READY.md'),
+              Path('SECURITY.md'),
+              Path('.env.example'),
+              Path('docs/OPERATIONS_RUNBOOK.md'),
+              Path('docs/THREAT_MODEL.md'),
+          ]
+          missing = [str(p) for p in required if not p.exists()]
+          if missing:
+              raise SystemExit(f'missing required readiness files: {missing}')
+
+          root_docs = '\n'.join(p.read_text(encoding='utf-8') for p in required)
+          must_contain = [
+              'OVERLLM_ENABLE_TERMINAL=0',
+              'OVERLLM_LEDGER_SECRET',
+              'OVERLLM_CORS_ORIGINS',
+              'human approval gate',
+              'live trading',
+              'guaranteed valuation',
+          ]
+          missing_terms = [term for term in must_contain if term not in root_docs]
+          if missing_terms:
+              raise SystemExit(f'readiness docs missing required guardrail terms: {missing_terms}')
+
+          unsafe_claims = [
+              r'guaranteed\s+profit',
+              r'guaranteed\s+loan',
+              r'guaranteed\s+collateral',
+              r'production-ready\s+by\s+default',
+          ]
+          for path in [Path('README.md'), *required]:
+              if not path.exists():
+                  continue
+              text = path.read_text(encoding='utf-8', errors='ignore').lower()
+              for pattern in unsafe_claims:
+                  if re.search(pattern, text):
+                      raise SystemExit(f'unsafe claim {pattern!r} found in {path}')
+          print('production readiness guardrails OK')
+          PY
+
+      - name: Public API safety assertions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          api = Path('api/main.py').read_text(encoding='utf-8', errors='ignore')
+          required_snippets = [
+              'OVERLLM_ENABLE_TERMINAL',
+              'PUBLIC_TERMINAL_ENABLED',
+              'disabled_for_security',
+              'OVERLLM_CORS_ORIGINS',
+              'OVERLLM_FILE_ROOT',
+          ]
+          missing = [s for s in required_snippets if s not in api]
+          if missing:
+              raise SystemExit(f'api/main.py missing expected public safety snippets: {missing}')
+          if 'allow_origins=["*"]' in api or "allow_origins=['*']" in api:
+              raise SystemExit('wildcard CORS must not be hard-coded')
+          print('public API safety assertions OK')
+          PY
