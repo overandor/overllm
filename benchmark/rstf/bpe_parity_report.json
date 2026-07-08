@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "vocab_dir": "/home/user/overllm/cpp/tokenizer_data",
+  "case_count": 13,
+  "mismatch_count": 0,
+  "mismatches": []
+}

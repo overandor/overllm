@@ -14,3 +14,11 @@ add_executable(overllm_inference src/inference_main.cpp ${SOURCES})
 add_executable(test_overllm test_overllm.cpp ${SOURCES})
 add_executable(train_online train_online.cpp ${SOURCES})
 add_executable(test_llm_client test_llm_client.cpp ${SOURCES})
+
+# Standalone BPE tokenizer CLI. Deliberately links only against
+# src/tokenizer.cpp, not the full SOURCES list, so it builds independently
+# of the other engine components (model/tensor_ops/rl_trainer/etc). This is
+# the compiled artifact tools/bpe_parity_check.py runs to verify the C++
+# tokenizer produces identical token IDs to the Python reference
+# implementation (tools/bpe_tokenizer.py) on the same trained vocabulary.
+add_executable(bpe_cli tools/bpe_cli.cpp src/tokenizer.cpp)

@@ -1,6 +1,6 @@
 {
-  "expected_hits_within_rstf_own_files": 28,
-  "files_scanned": 66,
+  "expected_hits_within_rstf_own_files": 34,
+  "files_scanned": 73,
   "fingerprint_version": "RSTF-1",
   "hits": [
     {
@@ -304,6 +304,42 @@
       "within_rstf_own_files": false
     },
     {
+      "file": "tests/test_bpe_tokenizer.py",
+      "line": 33,
+      "text": "\"\u0287s\u01dd\u0287\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_bpe_tokenizer.py",
+      "line": 34,
+      "text": "\"\u0430pple.com\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_bpe_tokenizer.py",
+      "line": 35,
+      "text": "\"invoice\u202eexe.gpj\u202c\",",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
       "file": "tests/test_semantic_fingerprint.py",
       "line": 44,
       "text": "raw = \"abc\u202edef\u202cghi\"",
@@ -340,6 +376,42 @@
       "within_rstf_own_files": true
     },
     {
+      "file": "tools/bpe_parity_check.py",
+      "line": 40,
+      "text": "\"\u0287s\u01dd\u0287\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tools/bpe_parity_check.py",
+      "line": 41,
+      "text": "\"\u0430pple.com\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tools/bpe_parity_check.py",
+      "line": 42,
+      "text": "\"invoice\u202eexe.gpj\u202c\",",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
       "file": "tools/rstf_dogfood_scan.py",
       "line": 14,
       "text": "legitimately contains crafted example glyphs like \"\u0287s\u01dd\u0287\" or \"\u0430pple.com\" -",
@@ -352,9 +424,9 @@
       "within_rstf_own_files": true
     }
   ],
-  "lines_scanned": 9042,
+  "lines_scanned": 9699,
   "report_version": "rstf-dogfood-scan-v0.1",
-  "total_hits": 29,
+  "total_hits": 35,
   "truth_label": "real_repo_text_not_a_customer_pilot_no_external_input_data",
   "unexpected_hits_elsewhere": 1
 }

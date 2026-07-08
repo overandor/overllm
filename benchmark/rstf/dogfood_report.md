@@ -6,10 +6,10 @@ Scanned this repository's own `.md` and `.py` files line-by-line - real text, no
 
 | Metric | Value |
 |---|---|
-| Files scanned | 66 |
-| Non-blank lines scanned | 9042 |
-| Total hits | 29 |
-| Expected hits (within RSTF's own module/docs/benchmark/test files) | 28 |
+| Files scanned | 73 |
+| Non-blank lines scanned | 9699 |
+| Total hits | 35 |
+| Expected hits (within RSTF's own module/docs/benchmark/test files) | 34 |
 | **Unexpected hits (elsewhere in the repo)** | **1** |
 
 ## Unexpected hits — needs review
