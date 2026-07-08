@@ -8,6 +8,7 @@ on:
       - ".env.example"
       - "docs/OPERATIONS_RUNBOOK.md"
       - "docs/THREAT_MODEL.md"
+      - "docs/PROD_RUNTIME_CONTROLS.md"
       - "api/**"
       - "tools/**"
       - ".github/workflows/prod-readiness.yml"
@@ -20,6 +21,7 @@ on:
       - ".env.example"
       - "docs/OPERATIONS_RUNBOOK.md"
       - "docs/THREAT_MODEL.md"
+      - "docs/PROD_RUNTIME_CONTROLS.md"
       - "api/**"
       - "tools/**"
       - ".github/workflows/prod-readiness.yml"
@@ -29,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -51,6 +53,7 @@ jobs:
               Path('.env.example'),
               Path('docs/OPERATIONS_RUNBOOK.md'),
               Path('docs/THREAT_MODEL.md'),
+              Path('docs/PROD_RUNTIME_CONTROLS.md'),
           ]
           missing = [str(p) for p in required if not p.exists()]
           if missing:
@@ -61,6 +64,8 @@ jobs:
               'OVERLLM_ENABLE_TERMINAL=0',
               'OVERLLM_LEDGER_SECRET',
               'OVERLLM_CORS_ORIGINS',
+              'OVERLLM_API_KEY',
+              'OVERLLM_RATE_LIMIT_ENABLED',
               'human approval gate',
               'live trading',
               'guaranteed valuation',
@@ -90,17 +95,35 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           api = Path('api/main.py').read_text(encoding='utf-8', errors='ignore')
-          required_snippets = [
+          prod_controls = Path('api/prod_controls.py').read_text(encoding='utf-8', errors='ignore')
+          prod_app = Path('api/prod_app.py').read_text(encoding='utf-8', errors='ignore')
+          main_required = [
               'OVERLLM_ENABLE_TERMINAL',
               'PUBLIC_TERMINAL_ENABLED',
               'disabled_for_security',
               'OVERLLM_CORS_ORIGINS',
               'OVERLLM_FILE_ROOT',
           ]
-          missing = [s for s in required_snippets if s not in api]
+          controls_required = [
+              'ProductionControlMiddleware',
+              'X-Request-ID',
+              'X-Content-Type-Options',
+              'OVERLLM_API_KEY',
+              'OVERLLM_RATE_LIMIT_PER_MINUTE',
+              'build_readiness_report',
+          ]
+          app_required = [
+              'install_prod_controls(app)',
+              '@app.get("/ready"',
+              'build_readiness_report()',
+          ]
+          missing = [s for s in main_required if s not in api]
+          missing += [s for s in controls_required if s not in prod_controls]
+          missing += [s for s in app_required if s not in prod_app]
           if missing:
-              raise SystemExit(f'api/main.py missing expected public safety snippets: {missing}')
-          if 'allow_origins=["*"]' in api or "allow_origins=['*']" in api:
+              raise SystemExit(f'missing expected production safety snippets: {missing}')
+          combined = api + prod_controls + prod_app
+          if 'allow_origins=["*"]' in combined or "allow_origins=['*']" in combined:
               raise SystemExit('wildcard CORS must not be hard-coded')
           print('public API safety assertions OK')
           PY
