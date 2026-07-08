@@ -36,9 +36,15 @@ def test_deterministic_transforms_recover_exactly():
 
 def test_reversed_detection_meets_minimum_bar():
     # The reversed-text detector is a weak heuristic (common-word-list
-    # based) by design; this is a floor, not a target of 1.0.
+    # based) by design; this is a floor, not a target of 1.0. The floor was
+    # lowered from 0.9 deliberately: tools/rstf_dogfood_scan.py found the
+    # looser threshold flagged ordinary code ("import os") as reversed text
+    # in 19 real, unrelated repo lines, so _detect_reversed was tightened to
+    # require >=3 tokens and >=2 post-reversal common-word hits. That traded
+    # detection rate on short/weak-signal sentences for a large real-world
+    # false-positive reduction (19 -> 1 unrelated hits in the dogfood scan).
     report = run_benchmark()
-    assert report["per_transform"]["reversed"]["detection_rate"] >= 0.9
+    assert report["per_transform"]["reversed"]["detection_rate"] >= 0.75
 
 
 def test_overall_detection_meets_minimum_bar():

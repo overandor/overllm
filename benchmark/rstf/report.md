@@ -10,8 +10,8 @@ Synthetic, generated examples — not real-world traffic. See docs/SEMANTIC_TRAN
 |---|---|
 | Examples | 160 |
 | Raw hash divergence rate | 100.0% |
-| Detection rate | 99.4% |
-| Exact recovery rate | 99.4% |
+| Detection rate | 95.6% |
+| Exact recovery rate | 95.6% |
 
 ## Per-transform
 
@@ -19,7 +19,7 @@ Synthetic, generated examples — not real-world traffic. See docs/SEMANTIC_TRAN
 |---|---|---|---|---|
 | `bidi_override` | 40 | 100.0% | 100.0% | 100.0% |
 | `homoglyph` | 40 | 100.0% | 100.0% | 100.0% |
-| `reversed` | 40 | 100.0% | 97.5% | 97.5% |
+| `reversed` | 40 | 100.0% | 82.5% | 82.5% |
 | `upside_down` | 40 | 100.0% | 100.0% | 100.0% |
 
 ## Control group (unmodified text)
@@ -38,4 +38,10 @@ Measures the false-positive ("false merge") rate: how often the detector flags a
 
 | source_id | transform | detected | recovered_exact |
 |---|---|---|---|
+| 1 | `reversed` | False | False |
 | 8 | `reversed` | False | False |
+| 10 | `reversed` | False | False |
+| 22 | `reversed` | False | False |
+| 33 | `reversed` | False | False |
+| 34 | `reversed` | False | False |
+| 38 | `reversed` | False | False |

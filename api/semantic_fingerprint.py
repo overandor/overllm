@@ -119,12 +119,17 @@ def _tokenize(text: str) -> list[str]:
 
 def _detect_reversed(text: str) -> tuple[bool, float]:
     original_tokens = _tokenize(text)
-    if len(original_tokens) < 2:
+    # A single short common-word match is not enough signal: e.g. "import os"
+    # reversed produces "so tropmi", and "so" alone is a common word, which
+    # previously flagged ordinary code (found by the dogfood scan in
+    # tools/rstf_dogfood_scan.py). Require a real sentence's worth of tokens
+    # and at least two post-reversal matches before calling it reversed.
+    if len(original_tokens) < 3:
         return False, 0.0
     candidate_tokens = _tokenize(text[::-1])
     original_hits = sum(1 for t in original_tokens if t in _COMMON_WORDS)
     candidate_hits = sum(1 for t in candidate_tokens if t in _COMMON_WORDS)
-    if candidate_hits <= original_hits:
+    if candidate_hits < 2 or candidate_hits <= original_hits:
         return False, 0.0
     confidence = min(1.0, candidate_hits / max(1, len(candidate_tokens)))
     return True, confidence
@@ -211,6 +216,21 @@ _CONFUSABLES: dict[str, str] = {
 
 
 def _normalize_homoglyphs(text: str) -> tuple[bool, str, dict[str, int]]:
+    # Guard against the single most damaging false-positive mode: monolingual
+    # non-Latin prose (plain Russian, Greek, etc.) contains plenty of letters
+    # that are in _CONFUSABLES, but there is no Latin string being spoofed —
+    # it's just text in another script. A real homograph attack mixes scripts
+    # ("аpple.com": Cyrillic а next to Latin p,p,l,e). Only treat confusables
+    # as a substitution signal when the text also contains ordinary Latin
+    # letters; otherwise leave it untouched. This does not fully solve
+    # homograph detection (a sentence that legitimately mixes scripts, e.g.
+    # an English sentence naming a Cyrillic word, can still trip this), but
+    # it removes the worst case: any non-English input being "corrected"
+    # into corrupted text.
+    has_latin_letter = any(c.isascii() and c.isalpha() for c in text)
+    if not has_latin_letter:
+        return False, text, {}
+
     hits: dict[str, int] = {}
     out_chars: list[str] = []
     for c in text:
