@@ -65,7 +65,13 @@ enum Flow {
 
 pub struct Interp<'a> {
     fns: HashMap<String, &'a FnDecl>,
-    scopes: Vec<HashMap<String, Value>>,
+    /// Top-level `let` bindings — visible everywhere, including inside
+    /// every function body (a function's only enclosing lexical scope).
+    globals: HashMap<String, Value>,
+    /// Block-local scopes for the *currently executing* call: pushed/popped
+    /// by `if`/`while`/function bodies. Deliberately NOT shared across a
+    /// function call boundary — see `call_user_fn` for why.
+    locals: Vec<HashMap<String, Value>>,
     rng: DeterministicRng,
     stdout: String,
     trace: Fnv1a,
@@ -76,7 +82,8 @@ impl<'a> Interp<'a> {
     pub fn new(echo: bool) -> Self {
         Interp {
             fns: HashMap::new(),
-            scopes: vec![HashMap::new()],
+            globals: HashMap::new(),
+            locals: Vec::new(),
             rng: DeterministicRng::new(0),
             stdout: String::new(),
             trace: Fnv1a::new(),
@@ -93,21 +100,28 @@ impl<'a> Interp<'a> {
     }
 
     fn push_scope(&mut self) {
-        self.scopes.push(HashMap::new());
+        self.locals.push(HashMap::new());
     }
     fn pop_scope(&mut self) {
-        self.scopes.pop();
+        self.locals.pop();
     }
     fn declare(&mut self, name: &str, v: Value) {
-        self.scopes.last_mut().unwrap().insert(name.to_string(), v);
+        match self.locals.last_mut() {
+            Some(scope) => {
+                scope.insert(name.to_string(), v);
+            }
+            None => {
+                self.globals.insert(name.to_string(), v);
+            }
+        }
     }
     fn lookup(&self, name: &str) -> Option<Value> {
-        for scope in self.scopes.iter().rev() {
+        for scope in self.locals.iter().rev() {
             if let Some(v) = scope.get(name) {
                 return Some(v.clone());
             }
         }
-        None
+        self.globals.get(name).cloned()
     }
 
     /// Updates a binding in whichever scope it lives in (found innermost
@@ -115,11 +129,15 @@ impl<'a> Interp<'a> {
     /// does. Returns false if the type checker somehow let an assignment to
     /// an undefined variable through.
     fn set(&mut self, name: &str, v: Value) -> bool {
-        for scope in self.scopes.iter_mut().rev() {
+        for scope in self.locals.iter_mut().rev() {
             if scope.contains_key(name) {
                 scope.insert(name.to_string(), v);
                 return true;
             }
+        }
+        if self.globals.contains_key(name) {
+            self.globals.insert(name.to_string(), v);
+            return true;
         }
         false
     }
@@ -354,6 +372,30 @@ impl<'a> Interp<'a> {
         }
     }
 
+    /// Executes a user-defined function's body with its locals isolated
+    /// from the caller's: only `self.globals` plus the fresh parameter
+    /// scope are visible, never whatever local scopes happen to be on the
+    /// stack at the call site. Swapping `self.locals` out for the duration
+    /// of the call (instead of pushing onto the existing stack) is what
+    /// makes this lexical scoping rather than dynamic scoping — a callee
+    /// can never see a caller's `let x = ...` just because the call
+    /// happened to occur while that binding was in scope. Early Lisp did
+    /// exactly the wrong thing here before Scheme/Common Lisp fixed it;
+    /// see docs/DESIGN.md's "Prehistoric lineage" section.
+    fn call_user_fn(&mut self, f: &'a FnDecl, arg_vals: Vec<Value>) -> OResult<Value> {
+        let caller_locals = std::mem::take(&mut self.locals);
+        self.push_scope();
+        for (p, v) in f.params.iter().zip(arg_vals.into_iter()) {
+            self.declare(&p.name, v);
+        }
+        let result = self.exec_stmts(&f.body).map(|flow| match flow {
+            Flow::Return(v) => v,
+            Flow::Normal => Value::Unit,
+        });
+        self.locals = caller_locals;
+        result
+    }
+
     fn eval_call(&mut self, name: &str, args: &'a [Expr]) -> OResult<Value> {
         match name {
             "seed" => {
@@ -489,39 +531,45 @@ impl<'a> Interp<'a> {
                     .get(name)
                     .copied()
                     .ok_or_else(|| OverMlError::detached(format!("call to undefined function '{}'", name)))?;
+                // Every argument is evaluated to a concrete value here,
+                // *before* the callee's body runs — this is why OverML has
+                // ordinary eager call-by-value semantics rather than
+                // ALGOL's call-by-name (which re-evaluated an argument
+                // expression on every use inside the callee, a notorious
+                // source of surprising behavior when the expression had
+                // side effects, e.g. Jensen's Device).
                 let mut arg_vals = Vec::with_capacity(args.len());
                 for a in args {
                     arg_vals.push(self.eval_expr(a)?);
                 }
-                self.push_scope();
-                for (p, v) in f.params.iter().zip(arg_vals.into_iter()) {
-                    self.declare(&p.name, v);
-                }
-                let result = match self.exec_stmts(&f.body)? {
-                    Flow::Return(v) => v,
-                    Flow::Normal => Value::Unit,
-                };
-                self.pop_scope();
-                Ok(result)
+                self.call_user_fn(f, arg_vals)
             }
         }
     }
 }
 
+/// Integer arithmetic is checked, never wrapping. Silent overflow — a value
+/// quietly wrapping around to a wrong-but-plausible number instead of
+/// stopping the program — is one of the oldest, best-documented flaw
+/// classes in language history (FORTRAN, B, and raw assembly all did this;
+/// C inherited it as undefined behavior for signed overflow). OverML's rule
+/// throughout is "loud failure over silent corruption" — the same reason
+/// tensor shape/dtype mismatches are compile errors instead of best-effort
+/// coercions — and integer overflow is no exception.
 fn apply_int_op(op: BinOp, a: i64, b: i64) -> OResult<i64> {
-    match op {
-        BinOp::Add => Ok(a.wrapping_add(b)),
-        BinOp::Sub => Ok(a.wrapping_sub(b)),
-        BinOp::Mul => Ok(a.wrapping_mul(b)),
+    let result = match op {
+        BinOp::Add => a.checked_add(b),
+        BinOp::Sub => a.checked_sub(b),
+        BinOp::Mul => a.checked_mul(b),
         BinOp::Div => {
             if b == 0 {
-                Err(OverMlError::detached("integer division by zero".to_string()))
-            } else {
-                Ok(a / b)
+                return Err(OverMlError::detached("integer division by zero".to_string()));
             }
+            a.checked_div(b)
         }
         _ => unreachable!(),
-    }
+    };
+    result.ok_or_else(|| OverMlError::detached(format!("integer overflow: {} {:?} {}", a, op, b)))
 }
 
 fn apply_num_op(op: BinOp, a: f64, b: f64) -> OResult<f64> {

@@ -20,6 +20,15 @@ ring buffer for attention caches — `kv_push` evicts the oldest step once full
 instead of growing, so a cache's memory is bounded by its type, not by how
 long the sequence runs (see `examples/kv_cache_window.oml`).
 
+OverML is also checked, individually, against specific design mistakes from
+languages that predate C — implicit typing (FORTRAN), unstructured `GOTO`
+control flow (FORTRAN/BASIC/COBOL), dynamic scoping (early Lisp), call-by-name
+(ALGOL), silent integer overflow (FORTRAN/B/assembly), and unchecked array
+access (FORTRAN/B/assembly) — each with a named source and a passing test.
+See [`docs/DESIGN.md`](docs/DESIGN.md#prehistoric-lineage-flaws-inherited-from-pre-c-languages)
+for the full table, including one real bug (dynamic scoping) this check
+actually found and fixed.
+
 See [`docs/DESIGN.md`](docs/DESIGN.md) for the full language design, type
 system, reproducibility model, and packaging format.
 

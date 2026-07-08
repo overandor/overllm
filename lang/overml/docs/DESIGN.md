@@ -103,6 +103,41 @@ code executes:
   to stay symbolic (see `tests/examples.rs` and `typecheck.rs` for the
   `in_fn` distinction).
 
+## Prehistoric lineage: flaws inherited from pre-C languages
+
+"Prehistoric" here means literally that: the languages that existed before
+C (1972) — FORTRAN (1957), Lisp (1958), ALGOL (1958/60), COBOL (1959), BASIC
+(1964), PL/I (1964), B (1969, C's direct ancestor), and raw assembly. Each
+has specific, well-documented design mistakes that later languages spent
+decades fixing one at a time. This section lists the ones OverML fixes,
+names the language(s) each mistake traces to, and points at the exact code
+and test that proves the fix — no claim here is unverified prose.
+
+One of these (lexical vs. dynamic scoping) was **found and fixed during the
+writing of this section**, not designed in from the start — worth stating
+plainly, because "we checked and it was actually broken" is a more honest
+provenance than "we designed it correctly the first time."
+
+| Flaw | Where it came from | How OverML avoids it | Proof |
+|---|---|---|---|
+| **Implicit/weak typing.** FORTRAN inferred a variable's type from its *first letter* (`I`–`N` meant integer, everything else real) — a typo in a variable name silently changed its type. PL/I coerced aggressively across types with surprising results. | FORTRAN, PL/I | Every tensor carries an explicit `dtype` and `shape` in its type; `i64`/`f64` mixing in an arithmetic op is a compile error, not a coercion. | `typecheck.rs`'s dtype/shape checks; `src/lib.rs::tests::shape_mismatch_is_rejected_at_check_time` |
+| **Unstructured control flow.** FORTRAN, BASIC, and COBOL leaned on `GOTO`/line numbers for all control flow, producing famously unmaintainable "spaghetti code" (the subject of Dijkstra's 1968 "Go To Statement Considered Harmful"). | FORTRAN, BASIC, COBOL | OverML has no `goto` and no line-number-addressed jumps at all — only structured `if`/`else` and `while`, block-scoped by `{ }`. | `ast.rs`'s `Stmt` enum has no goto/label variant; the grammar in `parser.rs` has no way to construct one |
+| **Dynamic scoping.** Early Lisp resolved a free variable using whatever binding happened to be active at the *call site*, not where the function was *defined* — so a callee could accidentally see (and be corrupted by) a caller's same-named local. Scheme and Common Lisp later fixed this. | Lisp (pre-Scheme) | A function call isolates the callee's execution to only `self.globals` plus its own fresh parameter scope — the caller's local variables are swapped out for the duration of the call, not inherited. | `interp.rs::call_user_fn`; `tests::scoping_is_lexical_not_dynamic_like_early_lisp` |
+| **Call-by-name.** ALGOL's call-by-name parameters were textually re-evaluated on *every use* inside the callee, not once at the call. Combined with side effects, this produced results that depended on how many times a parameter happened to be referenced in the body (Jensen's Device is the canonical example/exploit of this). | ALGOL | Arguments are evaluated to concrete values once, before the callee's body runs at all (ordinary eager call-by-value). | `interp.rs::eval_call`'s user-function branch; `tests::call_by_value_is_eager_not_call_by_name` |
+| **Silent integer overflow.** FORTRAN, B, and raw assembly all let arithmetic silently wrap or corrupt on overflow with no error; C inherited this as undefined behavior for signed integers. | FORTRAN, B, assembly | Integer `+`/`-`/`*`/`/` use Rust's checked arithmetic; overflow is a catchable runtime error, not a wrapped or undefined value. | `interp.rs::apply_int_op`; `tests::integer_overflow_is_a_checked_error_not_silent_wraparound` |
+| **Unchecked array access.** FORTRAN, B, and assembly arrays have no bounds checking — an out-of-range index reads or corrupts adjacent memory instead of failing. | FORTRAN, B, assembly | Tensor indexing (`t[i]`) is bounds-checked against the actual backing storage on every access; out-of-range is a runtime error, never memory corruption (there's no raw memory access in OverML at all — no pointers, no `malloc`). | `interp.rs`'s `Expr::Index` handling; `tests::tensor_indexing_out_of_bounds_is_a_checked_error_not_memory_corruption` |
+| **No package/dependency concept.** None of these languages had any notion of a versioned, namespaced dependency — programs were monolithic, or subroutines were linked by hand with no compatibility checking at all. | all of the above | `oml.toml`/`oml.lock` with content-hash-pinned dependencies and namespaced imports (`modname::fn`). | See "Packaging" below |
+| **No reproducibility story.** Floating-point behavior varied by machine with no standard, and there was no concept of a seeded, portable random sequence — "run it again" could mean "get different numbers." | all of the above (this predates IEEE 754, 1985) | A from-scratch deterministic PRNG plus a provenance fingerprint of a run's full observable output. | See "Reproducibility" below |
+| **Arbitrary, rigid surface syntax.** FORTRAN's fixed source columns (1–5 for labels, 6 for continuation, 7–72 for code) meant *where on the line* you typed something changed its meaning, independent of what you typed. | FORTRAN | Free-form syntax; whitespace is insignificant outside of separating tokens. | `lexer.rs`'s `skip_trivia` — no column tracking affects parsing |
+
+What this section is *not* claiming: memory safety and lexical scoping
+are not exotic OverML inventions — they're what most languages designed
+after roughly 1975 do by default. The point of writing them down here is
+that "prehistoric" flaws are specific, nameable, individually-fixable
+mistakes, not a vague gesture at "old languages were bad" — and that
+claim only means something if it's checked against the actual running
+interpreter, which is exactly what the test column above does.
+
 ## Bounded memory: `KvCache` (reducing KV bloat)
 
 ```

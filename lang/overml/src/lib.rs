@@ -228,6 +228,104 @@ mod tests {
         assert!(err.contains("compile-time bound"), "got: {}", err);
     }
 
+    // --- "prehistoric lineage" regression tests: each of these locks in a
+    // specific, well-documented flaw from a pre-C language that OverML is
+    // designed not to repeat. See docs/DESIGN.md's "Prehistoric lineage"
+    // section for the full list and historical citations.
+
+    #[test]
+    fn integer_overflow_is_a_checked_error_not_silent_wraparound() {
+        // FORTRAN, B, and raw assembly all let arithmetic silently wrap or
+        // corrupt on overflow; C inherited it as undefined behavior for
+        // signed integers. OverML treats it as an ordinary runtime error.
+        let src = "print(9223372036854775807 + 1);"; // i64::MAX + 1
+        let err = run_source(src).unwrap_err().to_string();
+        assert!(err.contains("overflow"), "expected an overflow error, got: {}", err);
+    }
+
+    #[test]
+    fn integer_arithmetic_without_overflow_is_unaffected() {
+        let (out, _) = run_source("print(40 + 2);").unwrap();
+        assert_eq!(out.trim(), "42");
+    }
+
+    #[test]
+    fn scoping_is_lexical_not_dynamic_like_early_lisp() {
+        // Dynamic scoping (pre-Scheme/Common-Lisp Lisps) resolves a free
+        // identifier using whatever local variable happens to be in scope
+        // at the *call site*. Lexical scoping resolves it using the scope
+        // where the function was *defined*. This is directly observable:
+        // `show`'s only free variable is the global `x` — it must never
+        // see `caller`'s local `x`, no matter that the call happens while
+        // that local is in scope.
+        let src = r#"
+            let x = 100;
+            fn show() -> i64 { return x; }
+            fn caller() -> i64 {
+                let x = 999;
+                return show();
+            }
+            print(caller());
+        "#;
+        let (out, _) = run_source(src).unwrap();
+        assert_eq!(
+            out.trim(),
+            "100",
+            "show() must see the global x (lexical scoping), not caller()'s local x (dynamic scoping)"
+        );
+    }
+
+    #[test]
+    fn call_by_value_is_eager_not_call_by_name() {
+        // ALGOL's call-by-name re-evaluated an argument expression on
+        // every use inside the callee (Jensen's Device), which is exactly
+        // the surprising behavior eager call-by-value avoids: an argument
+        // expression is evaluated exactly once, before the callee runs.
+        // Proof: `rand_tensor(...)` draws from a seeded, deterministic
+        // sequence, so "the argument was evaluated once and reused" and
+        // "the argument was re-evaluated per use" are two different,
+        // predictable, distinguishable results.
+        let double_body = r#"
+            fn double(x: Tensor<f32, [1, 1]>) -> Tensor<f32, [1, 1]> {
+                return x + x;
+            }
+            seed(42);
+            print(double(rand_tensor("f32", 1, 1)));
+        "#;
+        let (double_out, _) = run_source(double_body).unwrap();
+
+        // If the same first draw after seed(42) is used twice explicitly,
+        // call-by-value semantics guarantee this matches double_out
+        // exactly. Under (hypothetical) call-by-name, double() would have
+        // consumed two draws instead of one, and this wouldn't match.
+        let explicit_body = r#"
+            seed(42);
+            let v = rand_tensor("f32", 1, 1);
+            print(v + v);
+        "#;
+        let (explicit_out, _) = run_source(explicit_body).unwrap();
+
+        assert_eq!(
+            double_out, explicit_out,
+            "double(rand_tensor(...)) must equal v+v for a single draw v — \
+             a mismatch means the argument was evaluated more than once"
+        );
+    }
+
+    #[test]
+    fn tensor_indexing_out_of_bounds_is_a_checked_error_not_memory_corruption() {
+        // FORTRAN/B/raw assembly arrays have no bounds checking at all —
+        // an out-of-range index reads or corrupts adjacent memory instead
+        // of failing. OverML's tensors are backed by a Vec, and every
+        // index is checked before use.
+        let src = r#"
+            let v: Tensor<f32, [3]> = tensor([1, 2, 3]);
+            print(v[5]);
+        "#;
+        let err = run_source(src).unwrap_err().to_string();
+        assert!(err.contains("out of bounds"), "expected a bounds error, got: {}", err);
+    }
+
     #[test]
     fn ffi_roundtrip() {
         use std::ffi::CString;
