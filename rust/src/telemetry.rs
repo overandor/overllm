@@ -70,6 +70,10 @@ pub fn get_active_app() -> Option<TelemetryEvent> {
 }
 
 pub fn get_system_stats() -> Option<TelemetryEvent> {
+    if !is_telemetry_enabled() {
+        return None;
+    }
+
     let cpu = Command::new("sh")
         .args(["-c", "ps -A -o %cpu | awk '{s+=$1} END {print s}'"])
         .output()
