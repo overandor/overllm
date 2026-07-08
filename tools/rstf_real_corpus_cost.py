@@ -10,6 +10,16 @@ The expected result on ordinary clean corpora may be near-zero savings. That is
 not a failure: the point is to measure real prevalence and real cost impact, not
 to replay synthetic attacks.
 
+This scanner also includes RAM/storage compression A/B metrics:
+
+- raw UTF-8 bytes
+- canonical UTF-8 bytes
+- compact receipt JSON bytes
+- compressed raw bytes
+- compressed canonical bytes
+- compressed canonical+receipt bytes
+- hot-path and audit-path delta ratios
+
 Supported input modes:
 
   --input-file path.txt              one record per non-empty line by default
@@ -21,6 +31,7 @@ Examples:
   python tools/rstf_real_corpus_cost.py --input-dir docs --glob "*.md"
   python tools/rstf_real_corpus_cost.py --input-file data/messages.jsonl --text-field message
   python tools/rstf_real_corpus_cost.py --input-file data/prompts.txt --tokenizer tiktoken --model gpt-4o
+  python tools/rstf_real_corpus_cost.py --input-file data/prompts.txt --compressor zlib --include-examples
 """
 
 from __future__ import annotations
@@ -28,6 +39,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import zlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -50,8 +62,14 @@ try:
 except Exception:  # pragma: no cover - optional dependency path
     get_tiktoken_encoding = None  # type: ignore[assignment]
 
-REPORT_VERSION = "rstf-real-corpus-cost-v0.1"
+try:
+    import zstandard as zstd  # type: ignore
+except Exception:  # pragma: no cover - optional dependency path
+    zstd = None  # type: ignore[assignment]
+
+REPORT_VERSION = "rstf-real-corpus-cost-v0.2"
 REPORT_TRUTH_LABEL = "non_synthetic_real_input_rtf_scan_not_generated_attack_corpus"
+COMPRESSION_TRUTH_LABEL = "lossless_ram_compression_ab_probe_not_os_memory_compressor_exact_model"
 
 
 @dataclass
@@ -104,6 +122,19 @@ def token_counter(tokenizer: str, model: str | None, encoding_name: str):
     raise ValueError(f"Unknown tokenizer: {tokenizer}")
 
 
+def compressor_fn(compressor: str):
+    if compressor == "none":
+        return (lambda data: data), "none"
+    if compressor == "zlib":
+        return (lambda data: zlib.compress(data, level=6)), "zlib_level_6"
+    if compressor == "zstd":
+        if zstd is None:
+            raise RuntimeError("zstandard package unavailable; install zstandard or use --compressor zlib")
+        zstd_compressor = zstd.ZstdCompressor(level=3)
+        return zstd_compressor.compress, "zstd_level_3"
+    raise ValueError(f"Unknown compressor: {compressor}")
+
+
 def transform_names(receipt: dict[str, Any]) -> list[str]:
     names: list[str] = []
     if receipt.get("bidi_override"):
@@ -117,14 +148,34 @@ def transform_names(receipt: dict[str, Any]) -> list[str]:
     return names or ["none"]
 
 
+def compact_receipt(fp: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "raw_hash": fp["raw_hash"],
+        "canonical_hash": fp["canonical_hash"],
+        "transform_receipt": fp["transform_receipt"],
+        "lossless": fp["lossless"],
+        "truth_label": fp["truth_label"],
+    }
+
+
+def utf8_bytes(text: str) -> bytes:
+    return text.encode("utf-8")
+
+
+def ratio(saved: int, base: int) -> float:
+    return round(saved / base, 4) if base else 0.0
+
+
 def scan_records(
     records: list[TextRecord],
     tokenizer: str,
     model: str | None,
     encoding_name: str,
     include_examples: bool,
+    compressor: str = "zlib",
 ) -> dict[str, Any]:
     count_fn, metric_name, metric_truth_label = token_counter(tokenizer, model, encoding_name)
+    compress, compressor_resolved = compressor_fn(compressor)
 
     total_raw_units = 0
     total_canonical_units = 0
@@ -134,9 +185,30 @@ def scan_records(
     per_transform: dict[str, dict[str, Any]] = {}
     examples: list[dict[str, Any]] = []
 
+    raw_utf8_bytes_total = 0
+    canonical_utf8_bytes_total = 0
+    receipt_json_bytes_total = 0
+    compressed_raw_bytes_total = 0
+    compressed_canonical_bytes_total = 0
+    compressed_canonical_plus_receipt_bytes_total = 0
+
     for record in records:
         fp = compute_fingerprint(record.text)
         canonical = fp["canonical_text"]
+        receipt = compact_receipt(fp)
+        receipt_bytes = json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+        raw_bytes = utf8_bytes(record.text)
+        canonical_bytes = utf8_bytes(canonical)
+        canonical_plus_receipt_bytes = canonical_bytes + b"\n" + receipt_bytes
+
+        raw_utf8_bytes_total += len(raw_bytes)
+        canonical_utf8_bytes_total += len(canonical_bytes)
+        receipt_json_bytes_total += len(receipt_bytes)
+        compressed_raw_bytes_total += len(compress(raw_bytes))
+        compressed_canonical_bytes_total += len(compress(canonical_bytes))
+        compressed_canonical_plus_receipt_bytes_total += len(compress(canonical_plus_receipt_bytes))
+
         raw_units = count_fn(record.text)
         canonical_units = count_fn(canonical)
         delta = raw_units - canonical_units
@@ -165,7 +237,13 @@ def scan_records(
                 "raw_units": raw_units,
                 "canonical_units": canonical_units,
                 "units_saved": delta,
-                "savings_ratio": round(delta / raw_units, 4) if raw_units else 0.0,
+                "savings_ratio": ratio(delta, raw_units),
+                "raw_utf8_bytes": len(raw_bytes),
+                "canonical_utf8_bytes": len(canonical_bytes),
+                "receipt_json_bytes": len(receipt_bytes),
+                "compressed_raw_bytes": len(compress(raw_bytes)),
+                "compressed_canonical_bytes": len(compress(canonical_bytes)),
+                "compressed_canonical_plus_receipt_bytes": len(compress(canonical_plus_receipt_bytes)),
                 "raw_preview": record.text[:160],
                 "canonical_preview": canonical[:160],
                 "truth_label": fp["truth_label"],
@@ -175,11 +253,14 @@ def scan_records(
         raw = stats["raw_units"]
         canonical = stats["canonical_units"]
         stats["units_saved"] = raw - canonical
-        stats["savings_ratio"] = round((raw - canonical) / raw, 4) if raw else 0.0
+        stats["savings_ratio"] = ratio(raw - canonical, raw)
 
     total_saved = total_raw_units - total_canonical_units
     transformed_saved = transformed_raw_units - transformed_canonical_units
     total_count = len(records)
+    utf8_saved = raw_utf8_bytes_total - canonical_utf8_bytes_total
+    compressed_hot_saved = compressed_raw_bytes_total - compressed_canonical_bytes_total
+    compressed_audit_delta = compressed_raw_bytes_total - compressed_canonical_plus_receipt_bytes_total
     return {
         "report_type": "RSTF Real Corpus Cost Scan",
         "report_version": REPORT_VERSION,
@@ -194,26 +275,46 @@ def scan_records(
             "raw_units_total": total_raw_units,
             "canonical_units_total": total_canonical_units,
             "units_saved_total": total_saved,
-            "overall_savings_ratio": round(total_saved / total_raw_units, 4) if total_raw_units else 0.0,
+            "overall_savings_ratio": ratio(total_saved, total_raw_units),
         },
         "transformed_only": {
             "records": transformed_count,
             "raw_units_total": transformed_raw_units,
             "canonical_units_total": transformed_canonical_units,
             "units_saved_total": transformed_saved,
-            "savings_ratio": round(transformed_saved / transformed_raw_units, 4) if transformed_raw_units else 0.0,
+            "savings_ratio": ratio(transformed_saved, transformed_raw_units),
+        },
+        "ram_compression": {
+            "compressor": compressor_resolved,
+            "raw_utf8_bytes": raw_utf8_bytes_total,
+            "canonical_utf8_bytes": canonical_utf8_bytes_total,
+            "utf8_bytes_saved": utf8_saved,
+            "utf8_savings_ratio": ratio(utf8_saved, raw_utf8_bytes_total),
+            "receipt_json_bytes": receipt_json_bytes_total,
+            "compressed_raw_bytes": compressed_raw_bytes_total,
+            "compressed_canonical_bytes": compressed_canonical_bytes_total,
+            "compressed_canonical_plus_receipt_bytes": compressed_canonical_plus_receipt_bytes_total,
+            "hot_path_compressed_bytes_saved": compressed_hot_saved,
+            "hot_path_compressed_savings_ratio": ratio(compressed_hot_saved, compressed_raw_bytes_total),
+            "audit_path_compressed_delta_bytes": compressed_audit_delta,
+            "audit_path_compressed_delta_ratio": ratio(compressed_audit_delta, compressed_raw_bytes_total),
+            "hot_path_policy": "canonical_text_only",
+            "audit_path_policy": "canonical_text_plus_compact_receipt_raw_text_cold_storage_if_required",
+            "truth_label": COMPRESSION_TRUTH_LABEL,
         },
         "per_transform": per_transform,
         "examples": examples,
         "truth_label": REPORT_TRUTH_LABEL,
         "scope_note": (
             "This scan uses real input records as-is. It does not generate attack examples. "
-            "Low or zero savings on clean corpora is expected and should be interpreted as low observed prevalence, not detector failure."
+            "Low or zero savings on clean corpora is expected and should be interpreted as low observed prevalence, not detector failure. "
+            "RAM compression metrics are an A/B probe using the selected lossless compressor, not an exact model of any OS memory compressor."
         ),
     }
 
 
 def render_markdown(report: dict[str, Any]) -> str:
+    ram = report["ram_compression"]
     lines = [
         f"# {report['report_type']}",
         "",
@@ -232,6 +333,25 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"| Canonical units | {report['overall']['canonical_units_total']} |",
         f"| Units saved | {report['overall']['units_saved_total']} |",
         f"| Overall savings ratio | {report['overall']['overall_savings_ratio']:.2%} |",
+        "",
+        "## RAM compression A/B",
+        "",
+        f"Compressor: `{ram['compressor']}`",
+        "",
+        "| Metric | Value |",
+        "|---|---:|",
+        f"| Raw UTF-8 bytes | {ram['raw_utf8_bytes']} |",
+        f"| Canonical UTF-8 bytes | {ram['canonical_utf8_bytes']} |",
+        f"| UTF-8 bytes saved | {ram['utf8_bytes_saved']} |",
+        f"| UTF-8 savings ratio | {ram['utf8_savings_ratio']:.2%} |",
+        f"| Receipt JSON bytes | {ram['receipt_json_bytes']} |",
+        f"| Compressed raw bytes | {ram['compressed_raw_bytes']} |",
+        f"| Compressed canonical bytes | {ram['compressed_canonical_bytes']} |",
+        f"| Compressed canonical+receipt bytes | {ram['compressed_canonical_plus_receipt_bytes']} |",
+        f"| Hot-path compressed bytes saved | {ram['hot_path_compressed_bytes_saved']} |",
+        f"| Hot-path compressed savings ratio | {ram['hot_path_compressed_savings_ratio']:.2%} |",
+        f"| Audit-path compressed delta bytes | {ram['audit_path_compressed_delta_bytes']} |",
+        f"| Audit-path compressed delta ratio | {ram['audit_path_compressed_delta_ratio']:.2%} |",
         "",
         "## Transformed records only",
         "",
@@ -264,6 +384,7 @@ def main() -> None:
     parser.add_argument("--tokenizer", choices=["bytes", "tiktoken"], default="bytes")
     parser.add_argument("--model", default=None, help="Model for tiktoken.encoding_for_model")
     parser.add_argument("--encoding", default="cl100k_base", help="Fallback tiktoken encoding")
+    parser.add_argument("--compressor", choices=["none", "zlib", "zstd"], default="zlib", help="Lossless compressor for RAM/storage A/B metrics")
     parser.add_argument("--include-examples", action="store_true", help="Include detected example previews")
     parser.add_argument("--out", default="benchmark/rstf/real_corpus_cost_report.json")
     parser.add_argument("--out-md", default="benchmark/rstf/real_corpus_cost_report.md")
@@ -279,6 +400,7 @@ def main() -> None:
         model=args.model,
         encoding_name=args.encoding,
         include_examples=args.include_examples,
+        compressor=args.compressor,
     )
 
     out = Path(args.out)
