@@ -19,7 +19,7 @@ jobs:
     name: Go agent compile/test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-go@v5
         with:
           go-version: '1.26.x'
@@ -35,7 +35,7 @@ jobs:
     name: Rust telemetry compile/test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - name: Test telemetry crate
         working-directory: rust
@@ -45,7 +45,7 @@ jobs:
     name: OverML package tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - name: Test OverML
         working-directory: lang/overml
@@ -55,7 +55,7 @@ jobs:
     name: C++ engine build
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Configure CMake
         run: cmake -B cpp/build -S cpp -DCMAKE_BUILD_TYPE=Release
       - name: Build C++ engine
@@ -65,7 +65,7 @@ jobs:
     name: UI build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -80,7 +80,7 @@ jobs:
     name: Python API import check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
