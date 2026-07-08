@@ -96,9 +96,11 @@ python tools/semantic_fingerprint.py compute --text "ʇsǝʇ"
 python tools/semantic_fingerprint.py compare --text-a "test" --text-b "ʇsǝʇ"
 ```
 
+A 160-example synthetic benchmark (`tools/rstf_benchmark.py`) measures detection/recovery accuracy (99.4% overall, 0% false positives on unmodified text), and `tools/rstf_token_cost.py` measures whether canonicalization actually reduces UTF-8 byte length — a provable upper bound on token count for byte-level BPE tokenizers — before it reaches a model (26.2% overall byte savings; 0% for plain reversal, as expected, since reordering bytes can't change how many there are).
+
 Read the full guide: [`docs/SEMANTIC_TRANSFORM_FINGERPRINT.md`](docs/SEMANTIC_TRANSFORM_FINGERPRINT.md).
 
-Important truth label: the glyph and homoglyph tables are curated subsets, not exhaustive Unicode confusables data, and the bidi recovery is a simplified reconstruction, not a full UAX#9 implementation.
+Important truth label: the glyph and homoglyph tables are curated subsets, not exhaustive Unicode confusables data, and the bidi recovery is a simplified reconstruction, not a full UAX#9 implementation. The byte-cost benchmark reports UTF-8 byte length, not real tokenizer token counts, because this environment's egress policy blocks the hosts tiktoken/Hugging Face tokenizers need.
 
 ---
 

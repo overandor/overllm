@@ -130,6 +130,38 @@ group, not a claim of coverage against real adversarial traffic, zero-width
 steganography, fullwidth-form abuse, emoji-encoded payloads, or mixed/stacked
 transforms — none of which this module implements yet.
 
+## Byte-cost benchmark (token-cost proxy)
+
+`tools/rstf_token_cost.py` measures whether canonicalization actually saves
+inference cost, using the same 160 examples. It reports UTF-8 byte length,
+not a real tokenizer's token count — this environment's egress policy blocks
+the hosts tiktoken and Hugging Face tokenizers need to fetch vocabulary files
+from (`openaipublic.blob.core.windows.net` and `huggingface.co` both return
+403 here), so no live tokenizer is reachable. Byte length is not a
+convenience substitute: it is a **provable upper bound** on token count for
+every byte-level BPE tokenizer in production use (GPT-3.5, GPT-4, Claude,
+Llama), since a token is composed of one or more raw bytes.
+
+```bash
+python tools/rstf_token_cost.py
+python tools/rstf_token_cost.py --out-md benchmark/rstf/token_cost_report.md
+```
+
+Committed run: `benchmark/rstf/token_cost_report.md` / `.json`.
+
+| Transform | Byte savings ratio |
+|---|---|
+| `homoglyph` | 39.2% |
+| `upside_down` | 38.9% |
+| `bidi_override` | 12.2% |
+| `reversed` | 0.0% (structural — reordering bytes can't change how many there are) |
+| **Overall** | **26.2%** |
+
+`reversed` showing exactly 0% is not a gap in the benchmark — it's a
+correctness check. If canonicalizing a purely-reordered string ever showed
+nonzero byte savings, that would indicate a bug in `_decode_upside_down`-style
+character substitution leaking into the reversal path, not a token saving.
+
 ## Honest limits
 
 - The upside-down and homoglyph tables are curated subsets (a few dozen
