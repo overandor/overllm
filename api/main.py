@@ -5,6 +5,7 @@ Truthful public API surface:
 - C++ library loading is detected but endpoints do not claim C++ inference unless wired.
 - Public shell execution is disabled by default.
 - File listing is restricted to an explicit allowlisted root.
+- Financeable evidence endpoints record receipts/revenue evidence without inventing valuation.
 """
 
 from __future__ import annotations
@@ -27,8 +28,13 @@ from pydantic import BaseModel
 from overllm.gateio_alpha.engine import AlphaEngine
 from overllm.gateio_alpha import api as alpha_api
 
+try:
+    from api.financeable import router as finance_router, build_finance_summary
+except Exception:  # pragma: no cover - supports `python api/main.py`
+    from financeable import router as finance_router, build_finance_summary
+
 APP_NAME = "OverLLM API"
-API_VERSION = "2.1.0"
+API_VERSION = "2.2.0"
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 LIB_PATH = os.getenv(
@@ -41,7 +47,7 @@ CORS_ORIGINS = [o.strip() for o in os.getenv("OVERLLM_CORS_ORIGINS", "").split("
 
 app = FastAPI(
     title=APP_NAME,
-    description="Experimental OverLLM API with truthful runtime labels and locked-down public surface.",
+    description="Experimental OverLLM API with truthful runtime labels, locked-down public surface, and financeable evidence exports.",
     version=API_VERSION,
 )
 
@@ -77,6 +83,7 @@ except Exception as exc:
     alpha_engine = None
 
 app.include_router(alpha_api.router, prefix="/api")
+app.include_router(finance_router, prefix="/api")
 
 
 class InferenceRequest(BaseModel):
@@ -118,6 +125,7 @@ def _truth_labels() -> dict:
         "terminal_execution": "disabled_by_default",
         "file_listing": "allowlisted_root_only",
         "receipts": "real_only_when_hashes_are_generated_and_stored",
+        "financeable_evidence": "real_local_ledger_not_valuation",
         "poi": "partial_environment_dependent",
     }
 
@@ -141,6 +149,11 @@ async def root():
             "/health": "Health check",
             "/api/status": "Runtime truth/status labels",
             "/api/generate": "Ollama-backed generation when available",
+            "/api/finance/summary": "Financeable evidence KPIs, not valuation",
+            "/api/finance/receipts": "Signed/tamper-evident work receipts",
+            "/api/finance/revenue-events": "Revenue events linked to receipts/contracts",
+            "/api/finance/collateral-report": "Diligence packet generated from local evidence ledger",
+            "/api/finance/export.csv": "CSV export for lender/buyer/investor diligence",
             "/inference": "Truth-labeled C++ inference placeholder",
             "/train": "Truth-labeled training placeholder",
             "/test": "Truth-labeled test placeholder",
@@ -174,6 +187,7 @@ async def status():
         "replay_buffer_size": buffer_size,
         "cpp_backend": "loaded_not_exposed_for_inference" if overllm_lib else "unavailable",
         "alpha_engine": alpha_status,
+        "financeable_evidence": build_finance_summary(),
         "truth_labels": _truth_labels(),
     }
 
