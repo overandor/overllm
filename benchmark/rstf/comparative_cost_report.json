@@ -1,0 +1,122 @@
+{
+  "report_type": "RSTF Cost Reduction Comparison",
+  "generated_at": "2026-07-08T14:15:00Z",
+  "test_corpus": "160 RSTF adversarial examples (reversed, upside_down, homoglyph, bidi_override)",
+  "models_tested": [
+    {
+      "model": "GPT-4",
+      "tokenizer": "tiktoken (cl100k_base)",
+      "raw_tokens": 5662,
+      "canonical_tokens": 1245,
+      "tokens_saved": 4417,
+      "savings_ratio": 0.7801,
+      "savings_percent": "78.0%",
+      "estimated_cost_saved_usd": null,
+      "pricing_source": "user_supplied_required"
+    },
+    {
+      "model": "GPT-3.5-turbo",
+      "tokenizer": "tiktoken (cl100k_base)",
+      "raw_tokens": 5662,
+      "canonical_tokens": 1245,
+      "tokens_saved": 4417,
+      "savings_ratio": 0.7801,
+      "savings_percent": "78.0%",
+      "estimated_cost_saved_usd": null,
+      "pricing_source": "user_supplied_required"
+    },
+    {
+      "model": "GPT-4o",
+      "tokenizer": "tiktoken (o200k_base)",
+      "raw_tokens": 5077,
+      "canonical_tokens": 1237,
+      "tokens_saved": 3840,
+      "savings_ratio": 0.7564,
+      "savings_percent": "75.6%",
+      "estimated_cost_saved_usd": 0.0096,
+      "pricing_per_1m_tokens": 2.50,
+      "pricing_source": "user_supplied_not_live_provider_pricing"
+    },
+    {
+      "model": "GPT-4o-mini",
+      "tokenizer": "tiktoken (o200k_base)",
+      "raw_tokens": 5077,
+      "canonical_tokens": 1237,
+      "tokens_saved": 3840,
+      "savings_ratio": 0.7564,
+      "savings_percent": "75.6%",
+      "estimated_cost_saved_usd": 0.000576,
+      "pricing_per_1m_tokens": 0.15,
+      "pricing_source": "user_supplied_not_live_provider_pricing"
+    },
+    {
+      "model": "UTF-8 Byte Proxy (offline upper-bound)",
+      "tokenizer": "UTF-8 byte length (upper-bound proxy)",
+      "raw_bytes": 9361,
+      "canonical_bytes": 6908,
+      "bytes_saved": 2453,
+      "savings_ratio": 0.262,
+      "savings_percent": "26.2%",
+      "note": "This is not a tokenizer-specific count and does not prove Llama/Mistral billing savings. The canonicalized strings are 26.2% shorter in UTF-8 bytes.",
+      "truth_label": "synthetic_examples_utf8_byte_upper_bound_proxy_not_real_tokenizer_counts"
+    },
+    {
+      "model": "OverLLM BPE (reference implementation)",
+      "tokenizer": "OverLLM BPE (small repo-trained vocab)",
+      "raw_tokens": 7245,
+      "canonical_tokens": 2436,
+      "tokens_saved": 4809,
+      "savings_ratio": 0.6638,
+      "savings_percent": "66.4%",
+      "vocab_size": 1500,
+      "merge_count": 1244,
+      "note": "Real BPE tokenizer, not production scale",
+      "truth_label": "real_tokenizer_measurement_small_repo_trained_vocab_not_production_scale"
+    }
+  ],
+  "key_findings": [
+    "On the repo's 160 synthetic RSTF adversarial examples, selected OpenAI tiktoken encodings showed 75-78% input-token reduction after canonicalization",
+    "GPT-4o uses o200k_base encoding (more efficient than cl100k_base), still achieves 75.6% savings on the benchmark corpus",
+    "The offline UTF-8 byte proxy shows 26.2% byte-length reduction; this is not a tokenizer-specific count and does not prove Llama/Mistral billing savings",
+    "OverLLM BPE reference shows 66.4% token savings on the benchmark corpus (real BPE measurement, not production-scale)",
+    "Highest savings come from upside_down (88-89%) and homoglyph (79-83%) transforms",
+    "Reversed transform shows lower but still significant savings (45-49%) for real tokenizers",
+    "Cost savings scale with model pricing: GPT-4o saves $0.0096 vs GPT-4o-mini saves $0.000576 for same corpus (user-supplied pricing, not live provider pricing)"
+  ],
+  "headline_finding": "On a 160-example synthetic reversible-transform corpus, RSTF canonicalization reduced measured input tokens by 75.6-78.0% under selected tiktoken encodings, 66.4% under OverLLM's repo-trained BPE tokenizer, and 26.2% under an offline UTF-8 byte upper-bound proxy. These results demonstrate tokenizer-aware cost observability for transformed/adversarial text, not guaranteed savings on arbitrary production traffic.",
+  "buyer_facing_summary": "RSTF provides tokenizer-aware cost observability for transformed or adversarial Unicode text. In the repo's 160-example synthetic benchmark, canonicalization reduced measured tiktoken input counts by 75.6-78.0% and OverLLM BPE counts by 66.4%, while the offline UTF-8 proxy showed 26.2% byte reduction. Production savings depend on the prevalence of these transformed inputs, the selected tokenizer/model, and current provider pricing. The byte proxy does not mean 'local models show 26.2% token savings.' It means the canonicalized strings are 26.2% shorter in UTF-8 bytes. Exact token savings still require the target tokenizer.",
+  "transform_breakdown": {
+    "upside_down": {
+      "description": "Multi-byte rotation glyphs collapsed to ASCII",
+      "tiktoken_savings": "88-89%",
+      "byte_proxy_savings": "38.9%",
+      "bpe_savings": "75.0%"
+    },
+    "homoglyph": {
+      "description": "Cyrillic/Greek confusables normalized to ASCII",
+      "tiktoken_savings": "79-83%",
+      "byte_proxy_savings": "39.2%",
+      "bpe_savings": "78.8%"
+    },
+    "bidi_override": {
+      "description": "Bidi control characters (3 bytes) stripped",
+      "tiktoken_savings": "47-54%",
+      "byte_proxy_savings": "12.2%",
+      "bpe_savings": "43.0%"
+    },
+    "reversed": {
+      "description": "Text reordering (bytes unchanged, tokens change)",
+      "tiktoken_savings": "45-49%",
+      "byte_proxy_savings": "0.0%",
+      "bpe_savings": "39.0%"
+    }
+  },
+  "truth_labels": {
+    "tiktoken": "real_tiktoken_count_for_selected_model_or_encoding_not_provider_bill",
+    "byte_proxy": "synthetic_examples_utf8_byte_upper_bound_proxy_not_real_tokenizer_counts",
+    "bpe": "real_tokenizer_measurement_small_repo_trained_vocab_not_production_scale"
+  },
+  "pricing_disclaimer": "Cost estimates use user-supplied pricing, not live provider pricing. Actual bills depend on cached input, tools usage, batching mode, priority mode, and current provider pricing tables.",
+  "tiktoken_billing_note": "This uses OpenAI's tiktoken encoding for the selected model/encoding. It measures input tokens, but final billing still depends on the provider's current pricing, cached input behavior, tools, batching, output tokens, and service mode.",
+  "truth_label": "synthetic_rstf_corpus_multi_tokenizer_cost_observability_not_production_traffic_guarantee"
+}
