@@ -17,8 +17,28 @@ import (
 
 type TelemetryEvent struct {
 	Timestamp int64  `json:"timestamp"`
-	Type      string `json:"type"`
+	Type      string `json:"type,omitempty"`
+	EventType string `json:"event_type,omitempty"`
 	Data      string `json:"data"`
+}
+
+// Normalize accepts both the original Go field name (`type`) and the Rust
+// daemon field name (`event_type`). Without this bridge, telemetry can be
+// accepted by the server but silently ignored by BuildContext.
+func (ev *TelemetryEvent) Normalize() {
+	if ev.Type == "" {
+		ev.Type = ev.EventType
+	}
+	if ev.EventType == "" {
+		ev.EventType = ev.Type
+	}
+}
+
+func (ev TelemetryEvent) Kind() string {
+	if ev.Type != "" {
+		return ev.Type
+	}
+	return ev.EventType
 }
 
 type PreferencePair struct {
@@ -77,14 +97,21 @@ func (a *Agent) StartCollector() {
 		}
 		body, _ := io.ReadAll(r.Body)
 		var ev TelemetryEvent
-		if err := json.Unmarshal(body, &ev); err == nil {
-			a.TelemetryMu.Lock()
-			a.Telemetry = append(a.Telemetry, ev)
-			if len(a.Telemetry) > 10000 {
-				a.Telemetry = a.Telemetry[len(a.Telemetry)-5000:]
-			}
-			a.TelemetryMu.Unlock()
+		if err := json.Unmarshal(body, &ev); err != nil {
+			http.Error(w, err.Error(), 400)
+			return
 		}
+		ev.Normalize()
+		if ev.Kind() == "" {
+			http.Error(w, "telemetry event type is required", 400)
+			return
+		}
+		a.TelemetryMu.Lock()
+		a.Telemetry = append(a.Telemetry, ev)
+		if len(a.Telemetry) > 10000 {
+			a.Telemetry = a.Telemetry[len(a.Telemetry)-5000:]
+		}
+		a.TelemetryMu.Unlock()
 		w.WriteHeader(200)
 	})
 
@@ -187,7 +214,7 @@ func (a *Agent) BuildContext() string {
 		start = 0
 	}
 	for _, ev := range a.Telemetry[start:] {
-		switch ev.Type {
+		switch ev.Kind() {
 		case "active_app":
 			parts = append(parts, fmt.Sprintf("Active app: %s", ev.Data))
 		case "file_access":
@@ -212,8 +239,9 @@ func (a *Agent) generationLoop() {
 		<-ticker.C
 		ctx := a.BuildContext()
 		for _, prompt := range a.Prompts {
-			// Placeholder for generation without Ollama dependency
-			// This would normally call the C++ OverLLM engine
+			// Placeholder for generation without Ollama dependency.
+			// This is intentionally only logged; production generation is served
+			// through the configured localmodel runner in the HTTP layer.
 			log.Printf("Processing prompt: %s with context length: %d", prompt, len(ctx))
 		}
 	}
@@ -309,7 +337,8 @@ func (a *Agent) GenerateWithWebContext(prompt string) (string, error) {
 		prompt = fmt.Sprintf("Web Context:\n%s\n\nQuestion: %s", webContext, prompt)
 	}
 
-	// Placeholder for generation without Ollama dependency
-	// This would normally call the C++ OverLLM engine
+	// Placeholder for generation without Ollama dependency.
+	// This endpoint remains truth-labeled as a scaffold until wired to the
+	// configured model runner.
 	return fmt.Sprintf("Generated response for: %s (with web context)", prompt), nil
 }
