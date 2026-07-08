@@ -1,0 +1,16 @@
+{
+  "protocol": "URAP-1",
+  "project": "overllm",
+  "origin": "overandor/overllm",
+  "mode": "mixed",
+  "claim_policy": "truth-labeled",
+  "analytics_policy": "aggregate-only",
+  "production_status": "hardening-baseline",
+  "release_gate": {
+    "ci_required": true,
+    "mock_proof_endpoints_allowed": false,
+    "admin_auth_required": true,
+    "telemetry_opt_in_required": true,
+    "signed_receipt_required": true
+  }
+}
