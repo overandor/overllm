@@ -95,8 +95,9 @@ This repo ships two related but separate deployment targets. Do not confuse them
 | Cloud demo | `ui/`, `api/` | Vercel, Render, Hugging Face, Docker | Server-side model/API calls when configured | Your deployed backend + configured model provider | Demo / API surface |
 | OverML package | `lang/overml/` | Rust toolchain / C ABI host | None required for local examples | Local source + provenance output | Experimental language package |
 | Financeable evidence | `api/financeable.py`, `tools/finance_packet.py` | Local or deployed API | Local file ledger unless deployed | `.overllm/finance` or `OVERLLM_FINANCE_ROOT` | Evidence ledger, not valuation |
+| iMessage auto-reply | `macos/imessage-agent/` | macOS 13+ workstation, requires Full Disk Access + Messages.app Automation permission | Local Ollama only | `~/Library/Messages/chat.db` (read-only) + `~/.overllm/data/imessage_state.json` | Untested prototype — sends autonomously, no approval step, see its README |
 
-If you are evaluating whether OverLLM can run fully offline, the answer is: **the local agent and financeable ledger paths are designed for local operation; the cloud demo is not an offline product.**
+If you are evaluating whether OverLLM can run fully offline, the answer is: **the local agent, financeable ledger, and iMessage auto-reply paths are designed for local operation; the cloud demo is not an offline product.**
 
 ---
 

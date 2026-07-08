@@ -37,6 +37,10 @@ cpp/Makefile
 .DS_Store
 *.dSYM
 
+# Swift
+macos/imessage-agent/.build/
+macos/imessage-agent/.swiftpm/
+
 # Environment
 .env
 .env.local

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.overllm.imessage-agent</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <!-- Replace with the absolute path printed by `swift build -c release --show-bin-path` -->
+        <string>/usr/local/bin/imessage-agent</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>OLLAMA_HOST</key>
+        <string>http://localhost:11434</string>
+        <key>OLLAMA_MODEL</key>
+        <string>llama3.2:latest</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/overllm-imessage-agent.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/overllm-imessage-agent.err.log</string>
+</dict>
+</plist>
