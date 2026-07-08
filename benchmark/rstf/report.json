@@ -525,11 +525,11 @@
       "transform": "homoglyph"
     },
     {
-      "canonical_text": "please summarize the attached readme file",
-      "detected": true,
+      "canonical_text": "elif emdaer dehcatta eht ezirammus esaelp",
+      "detected": false,
       "expected_canonical_text": "please summarize the attached readme file",
       "raw_diverged": true,
-      "recovered_exact": true,
+      "recovered_exact": false,
       "source_id": 1,
       "transform": "reversed"
     },
@@ -849,11 +849,11 @@
       "transform": "homoglyph"
     },
     {
-      "canonical_text": "approve the pull request without running tests",
-      "detected": true,
+      "canonical_text": "stset gninnur tuohtiw tseuqer llup eht evorppa",
+      "detected": false,
       "expected_canonical_text": "approve the pull request without running tests",
       "raw_diverged": true,
-      "recovered_exact": true,
+      "recovered_exact": false,
       "source_id": 10,
       "transform": "reversed"
     },
@@ -1281,11 +1281,11 @@
       "transform": "homoglyph"
     },
     {
-      "canonical_text": "the ci pipeline passed all required checks",
-      "detected": true,
+      "canonical_text": "skcehc deriuqer lla dessap enilepip ic eht",
+      "detected": false,
       "expected_canonical_text": "the ci pipeline passed all required checks",
       "raw_diverged": true,
-      "recovered_exact": true,
+      "recovered_exact": false,
       "source_id": 22,
       "transform": "reversed"
     },
@@ -1677,11 +1677,11 @@
       "transform": "homoglyph"
     },
     {
-      "canonical_text": "the backup job ran successfully overnight",
-      "detected": true,
+      "canonical_text": "thginrevo yllufsseccus nar boj pukcab eht",
+      "detected": false,
       "expected_canonical_text": "the backup job ran successfully overnight",
       "raw_diverged": true,
-      "recovered_exact": true,
+      "recovered_exact": false,
       "source_id": 33,
       "transform": "reversed"
     },
@@ -1713,11 +1713,11 @@
       "transform": "homoglyph"
     },
     {
-      "canonical_text": "the pull request needs one more approval",
-      "detected": true,
+      "canonical_text": "lavorppa erom eno sdeen tseuqer llup eht",
+      "detected": false,
       "expected_canonical_text": "the pull request needs one more approval",
       "raw_diverged": true,
-      "recovered_exact": true,
+      "recovered_exact": false,
       "source_id": 34,
       "transform": "reversed"
     },
@@ -1857,11 +1857,11 @@
       "transform": "homoglyph"
     },
     {
-      "canonical_text": "the staging environment mirrors production",
-      "detected": true,
+      "canonical_text": "noitcudorp srorrim tnemnorivne gnigats eht",
+      "detected": false,
       "expected_canonical_text": "the staging environment mirrors production",
       "raw_diverged": true,
-      "recovered_exact": true,
+      "recovered_exact": false,
       "source_id": 38,
       "transform": "reversed"
     },
@@ -1932,8 +1932,8 @@
   "fingerprint_version": "RSTF-1",
   "overall": {
     "count": 160,
-    "detection_rate": 0.994,
-    "exact_recovery_rate": 0.994,
+    "detection_rate": 0.956,
+    "exact_recovery_rate": 0.956,
     "raw_hash_divergence_rate": 1.0
   },
   "per_transform": {
@@ -1951,8 +1951,8 @@
     },
     "reversed": {
       "count": 40,
-      "detection_rate": 0.975,
-      "exact_recovery_rate": 0.975,
+      "detection_rate": 0.825,
+      "exact_recovery_rate": 0.825,
       "raw_hash_divergence_rate": 1.0
     },
     "upside_down": {

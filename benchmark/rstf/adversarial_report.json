@@ -1,0 +1,235 @@
+{
+  "corpus_version": "rstf-adversarial-v0.1",
+  "fingerprint_version": "RSTF-1",
+  "negative_by_category": {
+    "legitimate_latin_edge_case": {
+      "count": 5,
+      "false_positive_rate": 0.0,
+      "false_positives": 0
+    },
+    "legitimate_non_english": {
+      "count": 4,
+      "false_positive_rate": 0.0,
+      "false_positives": 0
+    }
+  },
+  "negative_examples": [
+    {
+      "category": "legitimate_non_english",
+      "false_positive": false,
+      "id": "neg-ru-1",
+      "text": "\u0434\u043e\u0431\u0440\u043e \u043f\u043e\u0436\u0430\u043b\u043e\u0432\u0430\u0442\u044c \u0432 \u043d\u0430\u0448 \u043c\u0430\u0433\u0430\u0437\u0438\u043d",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    },
+    {
+      "category": "legitimate_non_english",
+      "false_positive": false,
+      "id": "neg-ru-2",
+      "text": "\u0441\u043f\u0430\u0441\u0438\u0431\u043e \u0437\u0430 \u043f\u043e\u043a\u0443\u043f\u043a\u0443, \u0432\u0430\u0448 \u0437\u0430\u043a\u0430\u0437 \u043e\u0431\u0440\u0430\u0431\u0430\u0442\u044b\u0432\u0430\u0435\u0442\u0441\u044f",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    },
+    {
+      "category": "legitimate_non_english",
+      "false_positive": false,
+      "id": "neg-uk-1",
+      "text": "\u0434\u044f\u043a\u0443\u044e \u0437\u0430 \u043f\u043e\u043a\u0443\u043f\u043a\u0443",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    },
+    {
+      "category": "legitimate_non_english",
+      "false_positive": false,
+      "id": "neg-el-1",
+      "text": "\u03ba\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u03c3\u03b1\u03c2, \u03b5\u03c5\u03c7\u03b1\u03c1\u03b9\u03c3\u03c4\u03bf\u03cd\u03bc\u03b5 \u03b3\u03b9\u03b1 \u03c4\u03b7\u03bd \u03c0\u03b1\u03c1\u03b1\u03b3\u03b3\u03b5\u03bb\u03af\u03b1",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    },
+    {
+      "category": "legitimate_latin_edge_case",
+      "false_positive": false,
+      "id": "neg-latin-accent-1",
+      "text": "please review the r\u00e9sum\u00e9 and the caf\u00e9 receipt",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    },
+    {
+      "category": "legitimate_latin_edge_case",
+      "false_positive": false,
+      "id": "neg-latin-accent-2",
+      "text": "the price is 42.50 euros for se\u00f1or garc\u00eda",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    },
+    {
+      "category": "legitimate_latin_edge_case",
+      "false_positive": false,
+      "id": "neg-code-1",
+      "text": "def foo(x): return x + 1",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    },
+    {
+      "category": "legitimate_latin_edge_case",
+      "false_positive": false,
+      "id": "neg-url-1",
+      "text": "visit https://example.com/path?q=1 for details",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    },
+    {
+      "category": "legitimate_latin_edge_case",
+      "false_positive": false,
+      "id": "neg-plain-1",
+      "text": "the pull request is ready for review",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      }
+    }
+  ],
+  "negative_summary": {
+    "count": 9,
+    "false_positive_rate": 0.0
+  },
+  "positive_examples": [
+    {
+      "canonical_text": "test",
+      "category": "upside_down",
+      "detected": true,
+      "expected_canonical_contains": "test",
+      "id": "updown-1",
+      "recovered": true
+    },
+    {
+      "canonical_text": "this is a test",
+      "category": "upside_down",
+      "detected": true,
+      "expected_canonical_contains": "this is a test",
+      "id": "updown-2",
+      "recovered": true
+    },
+    {
+      "canonical_text": "example",
+      "category": "upside_down",
+      "detected": true,
+      "expected_canonical_contains": "example",
+      "id": "updown-3",
+      "recovered": true
+    },
+    {
+      "canonical_text": "retrauq yreve syek tnemyolped eht etator esaelp",
+      "category": "reversed",
+      "detected": false,
+      "expected_canonical_contains": "please rotate the deployment keys every quarter",
+      "id": "reversed-1",
+      "recovered": false
+    },
+    {
+      "canonical_text": "the model weights are stored in encrypted storage",
+      "category": "reversed",
+      "detected": true,
+      "expected_canonical_contains": "the model weights are stored in encrypted storage",
+      "id": "reversed-2",
+      "recovered": true
+    },
+    {
+      "canonical_text": "unauthorized access attempts were logged and blocked",
+      "category": "reversed",
+      "detected": true,
+      "expected_canonical_contains": "unauthorized access attempts were logged and blocked",
+      "id": "reversed-3",
+      "recovered": true
+    },
+    {
+      "canonical_text": "apple.com",
+      "category": "homoglyph",
+      "detected": true,
+      "expected_canonical_contains": "apple.com",
+      "id": "homoglyph-1",
+      "recovered": true
+    },
+    {
+      "canonical_text": "gmail.com",
+      "category": "homoglyph",
+      "detected": true,
+      "expected_canonical_contains": "gmail.com",
+      "id": "homoglyph-2",
+      "recovered": true
+    },
+    {
+      "canonical_text": "microsoft.com",
+      "category": "homoglyph",
+      "detected": true,
+      "expected_canonical_contains": "microsoft.com",
+      "id": "homoglyph-3",
+      "recovered": true
+    },
+    {
+      "canonical_text": "paypal.com login required",
+      "category": "homoglyph",
+      "detected": true,
+      "expected_canonical_contains": "paypal.com login required",
+      "id": "homoglyph-4",
+      "recovered": true
+    },
+    {
+      "canonical_text": "invoicejpg.exe",
+      "category": "bidi_override",
+      "detected": true,
+      "expected_canonical_contains": "invoicejpg.exe",
+      "id": "bidi-1",
+      "recovered": true
+    },
+    {
+      "canonical_text": "resumedoc.scr",
+      "category": "bidi_override",
+      "detected": true,
+      "expected_canonical_contains": "resumedoc.scr",
+      "id": "bidi-2",
+      "recovered": true
+    }
+  ],
+  "positive_summary": {
+    "count": 12,
+    "detection_rate": 0.917,
+    "recovery_rate": 0.917
+  },
+  "report_version": "rstf-adversarial-eval-v0.1",
+  "truth_label": "independent_hand_authored_examples_not_generated_by_the_detectors_own_encoders"
+}

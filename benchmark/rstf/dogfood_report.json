@@ -1,0 +1,360 @@
+{
+  "expected_hits_within_rstf_own_files": 28,
+  "files_scanned": 66,
+  "fingerprint_version": "RSTF-1",
+  "hits": [
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 70,
+      "text": "\"a\": \"\u0250\", \"b\": \"q\", \"c\": \"\u0254\", \"d\": \"p\", \"e\": \"\u01dd\", \"f\": \"\u025f\", \"g\": \"\u0183\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 71,
+      "text": "\"h\": \"\u0265\", \"i\": \"\u1d09\", \"j\": \"\u027e\", \"k\": \"\u029e\", \"l\": \"\u0283\", \"m\": \"\u026f\", \"n\": \"u\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 73,
+      "text": "\"v\": \"\u028c\", \"w\": \"\u028d\", \"x\": \"x\", \"y\": \"\u028e\", \"z\": \"z\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 74,
+      "text": "\"0\": \"0\", \"1\": \"1\", \"2\": \"\u1105\", \"3\": \"\u0190\", \"4\": \"\u3123\", \"5\": \"5\", \"6\": \"9\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 75,
+      "text": "\"7\": \"\u3125\", \"8\": \"8\", \"9\": \"6\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 147,
+      "text": "_RLO = \"\u202e\"",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 148,
+      "text": "_LRO = \"\u202d\"",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 149,
+      "text": "_PDF = \"\u202c\"",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 150,
+      "text": "_ISOLATE_STARTS = {\"\u2066\", \"\u2067\", \"\u2068\"}  # LRI, RLI, FSI",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 151,
+      "text": "_PDI = \"\u2069\"",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 152,
+      "text": "_BIDI_MARKS = {\"\u200e\", \"\u200f\", \"\u061c\"}  # LRM, RLM, ALM",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 207,
+      "text": "\"\u0430\": \"a\", \"\u0435\": \"e\", \"\u043e\": \"o\", \"\u0440\": \"p\", \"\u0441\": \"c\", \"\u0445\": \"x\", \"\u0443\": \"y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 208,
+      "text": "\"\u0456\": \"i\", \"\u0455\": \"s\", \"\u0458\": \"j\", \"\u04bb\": \"h\", \"\u0501\": \"d\", \"\u051b\": \"q\", \"\u0461\": \"w\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 209,
+      "text": "\"\u0410\": \"A\", \"\u0412\": \"B\", \"\u0415\": \"E\", \"\u041a\": \"K\", \"\u041c\": \"M\", \"\u041d\": \"H\", \"\u041e\": \"O\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 210,
+      "text": "\"\u0420\": \"P\", \"\u0421\": \"C\", \"\u0422\": \"T\", \"\u0425\": \"X\", \"\u0405\": \"S\", \"\u0406\": \"I\", \"\u0408\": \"J\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 212,
+      "text": "\"\u03b1\": \"a\", \"\u03bf\": \"o\", \"\u03c1\": \"p\", \"\u03c5\": \"u\", \"\u03c4\": \"t\", \"\u03b9\": \"i\", \"\u03ba\": \"k\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 213,
+      "text": "\"\u0391\": \"A\", \"\u0392\": \"B\", \"\u0395\": \"E\", \"\u0396\": \"Z\", \"\u0397\": \"H\", \"\u0399\": \"I\", \"\u039a\": \"K\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 214,
+      "text": "\"\u039c\": \"M\", \"\u039d\": \"N\", \"\u039f\": \"O\", \"\u03a1\": \"P\", \"\u03a4\": \"T\", \"\u03a5\": \"Y\", \"\u03a7\": \"X\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "api/semantic_fingerprint.py",
+      "line": 223,
+      "text": "# (\"\u0430pple.com\": Cyrillic \u0430 next to Latin p,p,l,e). Only treat confusables",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "benchmark/rstf/dogfood_report.md",
+      "line": 19,
+      "text": "| lang/overml/docs/DESIGN.md | 160 | 'arithmetic, no OS randomness, no per-platform float rounding differences.' | `{'bidi_override': False, 'upside_down': False, 'reversed': True, 'homoglyph_substitu",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": true,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
+      "line": 69,
+      "text": "-d '{\"text\": \"\u0287s\u01dd\u0287\"}'",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
+      "line": 73,
+      "text": "-d '{\"text_a\": \"test\", \"text_b\": \"\u0287s\u01dd\u0287\"}'",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
+      "line": 202,
+      "text": "homograph attack mixes scripts (`\u0430pple.com`: Cyrillic \u0430 next to Latin",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
+      "line": 233,
+      "text": "1 remaining case (`lang/overml/docs/DESIGN.md:160`, \"arithmetic, no OS",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": true,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "lang/overml/docs/DESIGN.md",
+      "line": 160,
+      "text": "arithmetic, no OS randomness, no per-platform float rounding differences.",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": true,
+        "upside_down": false
+      },
+      "within_rstf_own_files": false
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 44,
+      "text": "raw = \"abc\u202edef\u202cghi\"",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 52,
+      "text": "# Cyrillic \"\u0430\" (U+0430) substituted for Latin \"a\".",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 53,
+      "text": "raw = \"\u0430pple\"",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tools/rstf_dogfood_scan.py",
+      "line": 14,
+      "text": "legitimately contains crafted example glyphs like \"\u0287s\u01dd\u0287\" or \"\u0430pple.com\" -",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    }
+  ],
+  "lines_scanned": 9042,
+  "report_version": "rstf-dogfood-scan-v0.1",
+  "total_hits": 29,
+  "truth_label": "real_repo_text_not_a_customer_pilot_no_external_input_data",
+  "unexpected_hits_elsewhere": 1
+}
