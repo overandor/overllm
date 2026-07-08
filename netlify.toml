@@ -1,8 +1,17 @@
-# This file exists only to satisfy deployment tooling.
-# The actual deployment target is Render, configured in render.yaml.
+# Render remains the primary app target in render.yaml.
+# Netlify additionally exposes the RSTF serverless function for deploy previews.
 [build]
   publish = "ui/dist"
-  command = "cd ui && npm install && npm run build"
+  command = "npm test && cd ui && npm install && npm run build"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/rstf"
+  to = "/.netlify/functions/rstf"
+  status = 200
 
 [[redirects]]
   from = "/*"
