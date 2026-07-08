@@ -1,6 +1,6 @@
 {
-  "expected_hits_within_rstf_own_files": 34,
-  "files_scanned": 73,
+  "expected_hits_within_rstf_own_files": 35,
+  "files_scanned": 77,
   "fingerprint_version": "RSTF-1",
   "hits": [
     {
@@ -244,6 +244,18 @@
       "within_rstf_own_files": true
     },
     {
+      "file": "cpp/rstf/README.md",
+      "line": 36,
+      "text": "./build/overllm-rstf \"\u0287s\u01dd\u0287\"",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
       "line": 69,
       "text": "-d '{\"text\": \"\u0287s\u01dd\u0287\"}'",
@@ -269,7 +281,7 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 202,
+      "line": 257,
       "text": "homograph attack mixes scripts (`\u0430pple.com`: Cyrillic \u0430 next to Latin",
       "transform_receipt": {
         "bidi_override": false,
@@ -281,7 +293,7 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 233,
+      "line": 288,
       "text": "1 remaining case (`lang/overml/docs/DESIGN.md:160`, \"arithmetic, no OS",
       "transform_receipt": {
         "bidi_override": false,
@@ -293,7 +305,7 @@
     },
     {
       "file": "lang/overml/docs/DESIGN.md",
-      "line": 160,
+      "line": 195,
       "text": "arithmetic, no OS randomness, no per-platform float rounding differences.",
       "transform_receipt": {
         "bidi_override": false,
@@ -424,9 +436,9 @@
       "within_rstf_own_files": true
     }
   ],
-  "lines_scanned": 9699,
+  "lines_scanned": 10010,
   "report_version": "rstf-dogfood-scan-v0.1",
-  "total_hits": 35,
+  "total_hits": 36,
   "truth_label": "real_repo_text_not_a_customer_pilot_no_external_input_data",
   "unexpected_hits_elsewhere": 1
 }
