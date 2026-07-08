@@ -5,15 +5,16 @@ canonicalizing transformed text before it reaches a tokenizer.
 Why bytes, not tokens: this environment's egress policy blocks the hosts
 tiktoken and Hugging Face tokenizers need to fetch vocabulary files from
 (openaipublic.blob.core.windows.net, huggingface.co both return 403), so no
-real tokenizer is available offline here. UTF-8 byte length is not a
-approximation of convenience — it is a mathematically provable *upper bound*
-on token count for every byte-level BPE tokenizer in production use (GPT-3.5,
-GPT-4, Claude, Llama, and friends all use byte-level BPE with a byte-fallback
-base vocabulary): a token is composed of one or more raw bytes, so
-token_count <= byte_count always. Canonicalizing a rare multi-byte glyph into
-its single-byte ASCII equivalent can only reduce or hold constant the token
-count a real tokenizer would produce; this script reports that byte-level
-floor honestly, as a floor, not as a claimed exact token count.
+real tokenizer is available offline here. UTF-8 byte length is an upper bound
+on token count for byte-level tokenizers, not an exact cost metric. Reducing
+byte length reduces the worst-case byte-level budget and is expected to
+reduce or preserve token count for many rare multi-byte/control-character
+cases, but only a model-specific tokenizer can prove actual billable token
+savings. For byte-level or byte-fallback tokenizers, byte length is an
+upper-bound proxy because each token must encode at least one byte. Actual
+billable token savings are tokenizer/model-specific and must be measured with
+the target tokenizer. This script reports that byte-level upper-bound proxy
+honestly, as a proxy, not as a claimed exact token count.
 
 Usage:
 
@@ -109,16 +110,18 @@ def run_token_cost_benchmark() -> dict[str, Any]:
         "fingerprint_version": FINGERPRINT_VERSION,
         "metric": "utf8_byte_length",
         "metric_note": (
-            "UTF-8 byte length, not a real tokenizer count. It is a provable upper "
-            "bound on token count for byte-level BPE tokenizers (a token is >=1 raw "
-            "byte), computed offline because this environment's egress policy blocks "
-            "the hosts tiktoken/Hugging Face tokenizers need (403 on "
+            "UTF-8 byte length, not a real tokenizer count. For byte-level or "
+            "byte-fallback tokenizers, byte length is an upper-bound proxy because "
+            "each token must encode at least one byte. Actual billable token savings "
+            "are tokenizer/model-specific and must be measured with the target "
+            "tokenizer. Computed offline because this environment's egress policy "
+            "blocks the hosts tiktoken/Hugging Face tokenizers need (403 on "
             "openaipublic.blob.core.windows.net and huggingface.co)."
         ),
         "overall": overall,
         "per_transform": summary,
         "examples": results,
-        "truth_label": "synthetic_examples_byte_proxy_not_real_tokenizer_counts",
+        "truth_label": "synthetic_examples_utf8_byte_upper_bound_proxy_not_real_tokenizer_counts",
     }
 
 

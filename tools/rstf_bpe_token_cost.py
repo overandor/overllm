@@ -47,8 +47,17 @@ REPORT_VERSION = "rstf-bpe-token-cost-v0.1"
 DEFAULT_VOCAB_DIR = REPO_ROOT / "cpp" / "tokenizer_data"
 
 
+def load_tokenizer_or_die(vocab_dir: Path) -> BPETokenizer:
+    if not vocab_dir.exists():
+        raise FileNotFoundError(
+            f"BPE vocab directory not found: {vocab_dir}. "
+            "Run the tokenizer training/export step before this benchmark."
+        )
+    return BPETokenizer.load(vocab_dir)
+
+
 def run_bpe_token_cost_benchmark(vocab_dir: Path) -> dict[str, Any]:
-    tokenizer = BPETokenizer.load(vocab_dir)
+    tokenizer = load_tokenizer_or_die(vocab_dir)
     corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
     examples = _generate_examples(corpus["sentences"])
 
@@ -104,7 +113,7 @@ def run_bpe_token_cost_benchmark(vocab_dir: Path) -> dict[str, Any]:
     return {
         "report_version": REPORT_VERSION,
         "fingerprint_version": FINGERPRINT_VERSION,
-        "tokenizer_vocab_size": tokenizer.vocab and len(tokenizer.vocab),
+        "tokenizer_vocab_size": len(tokenizer.vocab) if tokenizer.vocab is not None else 0,
         "tokenizer_merge_count": len(tokenizer.merge_rank),
         "metric": "overllm_bpe_token_count",
         "metric_note": (

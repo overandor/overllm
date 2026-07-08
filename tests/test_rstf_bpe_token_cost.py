@@ -37,3 +37,17 @@ def test_markdown_report_documents_the_tokenizer_scope():
     md = render_markdown(report)
     assert "not GPT-4/Claude/Llama" in md
     assert "## Per-transform" in md
+
+
+def test_bpe_token_cost_summary_shape():
+    report = run_bpe_token_cost_benchmark(DEFAULT_VOCAB_DIR)
+    assert report["metric"] == "overllm_bpe_token_count"
+    assert report["overall"]["count"] > 0
+    assert "per_transform" in report
+    assert report["truth_label"] == "real_tokenizer_measurement_small_repo_trained_vocab_not_production_scale"
+
+
+def test_bpe_token_cost_does_not_claim_provider_billing():
+    report = run_bpe_token_cost_benchmark(DEFAULT_VOCAB_DIR)
+    assert "not GPT-4/Claude/Llama" in report["metric_note"]
+    assert "not_production_scale" in report["truth_label"]
