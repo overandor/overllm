@@ -87,15 +87,26 @@ python tools/semantic_fingerprint.py compute --file some_prompt.txt
 ## Benchmark
 
 `tools/rstf_benchmark.py` generates synthetic examples from `benchmark/rstf/corpus.json`
-(40 source sentences x 4 transform classes = 160 examples) and measures, per
-transform class: raw-hash divergence rate, detection rate, and exact
-canonical-recovery rate. A committed run is at `benchmark/rstf/report.json`.
+(40 source sentences x 4 transform classes = 160 positive examples) and
+measures, per transform class: raw-hash divergence rate, detection rate, and
+exact canonical-recovery rate. It also runs the 40 source sentences
+**unmodified** as a control group, to measure the false-positive ("false
+merge") rate — how often the detector flags a transform on text nobody
+transformed.
 
 ```bash
 python tools/rstf_benchmark.py                                  # full report to stdout
 python tools/rstf_benchmark.py --summary-only                   # aggregate only
-python tools/rstf_benchmark.py --out benchmark/rstf/report.json --summary-only
+python tools/rstf_benchmark.py \
+  --out benchmark/rstf/report.json \
+  --out-md benchmark/rstf/report.md \
+  --out-csv benchmark/rstf/report.csv \
+  --summary-only
 ```
+
+Committed runs: `benchmark/rstf/report.json` (full machine-readable data),
+`benchmark/rstf/report.md` (human-readable summary + failed-example list),
+`benchmark/rstf/report.csv` (one row per example, positive and control).
 
 Current v0.1 results:
 
@@ -105,7 +116,8 @@ Current v0.1 results:
 | `homoglyph` | 100% | 100% |
 | `upside_down` | 100% | 100% |
 | `reversed` | 97.5% | 97.5% |
-| **Overall** | **99.4%** | **99.4%** |
+| **Overall (160 positive examples)** | **99.4%** | **99.4%** |
+| **Control group (40 unmodified sentences)** | **0% false positive rate** | — |
 
 The one miss is `reversed` detection on "disable all security checks before
 merging" — reversing it doesn't produce enough common-word-list hits to beat
@@ -113,10 +125,10 @@ the (also low) hit count of the un-reversed form. That is the documented weak
 spot of the common-word-list heuristic, not a bug; see `_detect_reversed` in
 `api/semantic_fingerprint.py`.
 
-This is a v0.1, 160-example synthetic benchmark, not a claim of coverage
-against real adversarial traffic, zero-width steganography, fullwidth-form
-abuse, emoji-encoded payloads, or mixed/stacked transforms — none of which
-this module implements yet.
+This is a v0.1, 160-example synthetic benchmark plus a 40-example control
+group, not a claim of coverage against real adversarial traffic, zero-width
+steganography, fullwidth-form abuse, emoji-encoded payloads, or mixed/stacked
+transforms — none of which this module implements yet.
 
 ## Honest limits
 

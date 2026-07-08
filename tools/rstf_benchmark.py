@@ -14,14 +14,20 @@ and measures:
   recovered text (original text for reversed/bidi/homoglyph; lowercased
   original for upside_down, since that transform is case-lossy by design).
 
+It also runs a control group: the 40 source sentences *unmodified*, to
+measure the false-positive ("false merge") rate — how often the detector
+flags a transform on text nobody transformed.
+
 This is a v0.1 benchmark: 40 source sentences x 4 transform classes = 160
-examples. It is not a claim of exhaustive adversarial-text coverage — see
+positive examples, plus 40 control examples. It is not a claim of
+exhaustive adversarial-text coverage — see
 docs/SEMANTIC_TRANSFORM_FINGERPRINT.md for the module's documented limits.
 
 Usage:
 
   python tools/rstf_benchmark.py
-  python tools/rstf_benchmark.py --out benchmark/rstf/report.json
+  python tools/rstf_benchmark.py --out benchmark/rstf/report.json \
+      --out-md benchmark/rstf/report.md --out-csv benchmark/rstf/report.csv
 """
 
 from __future__ import annotations
@@ -149,13 +155,32 @@ def run_benchmark() -> dict[str, Any]:
         "exact_recovery_rate": round(sum(r["recovered_exact"] for r in results) / total, 3),
     }
 
+    control_results: list[dict[str, Any]] = []
+    for idx, sentence in enumerate(corpus["sentences"]):
+        fp = compute_fingerprint(sentence)
+        false_positive = fp["transform_detected"]
+        control_results.append({
+            "source_id": idx,
+            "transform": "control_unmodified",
+            "source_text": sentence,
+            "false_positive": false_positive,
+            "transform_receipt": fp["transform_receipt"],
+        })
+    control_count = len(control_results)
+    control_group = {
+        "count": control_count,
+        "false_positive_rate": round(sum(r["false_positive"] for r in control_results) / control_count, 3),
+    }
+
     return {
         "benchmark_version": BENCHMARK_VERSION,
         "fingerprint_version": FINGERPRINT_VERSION,
         "corpus_version": corpus.get("corpus_version"),
         "overall": overall,
         "per_transform": summary,
+        "control_group": control_group,
         "examples": results,
+        "control_examples": control_results,
         "truth_label": "synthetic_generated_examples_not_real_world_traffic",
     }
 
@@ -174,9 +199,97 @@ def _raw_hash_of(text: str) -> str:
     return _sha256_text(text)
 
 
+def render_markdown(report: dict[str, Any]) -> str:
+    lines = [
+        f"# RSTF benchmark report ({report['benchmark_version']})",
+        "",
+        f"Fingerprint version: `{report['fingerprint_version']}` | Corpus version: `{report['corpus_version']}`",
+        "",
+        "Synthetic, generated examples — not real-world traffic. See docs/SEMANTIC_TRANSFORM_FINGERPRINT.md for scope and limits.",
+        "",
+        "## Overall",
+        "",
+        "| Metric | Value |",
+        "|---|---|",
+        f"| Examples | {report['overall']['count']} |",
+        f"| Raw hash divergence rate | {report['overall']['raw_hash_divergence_rate']:.1%} |",
+        f"| Detection rate | {report['overall']['detection_rate']:.1%} |",
+        f"| Exact recovery rate | {report['overall']['exact_recovery_rate']:.1%} |",
+        "",
+        "## Per-transform",
+        "",
+        "| Transform | Count | Raw hash divergence | Detection rate | Exact recovery rate |",
+        "|---|---|---|---|---|",
+    ]
+    for transform, stats in sorted(report["per_transform"].items()):
+        lines.append(
+            f"| `{transform}` | {stats['count']} | {stats['raw_hash_divergence_rate']:.1%} "
+            f"| {stats['detection_rate']:.1%} | {stats['exact_recovery_rate']:.1%} |"
+        )
+
+    lines += [
+        "",
+        "## Control group (unmodified text)",
+        "",
+        "Measures the false-positive (\"false merge\") rate: how often the detector flags a "
+        "transform on text nobody transformed.",
+        "",
+        "| Metric | Value |",
+        "|---|---|",
+        f"| Examples | {report['control_group']['count']} |",
+        f"| False positive rate | {report['control_group']['false_positive_rate']:.1%} |",
+        "",
+        "## Failed examples",
+        "",
+    ]
+
+    failures = [r for r in report["examples"] if not r["detected"] or not r["recovered_exact"]]
+    false_positives = [r for r in report["control_examples"] if r["false_positive"]]
+    if not failures and not false_positives:
+        lines.append("None.")
+    else:
+        if failures:
+            lines += ["", "### Missed detections / imperfect recovery", "",
+                       "| source_id | transform | detected | recovered_exact |", "|---|---|---|---|"]
+            for f in failures:
+                lines.append(f"| {f['source_id']} | `{f['transform']}` | {f['detected']} | {f['recovered_exact']} |")
+        if false_positives:
+            lines += ["", "### False positives on unmodified text", "",
+                       "| source_id | transform_receipt |", "|---|---|"]
+            for f in false_positives:
+                lines.append(f"| {f['source_id']} | `{f['transform_receipt']}` |")
+
+    return "\n".join(lines) + "\n"
+
+
+def render_csv(report: dict[str, Any]) -> str:
+    import csv
+    import io
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow([
+        "source_id", "transform", "raw_diverged", "detected", "recovered_exact",
+        "canonical_text", "expected_canonical_text",
+    ])
+    for r in report["examples"]:
+        writer.writerow([
+            r["source_id"], r["transform"], r["raw_diverged"], r["detected"], r["recovered_exact"],
+            r["canonical_text"], r["expected_canonical_text"],
+        ])
+    for r in report["control_examples"]:
+        writer.writerow([
+            r["source_id"], r["transform"], "", not r["false_positive"], "",
+            r["source_text"], r["source_text"],
+        ])
+    return buffer.getvalue()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the RSTF benchmark")
     parser.add_argument("--out", help="Write the full JSON report to this path")
+    parser.add_argument("--out-md", help="Write a human-readable Markdown report to this path")
+    parser.add_argument("--out-csv", help="Write a per-example CSV report to this path")
     parser.add_argument("--summary-only", action="store_true", help="Print only the aggregate summary, not per-example results")
     args = parser.parse_args()
 
@@ -184,9 +297,13 @@ def main() -> None:
 
     if args.out:
         Path(args.out).write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+    if args.out_md:
+        Path(args.out_md).write_text(render_markdown(report), encoding="utf-8")
+    if args.out_csv:
+        Path(args.out_csv).write_text(render_csv(report), encoding="utf-8")
 
     if args.summary_only:
-        report = {k: v for k, v in report.items() if k != "examples"}
+        report = {k: v for k, v in report.items() if k not in ("examples", "control_examples")}
 
     print(json.dumps(report, indent=2, sort_keys=True))
 

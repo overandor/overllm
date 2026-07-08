@@ -5,7 +5,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 
-from tools.rstf_benchmark import run_benchmark
+from tools.rstf_benchmark import render_csv, render_markdown, run_benchmark
 
 
 def test_benchmark_generates_all_examples():
@@ -14,6 +14,7 @@ def test_benchmark_generates_all_examples():
     assert set(report["per_transform"].keys()) == {
         "reversed", "upside_down", "bidi_override", "homoglyph",
     }
+    assert report["control_group"]["count"] == 40
 
 
 def test_raw_hashes_always_diverge_from_source():
@@ -43,3 +44,27 @@ def test_reversed_detection_meets_minimum_bar():
 def test_overall_detection_meets_minimum_bar():
     report = run_benchmark()
     assert report["overall"]["detection_rate"] >= 0.95
+
+
+def test_control_group_false_positive_rate_is_low():
+    # The detector should stay quiet on unmodified text; this is a ceiling,
+    # not a floor, since false positives directly undermine a pilot pitch.
+    report = run_benchmark()
+    assert report["control_group"]["false_positive_rate"] <= 0.05
+
+
+def test_markdown_report_includes_key_sections():
+    report = run_benchmark()
+    md = render_markdown(report)
+    assert "## Overall" in md
+    assert "## Per-transform" in md
+    assert "## Control group" in md
+    assert "False positive rate" in md
+
+
+def test_csv_report_has_one_row_per_example_plus_header():
+    report = run_benchmark()
+    csv_text = render_csv(report)
+    rows = [line for line in csv_text.strip().splitlines() if line]
+    # header + 160 positive examples + 40 control examples
+    assert len(rows) == 1 + 160 + 40
