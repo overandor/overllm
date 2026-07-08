@@ -1,0 +1,40 @@
+name: Rust Telemetry Daemon Tests
+
+on:
+  pull_request:
+    paths:
+      - "rust/**"
+      - ".github/workflows/rust.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "rust/**"
+      - ".github/workflows/rust.yml"
+
+jobs:
+  rust-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            rust/target
+          key: overllm-telemetry-cargo-${{ runner.os }}-${{ hashFiles('rust/Cargo.toml') }}
+
+      - name: cargo build (lib + bin)
+        run: cargo build --all-targets
+
+      - name: cargo test
+        run: cargo test

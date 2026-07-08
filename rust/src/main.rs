@@ -17,6 +17,23 @@ async fn main() {
     println!("Sending events to http://localhost:7749/telemetry");
     println!();
 
+    // Telemetry (active app, processes, file access, network) is
+    // privacy-sensitive and opt-in: previously nothing ever called
+    // telemetry::set_telemetry_enabled, so the flag it gates on stayed at
+    // its default (false) forever and those collectors silently returned
+    // nothing no matter how long the daemon ran. Keep the safe default,
+    // but make the state explicit and visible instead of silently inert.
+    let telemetry_enabled = std::env::var("OVERLLM_TELEMETRY_ENABLED")
+        .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+        .unwrap_or(false);
+    telemetry::set_telemetry_enabled(telemetry_enabled);
+    if telemetry_enabled {
+        println!("[Telemetry] collection: ENABLED (active app, processes, file access, network)");
+    } else {
+        println!("[Telemetry] collection: DISABLED — set OVERLLM_TELEMETRY_ENABLED=1 to enable active-app/process/file/network capture");
+    }
+    println!();
+
     // Initialize new modules with Arc/Mutex for thread safety
     let vector_index = Arc::new(Mutex::new(VectorIndex::new(128, 32, 10000)));
     let embedder = Arc::new(EmbeddingGenerator::new(128));
@@ -54,6 +71,15 @@ async fn main() {
             println!("[RL] Training episode, avg reward: {:.2}", rewards.iter().sum::<f64>() / rewards.len() as f64);
         }
     });
+
+    // Tracks time-since-last-run for the two periodic tasks below. These
+    // used to be gated by `Instant::now().elapsed().as_secs() % N == 0`,
+    // but that creates the Instant and immediately reads its elapsed time
+    // in the same expression — elapsed() is always ~0 microseconds, so
+    // `0 % N == 0` is always true and both tasks actually ran on every
+    // 5-second tick instead of every 30s / 300s.
+    let mut last_blockchain_check = tokio::time::Instant::now();
+    let mut last_article_fetch = tokio::time::Instant::now();
 
     loop {
         tick.tick().await;
@@ -112,7 +138,8 @@ async fn main() {
         }
         
         // Blockchain monitoring (every 30s)
-        if tokio::time::Instant::now().elapsed().as_secs() % 30 == 0 {
+        if last_blockchain_check.elapsed().as_secs() >= 30 {
+            last_blockchain_check = tokio::time::Instant::now();
             let events = blockchain.watch_address("0x1234...").await;
             println!("[Blockchain] Found {} relevant transactions", events.len());
             for event in events {
@@ -130,7 +157,8 @@ async fn main() {
         }
         
         // Article ingestion (every 5 minutes)
-        if tokio::time::Instant::now().elapsed().as_secs() % 300 == 0 {
+        if last_article_fetch.elapsed().as_secs() >= 300 {
+            last_article_fetch = tokio::time::Instant::now();
             if let Ok(articles) = article_ingestor.fetch_arxiv("machine learning", 5).await {
                 println!("[Articles] Ingested {} new research papers", articles.len());
                 for article in articles {
