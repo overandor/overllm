@@ -85,6 +85,23 @@ Important truth label: this layer records evidence. It does **not** create a gua
 
 ---
 
+## Reversible semantic transform fingerprint (RSTF)
+
+OverLLM includes a text-identity module under `api/semantic_fingerprint.py` and `tools/semantic_fingerprint.py`.
+
+A cryptographic hash answers "same exact bytes?". RSTF answers a narrower, related question: is a byte-different string the same recoverable message under a known, reversible presentation transform? It detects and recovers four specific transforms — plain reversal, upside-down "flip text" glyphs, Unicode bidi-override spoofing (the mechanism behind Trojan Source-style attacks), and Cyrillic/Greek homoglyph substitution — and emits a receipt with `raw_hash`, `canonical_hash`, `canonical_text`, the detected `transform_receipt`, and a `lossless` flag.
+
+```bash
+python tools/semantic_fingerprint.py compute --text "ʇsǝʇ"
+python tools/semantic_fingerprint.py compare --text-a "test" --text-b "ʇsǝʇ"
+```
+
+Read the full guide: [`docs/SEMANTIC_TRANSFORM_FINGERPRINT.md`](docs/SEMANTIC_TRANSFORM_FINGERPRINT.md).
+
+Important truth label: the glyph and homoglyph tables are curated subsets, not exhaustive Unicode confusables data, and the bidi recovery is a simplified reconstruction, not a full UAX#9 implementation.
+
+---
+
 ## Two modes: local agent vs. cloud demo
 
 This repo ships two related but separate deployment targets. Do not confuse them.

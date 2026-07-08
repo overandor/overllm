@@ -33,6 +33,11 @@ try:
 except Exception:  # pragma: no cover - supports `python api/main.py`
     from financeable import router as finance_router, build_finance_summary
 
+try:
+    from api.semantic_fingerprint import router as fingerprint_router
+except Exception:  # pragma: no cover - supports `python api/main.py`
+    from semantic_fingerprint import router as fingerprint_router
+
 APP_NAME = "OverLLM API"
 API_VERSION = "2.2.0"
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -84,6 +89,7 @@ except Exception as exc:
 
 app.include_router(alpha_api.router, prefix="/api")
 app.include_router(finance_router, prefix="/api")
+app.include_router(fingerprint_router, prefix="/api")
 
 
 class InferenceRequest(BaseModel):
@@ -126,6 +132,7 @@ def _truth_labels() -> dict:
         "file_listing": "allowlisted_root_only",
         "receipts": "real_only_when_hashes_are_generated_and_stored",
         "financeable_evidence": "real_local_ledger_not_valuation",
+        "semantic_transform_fingerprint": "real_heuristic_curated_tables_not_exhaustive",
         "poi": "partial_environment_dependent",
     }
 
@@ -154,6 +161,8 @@ async def root():
             "/api/finance/revenue-events": "Revenue events linked to receipts/contracts",
             "/api/finance/collateral-report": "Diligence packet generated from local evidence ledger",
             "/api/finance/export.csv": "CSV export for lender/buyer/investor diligence",
+            "/api/fingerprint/compute": "Reversible semantic transform fingerprint (raw/canonical hash + transform receipt)",
+            "/api/fingerprint/compare": "Compare two texts for canonical-message equality despite byte differences",
             "/inference": "Truth-labeled C++ inference placeholder",
             "/train": "Truth-labeled training placeholder",
             "/test": "Truth-labeled test placeholder",
