@@ -63,6 +63,9 @@ RSTF_OWN_PATHS_PREFIXES = (
     "tests/test_bpe_tokenizer.py",
     "tests/test_bpe_parity_check.py",
     "tests/test_rstf_bpe_token_cost.py",
+    "cpp/rstf/",
+    "docs/OVERLLM_UNDERWRITING_PACKAGE.md",
+    "docs/RSTF_TRAINING_BOOTCAMP.md",
 )
 
 
