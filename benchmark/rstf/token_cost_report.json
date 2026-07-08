@@ -1,0 +1,1321 @@
+{
+  "examples": [
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 49,
+      "raw_bytes": 49,
+      "source_id": 0,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3636,
+      "bytes_saved": 28,
+      "canonical_bytes": 49,
+      "raw_bytes": 77,
+      "source_id": 0,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1091,
+      "bytes_saved": 6,
+      "canonical_bytes": 49,
+      "raw_bytes": 55,
+      "source_id": 0,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3718,
+      "bytes_saved": 29,
+      "canonical_bytes": 49,
+      "raw_bytes": 78,
+      "source_id": 0,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 41,
+      "raw_bytes": 41,
+      "source_id": 1,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4306,
+      "bytes_saved": 31,
+      "canonical_bytes": 41,
+      "raw_bytes": 72,
+      "source_id": 1,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1277,
+      "bytes_saved": 6,
+      "canonical_bytes": 41,
+      "raw_bytes": 47,
+      "source_id": 1,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3971,
+      "bytes_saved": 27,
+      "canonical_bytes": 41,
+      "raw_bytes": 68,
+      "source_id": 1,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 38,
+      "raw_bytes": 38,
+      "source_id": 2,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4328,
+      "bytes_saved": 29,
+      "canonical_bytes": 38,
+      "raw_bytes": 67,
+      "source_id": 2,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1364,
+      "bytes_saved": 6,
+      "canonical_bytes": 38,
+      "raw_bytes": 44,
+      "source_id": 2,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.377,
+      "bytes_saved": 23,
+      "canonical_bytes": 38,
+      "raw_bytes": 61,
+      "source_id": 2,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 45,
+      "raw_bytes": 45,
+      "source_id": 3,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4156,
+      "bytes_saved": 32,
+      "canonical_bytes": 45,
+      "raw_bytes": 77,
+      "source_id": 3,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1176,
+      "bytes_saved": 6,
+      "canonical_bytes": 45,
+      "raw_bytes": 51,
+      "source_id": 3,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3836,
+      "bytes_saved": 28,
+      "canonical_bytes": 45,
+      "raw_bytes": 73,
+      "source_id": 3,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 46,
+      "raw_bytes": 46,
+      "source_id": 4,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4177,
+      "bytes_saved": 33,
+      "canonical_bytes": 46,
+      "raw_bytes": 79,
+      "source_id": 4,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1154,
+      "bytes_saved": 6,
+      "canonical_bytes": 46,
+      "raw_bytes": 52,
+      "source_id": 4,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4026,
+      "bytes_saved": 31,
+      "canonical_bytes": 46,
+      "raw_bytes": 77,
+      "source_id": 4,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 32,
+      "raw_bytes": 32,
+      "source_id": 5,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3725,
+      "bytes_saved": 19,
+      "canonical_bytes": 32,
+      "raw_bytes": 51,
+      "source_id": 5,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1579,
+      "bytes_saved": 6,
+      "canonical_bytes": 32,
+      "raw_bytes": 38,
+      "source_id": 5,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.36,
+      "bytes_saved": 18,
+      "canonical_bytes": 32,
+      "raw_bytes": 50,
+      "source_id": 5,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 39,
+      "raw_bytes": 39,
+      "source_id": 6,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.35,
+      "bytes_saved": 21,
+      "canonical_bytes": 39,
+      "raw_bytes": 60,
+      "source_id": 6,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1333,
+      "bytes_saved": 6,
+      "canonical_bytes": 39,
+      "raw_bytes": 45,
+      "source_id": 6,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4091,
+      "bytes_saved": 27,
+      "canonical_bytes": 39,
+      "raw_bytes": 66,
+      "source_id": 6,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 38,
+      "raw_bytes": 38,
+      "source_id": 7,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3871,
+      "bytes_saved": 24,
+      "canonical_bytes": 38,
+      "raw_bytes": 62,
+      "source_id": 7,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1364,
+      "bytes_saved": 6,
+      "canonical_bytes": 38,
+      "raw_bytes": 44,
+      "source_id": 7,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4154,
+      "bytes_saved": 27,
+      "canonical_bytes": 38,
+      "raw_bytes": 65,
+      "source_id": 7,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 42,
+      "raw_bytes": 42,
+      "source_id": 8,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4247,
+      "bytes_saved": 31,
+      "canonical_bytes": 42,
+      "raw_bytes": 73,
+      "source_id": 8,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.125,
+      "bytes_saved": 6,
+      "canonical_bytes": 42,
+      "raw_bytes": 48,
+      "source_id": 8,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3636,
+      "bytes_saved": 24,
+      "canonical_bytes": 42,
+      "raw_bytes": 66,
+      "source_id": 8,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 48,
+      "raw_bytes": 48,
+      "source_id": 9,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3846,
+      "bytes_saved": 30,
+      "canonical_bytes": 48,
+      "raw_bytes": 78,
+      "source_id": 9,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1111,
+      "bytes_saved": 6,
+      "canonical_bytes": 48,
+      "raw_bytes": 54,
+      "source_id": 9,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3766,
+      "bytes_saved": 29,
+      "canonical_bytes": 48,
+      "raw_bytes": 77,
+      "source_id": 9,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 46,
+      "raw_bytes": 46,
+      "source_id": 10,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3611,
+      "bytes_saved": 26,
+      "canonical_bytes": 46,
+      "raw_bytes": 72,
+      "source_id": 10,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1154,
+      "bytes_saved": 6,
+      "canonical_bytes": 46,
+      "raw_bytes": 52,
+      "source_id": 10,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3947,
+      "bytes_saved": 30,
+      "canonical_bytes": 46,
+      "raw_bytes": 76,
+      "source_id": 10,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 40,
+      "raw_bytes": 40,
+      "source_id": 11,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.375,
+      "bytes_saved": 24,
+      "canonical_bytes": 40,
+      "raw_bytes": 64,
+      "source_id": 11,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1304,
+      "bytes_saved": 6,
+      "canonical_bytes": 40,
+      "raw_bytes": 46,
+      "source_id": 11,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4203,
+      "bytes_saved": 29,
+      "canonical_bytes": 40,
+      "raw_bytes": 69,
+      "source_id": 11,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 45,
+      "raw_bytes": 45,
+      "source_id": 12,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3919,
+      "bytes_saved": 29,
+      "canonical_bytes": 45,
+      "raw_bytes": 74,
+      "source_id": 12,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1176,
+      "bytes_saved": 6,
+      "canonical_bytes": 45,
+      "raw_bytes": 51,
+      "source_id": 12,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3919,
+      "bytes_saved": 29,
+      "canonical_bytes": 45,
+      "raw_bytes": 74,
+      "source_id": 12,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 38,
+      "raw_bytes": 38,
+      "source_id": 13,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3559,
+      "bytes_saved": 21,
+      "canonical_bytes": 38,
+      "raw_bytes": 59,
+      "source_id": 13,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1364,
+      "bytes_saved": 6,
+      "canonical_bytes": 38,
+      "raw_bytes": 44,
+      "source_id": 13,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4154,
+      "bytes_saved": 27,
+      "canonical_bytes": 38,
+      "raw_bytes": 65,
+      "source_id": 13,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 48,
+      "raw_bytes": 48,
+      "source_id": 14,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4,
+      "bytes_saved": 32,
+      "canonical_bytes": 48,
+      "raw_bytes": 80,
+      "source_id": 14,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1111,
+      "bytes_saved": 6,
+      "canonical_bytes": 48,
+      "raw_bytes": 54,
+      "source_id": 14,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.36,
+      "bytes_saved": 27,
+      "canonical_bytes": 48,
+      "raw_bytes": 75,
+      "source_id": 14,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 48,
+      "raw_bytes": 48,
+      "source_id": 15,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3766,
+      "bytes_saved": 29,
+      "canonical_bytes": 48,
+      "raw_bytes": 77,
+      "source_id": 15,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1111,
+      "bytes_saved": 6,
+      "canonical_bytes": 48,
+      "raw_bytes": 54,
+      "source_id": 15,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4,
+      "bytes_saved": 32,
+      "canonical_bytes": 48,
+      "raw_bytes": 80,
+      "source_id": 15,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 42,
+      "raw_bytes": 42,
+      "source_id": 16,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3824,
+      "bytes_saved": 26,
+      "canonical_bytes": 42,
+      "raw_bytes": 68,
+      "source_id": 16,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.125,
+      "bytes_saved": 6,
+      "canonical_bytes": 42,
+      "raw_bytes": 48,
+      "source_id": 16,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3913,
+      "bytes_saved": 27,
+      "canonical_bytes": 42,
+      "raw_bytes": 69,
+      "source_id": 16,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 43,
+      "raw_bytes": 43,
+      "source_id": 17,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3768,
+      "bytes_saved": 26,
+      "canonical_bytes": 43,
+      "raw_bytes": 69,
+      "source_id": 17,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1224,
+      "bytes_saved": 6,
+      "canonical_bytes": 43,
+      "raw_bytes": 49,
+      "source_id": 17,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3944,
+      "bytes_saved": 28,
+      "canonical_bytes": 43,
+      "raw_bytes": 71,
+      "source_id": 17,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 46,
+      "raw_bytes": 46,
+      "source_id": 18,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4458,
+      "bytes_saved": 37,
+      "canonical_bytes": 46,
+      "raw_bytes": 83,
+      "source_id": 18,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1154,
+      "bytes_saved": 6,
+      "canonical_bytes": 46,
+      "raw_bytes": 52,
+      "source_id": 18,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.425,
+      "bytes_saved": 34,
+      "canonical_bytes": 46,
+      "raw_bytes": 80,
+      "source_id": 18,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 45,
+      "raw_bytes": 45,
+      "source_id": 19,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.375,
+      "bytes_saved": 27,
+      "canonical_bytes": 45,
+      "raw_bytes": 72,
+      "source_id": 19,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1176,
+      "bytes_saved": 6,
+      "canonical_bytes": 45,
+      "raw_bytes": 51,
+      "source_id": 19,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3836,
+      "bytes_saved": 28,
+      "canonical_bytes": 45,
+      "raw_bytes": 73,
+      "source_id": 19,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 43,
+      "raw_bytes": 43,
+      "source_id": 20,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3582,
+      "bytes_saved": 24,
+      "canonical_bytes": 43,
+      "raw_bytes": 67,
+      "source_id": 20,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1224,
+      "bytes_saved": 6,
+      "canonical_bytes": 43,
+      "raw_bytes": 49,
+      "source_id": 20,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4342,
+      "bytes_saved": 33,
+      "canonical_bytes": 43,
+      "raw_bytes": 76,
+      "source_id": 20,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 46,
+      "raw_bytes": 46,
+      "source_id": 21,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4026,
+      "bytes_saved": 31,
+      "canonical_bytes": 46,
+      "raw_bytes": 77,
+      "source_id": 21,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1154,
+      "bytes_saved": 6,
+      "canonical_bytes": 46,
+      "raw_bytes": 52,
+      "source_id": 21,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3947,
+      "bytes_saved": 30,
+      "canonical_bytes": 46,
+      "raw_bytes": 76,
+      "source_id": 21,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 42,
+      "raw_bytes": 42,
+      "source_id": 22,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4085,
+      "bytes_saved": 29,
+      "canonical_bytes": 42,
+      "raw_bytes": 71,
+      "source_id": 22,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.125,
+      "bytes_saved": 6,
+      "canonical_bytes": 42,
+      "raw_bytes": 48,
+      "source_id": 22,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4167,
+      "bytes_saved": 30,
+      "canonical_bytes": 42,
+      "raw_bytes": 72,
+      "source_id": 22,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 44,
+      "raw_bytes": 44,
+      "source_id": 23,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.443,
+      "bytes_saved": 35,
+      "canonical_bytes": 44,
+      "raw_bytes": 79,
+      "source_id": 23,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.12,
+      "bytes_saved": 6,
+      "canonical_bytes": 44,
+      "raw_bytes": 50,
+      "source_id": 23,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3803,
+      "bytes_saved": 27,
+      "canonical_bytes": 44,
+      "raw_bytes": 71,
+      "source_id": 23,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 49,
+      "raw_bytes": 49,
+      "source_id": 24,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4235,
+      "bytes_saved": 36,
+      "canonical_bytes": 49,
+      "raw_bytes": 85,
+      "source_id": 24,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1091,
+      "bytes_saved": 6,
+      "canonical_bytes": 49,
+      "raw_bytes": 55,
+      "source_id": 24,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3875,
+      "bytes_saved": 31,
+      "canonical_bytes": 49,
+      "raw_bytes": 80,
+      "source_id": 24,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 43,
+      "raw_bytes": 43,
+      "source_id": 25,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3676,
+      "bytes_saved": 25,
+      "canonical_bytes": 43,
+      "raw_bytes": 68,
+      "source_id": 25,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1224,
+      "bytes_saved": 6,
+      "canonical_bytes": 43,
+      "raw_bytes": 49,
+      "source_id": 25,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4189,
+      "bytes_saved": 31,
+      "canonical_bytes": 43,
+      "raw_bytes": 74,
+      "source_id": 25,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 42,
+      "raw_bytes": 42,
+      "source_id": 26,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3824,
+      "bytes_saved": 26,
+      "canonical_bytes": 42,
+      "raw_bytes": 68,
+      "source_id": 26,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.125,
+      "bytes_saved": 6,
+      "canonical_bytes": 42,
+      "raw_bytes": 48,
+      "source_id": 26,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4167,
+      "bytes_saved": 30,
+      "canonical_bytes": 42,
+      "raw_bytes": 72,
+      "source_id": 26,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 42,
+      "raw_bytes": 42,
+      "source_id": 27,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4,
+      "bytes_saved": 28,
+      "canonical_bytes": 42,
+      "raw_bytes": 70,
+      "source_id": 27,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.125,
+      "bytes_saved": 6,
+      "canonical_bytes": 42,
+      "raw_bytes": 48,
+      "source_id": 27,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3636,
+      "bytes_saved": 24,
+      "canonical_bytes": 42,
+      "raw_bytes": 66,
+      "source_id": 27,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 45,
+      "raw_bytes": 45,
+      "source_id": 28,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3662,
+      "bytes_saved": 26,
+      "canonical_bytes": 45,
+      "raw_bytes": 71,
+      "source_id": 28,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1176,
+      "bytes_saved": 6,
+      "canonical_bytes": 45,
+      "raw_bytes": 51,
+      "source_id": 28,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4231,
+      "bytes_saved": 33,
+      "canonical_bytes": 45,
+      "raw_bytes": 78,
+      "source_id": 28,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 39,
+      "raw_bytes": 39,
+      "source_id": 29,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3607,
+      "bytes_saved": 22,
+      "canonical_bytes": 39,
+      "raw_bytes": 61,
+      "source_id": 29,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1333,
+      "bytes_saved": 6,
+      "canonical_bytes": 39,
+      "raw_bytes": 45,
+      "source_id": 29,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4,
+      "bytes_saved": 26,
+      "canonical_bytes": 39,
+      "raw_bytes": 65,
+      "source_id": 29,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 47,
+      "raw_bytes": 47,
+      "source_id": 30,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4051,
+      "bytes_saved": 32,
+      "canonical_bytes": 47,
+      "raw_bytes": 79,
+      "source_id": 30,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1132,
+      "bytes_saved": 6,
+      "canonical_bytes": 47,
+      "raw_bytes": 53,
+      "source_id": 30,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3896,
+      "bytes_saved": 30,
+      "canonical_bytes": 47,
+      "raw_bytes": 77,
+      "source_id": 30,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 47,
+      "raw_bytes": 47,
+      "source_id": 31,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3472,
+      "bytes_saved": 25,
+      "canonical_bytes": 47,
+      "raw_bytes": 72,
+      "source_id": 31,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1132,
+      "bytes_saved": 6,
+      "canonical_bytes": 47,
+      "raw_bytes": 53,
+      "source_id": 31,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4051,
+      "bytes_saved": 32,
+      "canonical_bytes": 47,
+      "raw_bytes": 79,
+      "source_id": 31,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 42,
+      "raw_bytes": 42,
+      "source_id": 32,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4,
+      "bytes_saved": 28,
+      "canonical_bytes": 42,
+      "raw_bytes": 70,
+      "source_id": 32,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.125,
+      "bytes_saved": 6,
+      "canonical_bytes": 42,
+      "raw_bytes": 48,
+      "source_id": 32,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.4167,
+      "bytes_saved": 30,
+      "canonical_bytes": 42,
+      "raw_bytes": 72,
+      "source_id": 32,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 41,
+      "raw_bytes": 41,
+      "source_id": 33,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3692,
+      "bytes_saved": 24,
+      "canonical_bytes": 41,
+      "raw_bytes": 65,
+      "source_id": 33,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1277,
+      "bytes_saved": 6,
+      "canonical_bytes": 41,
+      "raw_bytes": 47,
+      "source_id": 33,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3788,
+      "bytes_saved": 25,
+      "canonical_bytes": 41,
+      "raw_bytes": 66,
+      "source_id": 33,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 40,
+      "raw_bytes": 40,
+      "source_id": 34,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3333,
+      "bytes_saved": 20,
+      "canonical_bytes": 40,
+      "raw_bytes": 60,
+      "source_id": 34,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1304,
+      "bytes_saved": 6,
+      "canonical_bytes": 40,
+      "raw_bytes": 46,
+      "source_id": 34,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.375,
+      "bytes_saved": 24,
+      "canonical_bytes": 40,
+      "raw_bytes": 64,
+      "source_id": 34,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 43,
+      "raw_bytes": 43,
+      "source_id": 35,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3582,
+      "bytes_saved": 24,
+      "canonical_bytes": 43,
+      "raw_bytes": 67,
+      "source_id": 35,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1224,
+      "bytes_saved": 6,
+      "canonical_bytes": 43,
+      "raw_bytes": 49,
+      "source_id": 35,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3857,
+      "bytes_saved": 27,
+      "canonical_bytes": 43,
+      "raw_bytes": 70,
+      "source_id": 35,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 42,
+      "raw_bytes": 42,
+      "source_id": 36,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3824,
+      "bytes_saved": 26,
+      "canonical_bytes": 42,
+      "raw_bytes": 68,
+      "source_id": 36,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.125,
+      "bytes_saved": 6,
+      "canonical_bytes": 42,
+      "raw_bytes": 48,
+      "source_id": 36,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3438,
+      "bytes_saved": 22,
+      "canonical_bytes": 42,
+      "raw_bytes": 64,
+      "source_id": 36,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 46,
+      "raw_bytes": 46,
+      "source_id": 37,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3947,
+      "bytes_saved": 30,
+      "canonical_bytes": 46,
+      "raw_bytes": 76,
+      "source_id": 37,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1154,
+      "bytes_saved": 6,
+      "canonical_bytes": 46,
+      "raw_bytes": 52,
+      "source_id": 37,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3699,
+      "bytes_saved": 27,
+      "canonical_bytes": 46,
+      "raw_bytes": 73,
+      "source_id": 37,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 42,
+      "raw_bytes": 42,
+      "source_id": 38,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.4,
+      "bytes_saved": 28,
+      "canonical_bytes": 42,
+      "raw_bytes": 70,
+      "source_id": 38,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.125,
+      "bytes_saved": 6,
+      "canonical_bytes": 42,
+      "raw_bytes": 48,
+      "source_id": 38,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3538,
+      "bytes_saved": 23,
+      "canonical_bytes": 42,
+      "raw_bytes": 65,
+      "source_id": 38,
+      "transform": "homoglyph"
+    },
+    {
+      "byte_savings_ratio": 0.0,
+      "bytes_saved": 0,
+      "canonical_bytes": 43,
+      "raw_bytes": 43,
+      "source_id": 39,
+      "transform": "reversed"
+    },
+    {
+      "byte_savings_ratio": 0.3768,
+      "bytes_saved": 26,
+      "canonical_bytes": 43,
+      "raw_bytes": 69,
+      "source_id": 39,
+      "transform": "upside_down"
+    },
+    {
+      "byte_savings_ratio": 0.1224,
+      "bytes_saved": 6,
+      "canonical_bytes": 43,
+      "raw_bytes": 49,
+      "source_id": 39,
+      "transform": "bidi_override"
+    },
+    {
+      "byte_savings_ratio": 0.3582,
+      "bytes_saved": 24,
+      "canonical_bytes": 43,
+      "raw_bytes": 67,
+      "source_id": 39,
+      "transform": "homoglyph"
+    }
+  ],
+  "fingerprint_version": "RSTF-1",
+  "metric": "utf8_byte_length",
+  "metric_note": "UTF-8 byte length, not a real tokenizer count. It is a provable upper bound on token count for byte-level BPE tokenizers (a token is >=1 raw byte), computed offline because this environment's egress policy blocks the hosts tiktoken/Hugging Face tokenizers need (403 on openaipublic.blob.core.windows.net and huggingface.co).",
+  "overall": {
+    "byte_savings_ratio": 0.262,
+    "canonical_bytes_total": 6908,
+    "count": 160,
+    "raw_bytes_total": 9361
+  },
+  "per_transform": {
+    "bidi_override": {
+      "byte_savings_ratio": 0.122,
+      "canonical_bytes_total": 1727,
+      "count": 40,
+      "raw_bytes_total": 1967
+    },
+    "homoglyph": {
+      "byte_savings_ratio": 0.3919,
+      "canonical_bytes_total": 1727,
+      "count": 40,
+      "raw_bytes_total": 2840
+    },
+    "reversed": {
+      "byte_savings_ratio": 0.0,
+      "canonical_bytes_total": 1727,
+      "count": 40,
+      "raw_bytes_total": 1727
+    },
+    "upside_down": {
+      "byte_savings_ratio": 0.3891,
+      "canonical_bytes_total": 1727,
+      "count": 40,
+      "raw_bytes_total": 2827
+    }
+  },
+  "report_version": "rstf-token-cost-v0.1",
+  "truth_label": "synthetic_examples_byte_proxy_not_real_tokenizer_counts"
+}
