@@ -1,95 +1,370 @@
 # OverLLM
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/overandor/overllm)
+![README views](https://komarev.com/ghpvc/?username=overandor-overllm&label=README%20views&style=flat)
 
-**Live Alpha Engine**: `https://huggingface.co/spaces/josephrw/overllm-pro` *(update after first deploy)*
+**OverLLM** is a local-first AI agent runtime for reproducible coding work: system telemetry, prompts, commands, file changes, generated answers, tests, and receipts are treated as one protocolized evidence chain.
 
-OverLLM is a local coding agent where every answer, command, code diff, and test result can produce a cryptographic proof-of-truth receipt.
-A personal-contextual LLM built from scratch in **C++**, **Go**, and **Rust**.
+Search anchor: **local AI coding agent**, **reproducible LLM runtime**, **proof-of-inference receipts**, **coding-agent provenance**, **C++ transformer engine**, **Go agent orchestration**, **Rust telemetry daemon**, **deterministic ML language**, **OverML**, **local-first developer AI**, **forkable AI agent protocol**.
 
-## Two Modes: Local vs. Cloud Demo
+> Status: experimental research software. This repository contains real components, partial components, and clearly labeled placeholders. Do not market a fork as production-ready unless it passes the reproducibility checks below.
 
-This repo ships two independent things — don't confuse one for the other:
+---
 
-| | **Local agent** (this README, below) | **Cloud demo** (`ui/` + `api/`) |
+## What this repo is
+
+OverLLM is a protocolized workspace for teams and users who want an AI coding agent that can be reproduced, forked, audited, and measured.
+
+The core thesis is simple:
+
+```text
+prompt + context + command + diff + test + receipt = reproducible agent work
+```
+
+A normal coding assistant gives an answer. OverLLM is designed to preserve the surrounding evidence: what context was available, what command ran, what files changed, what test result was produced, and what proof/receipt was attached.
+
+---
+
+## Two modes: local agent vs. cloud demo
+
+This repo ships two related but separate deployment targets. Do not confuse them.
+
+| Mode | Path | Runs where | Network | Data boundary | Truth label |
+|---|---|---|---|---|---|
+| Local agent | `cpp/`, `go/`, `rust/`, `training/` | macOS ARM64 workstation | Offline-first, uses local Ollama when configured | `~/.overllm/data/` | Experimental local runtime |
+| Cloud demo | `ui/`, `api/` | Vercel, Render, Hugging Face, Docker | Server-side model/API calls when configured | Your deployed backend + configured model provider | Demo / API surface |
+| OverML package | `lang/overml/` | Rust toolchain / C ABI host | None required for local examples | Local source + provenance output | Experimental language package |
+
+If you are evaluating whether OverLLM can run fully offline, the answer is: **the local agent path is designed for offline/local operation; the cloud demo is not an offline product.**
+
+---
+
+## Universal Reproducible Adoption Protocol — URAP-1
+
+URAP-1 is the adoption contract for users, teams, forks, demos, and investor/audit reviews. A fork is considered a serious OverLLM adoption only when it publishes its state against these phases.
+
+### Phase 0 — Identify the fork
+
+Every fork should define its identity before changing claims.
+
+```json
+{
+  "protocol": "URAP-1",
+  "project": "overllm",
+  "fork_owner": "YOUR_GITHUB_USER_OR_ORG",
+  "repo": "overllm",
+  "origin": "overandor/overllm",
+  "mode": "local-agent | cloud-demo | overml | mixed",
+  "claim_policy": "truth-labeled",
+  "analytics_policy": "aggregate-only"
+}
+```
+
+Recommended file path for forks:
+
+```text
+.overllm/adoption.json
+```
+
+### Phase 1 — Reproduce the repository
+
+A clean adoption must begin from a clean clone.
+
+```bash
+git clone https://github.com/overandor/overllm.git
+cd overllm
+git rev-parse HEAD
+```
+
+Record the commit SHA in your adoption notes. A team report without a commit SHA is not reproducible.
+
+### Phase 2 — Build each subsystem separately
+
+Run the subsystems independently before claiming a full system.
+
+```bash
+# Native local stack
+./build.sh
+
+# Python cloud/API stack, when used
+python -m pip install -r requirements.txt
+python api/main.py
+
+# UI demo, when used
+cd ui
+npm install
+npm run build
+
+# OverML package
+cd ../lang/overml
+cargo test
+```
+
+If any command fails, label the fork as `partial`, not `ready`.
+
+### Phase 3 — Run the local loop
+
+The intended local loop is:
+
+```bash
+# Terminal 1
+ollama serve
+
+# Terminal 2
+./overllm-agent
+
+# Terminal 3
+./overllm-telemetry
+
+# Terminal 4
+python training/generate.py --count 20
+python training/dpo_trainer.py --epochs 10 --export models/overllm.bin
+./overllm_inference vocab.txt models/overllm.bin "What should I do next?"
+```
+
+Telemetry must be opt-in, visible, and documented. Do not collect user/application/file telemetry silently.
+
+### Phase 4 — Produce a receipt
+
+A valid receipt must include, at minimum:
+
+```json
+{
+  "prompt_hash": "sha256(prompt)",
+  "output_hash": "sha256(output)",
+  "model_or_runtime": "runtime label",
+  "commands_run": [],
+  "files_touched": [],
+  "test_result_hash": "sha256(test output)",
+  "created_at": "ISO-8601 timestamp",
+  "truth_label": "real | partial | mock | not_configured"
+}
+```
+
+A receipt is not proof by itself. It becomes stronger when it is reproducible, signed, stored, and linked to tests.
+
+### Phase 5 — Publish claim labels
+
+Use these labels in README files, demos, dashboards, and pitch material.
+
+| Label | Meaning |
+|---|---|
+| `real` | Implemented and reproduced from a clean checkout. |
+| `experimental` | Implemented but not production-hardened. |
+| `partial` | Interface exists, but the full path is not wired. |
+| `mock` | Placeholder or simulated output. |
+| `not_configured` | Real path exists but requires external setup. |
+| `disabled_for_security` | Intentionally blocked until a safe runner exists. |
+
+A fork that keeps these labels earns more trust than a fork that overclaims.
+
+---
+
+## Team adoption playbook
+
+For teams, OverLLM should be adopted as a protocol before it is adopted as a product.
+
+1. Assign an owner for local data, telemetry, and proof policy.
+2. Reproduce the build on a clean machine.
+3. Record commit SHA, OS version, toolchain versions, model/runtime configuration, and test logs.
+4. Run one end-to-end task with a receipt.
+5. Publish an adoption manifest.
+6. Only then extend the agent, UI, proof layer, or OverML language package.
+
+A team fork should add this table to its README:
+
+| Adoption item | Status | Evidence |
 |---|---|---|
-| What it is | The core OverLLM system: telemetry → DPO → C++ inference | A deployable web UI/backend, internally named "Devin Terminal" — see [`NO_MOCK_FUNCTIONALITY.md`](NO_MOCK_FUNCTIONALITY.md) |
-| Network access | **None.** Compiles to ~50MB, runs entirely offline against a local Ollama instance | Calls the OpenAI API server-side; requires `OPENAI_API_KEY` |
-| Where it runs | macOS ARM64, on your machine | Vercel (frontend) + Hugging Face Spaces / Render (backend) |
-| Data | Stays on disk (`~/.overllm/data/`) | Passes through your deployed backend and OpenAI |
+| Clean clone recorded | `pending` | Commit SHA |
+| Native build passes | `pending` | Build log |
+| UI build passes | `pending` | `npm run build` log |
+| OverML tests pass | `pending` | `cargo test` log |
+| Receipt generated | `pending` | Receipt JSON |
+| Telemetry policy published | `pending` | Privacy note |
+| Analytics policy published | `pending` | Aggregate-only badge or GitHub traffic |
 
-If you're evaluating "does this run fully offline?", the answer is **yes for the local agent, no for the cloud demo** — they're separate deployment targets sharing one repo, not one product with two settings.
+---
+
+## Fork adoption protocol
+
+Forks should keep the upstream anchor visible while adding their own fork identity.
+
+```markdown
+This fork adopts URAP-1 from `overandor/overllm`.
+Origin: https://github.com/overandor/overllm
+Fork owner: YOUR_GITHUB_USER_OR_ORG
+Fork mode: local-agent | cloud-demo | overml | mixed
+Truth-label policy: real / experimental / partial / mock / not_configured
+```
+
+Forks should replace the README view badge with their own aggregate counter label:
+
+```markdown
+![README views](https://komarev.com/ghpvc/?username=YOUR_OWNER-overllm&label=README%20views&style=flat)
+```
+
+This badge counts aggregate image loads. It does **not** identify individual visitors, and GitHub image caching/proxying can make the count approximate. For official repository owner analytics, use GitHub’s built-in traffic page instead.
+
+---
+
+## Privacy-safe analytics policy
+
+This README includes an aggregate README view badge for lightweight adoption measurement.
+
+Rules for OverLLM analytics:
+
+- Aggregate counters are acceptable.
+- GitHub stars, forks, watchers, clones, and traffic totals are acceptable.
+- Do not claim to know exactly who visited a GitHub README from a pixel.
+- Do not collect private visitor identity without clear consent.
+- Do not use analytics to fingerprint users.
+- Forks must disclose any external counter or badge they add.
+
+Recommended public adoption KPIs:
+
+| KPI | Source | Privacy level |
+|---|---|---|
+| Stars | GitHub repo metadata | Public aggregate |
+| Forks | GitHub repo metadata | Public aggregate |
+| README view badge | External badge/counter | Approximate aggregate |
+| Clones/views | GitHub Traffic | Owner-only aggregate |
+| Reproducible builds | CI logs | Public or private evidence |
+| Valid receipts | Receipt files / dashboard | Depends on contents |
+
+---
 
 ## Architecture
 
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│                         Local Mac / Workstation                       │
+│                                                                      │
+│  ┌──────────────────┐     ┌──────────────────┐     ┌──────────────┐ │
+│  │ Rust telemetry   │────▶│ Go agent server   │────▶│ C++ runtime   │ │
+│  │ system context   │     │ context + API     │     │ inference     │ │
+│  └──────────────────┘     └────────┬─────────┘     └──────────────┘ │
+│                                     │                                │
+│                                     ▼                                │
+│                            ~/.overllm/data/                          │
+│                      preferences, logs, receipts                     │
+│                                     │                                │
+│                                     ▼                                │
+│                         Python training bridge                       │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│                             Cloud demo                               │
+│                                                                      │
+│      React/Vite UI ─────▶ FastAPI backend ─────▶ configured model/API │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    YOUR MAC (macOS ARM64)                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │  Rust Daemon │  │  Go Agent    │  │  C++ Engine  │       │
-│  │  telemetry   │──│  orchestrator│──│  inference   │       │
-│  │  collector   │  │  + DPO loop  │  │  + training  │       │
-│  └──────────────┘  └──────┬───────┘  └──────────────┘       │
-│                             │                                  │
-│                        ┌────┴────┐                             │
-│                        │  Ollama │  (teacher / data source)    │
-│                        └─────────┘                             │
-└─────────────────────────────────────────────────────────────┘
-```
 
-## Core Concept: Punishment-as-Reward
-
-OverLLM learns to out-perform its Ollama teacher through **Direct Preference Optimization (DPO)**:
-
-- **Punished** (`rejected`): Ollama generates a response **without** system context → generic, impersonal
-- **Rewarded** (`chosen`): Ollama generates a response **with** full telemetry context → personalized, actionable
-- OverLLM is trained to **maximize the margin** between chosen and rejected, learning to exploit system metadata
-
-The Rust daemon continuously harvests:
-- Active application / window
-- File system access patterns
-- Process resource consumption
-- Network connections
-- CPU / RAM telemetry
-- Context switches (proxy for clicks/interactions)
-
-This telemetry is injected into every prompt, making OverLLM hyper-aware of your current state.
+---
 
 ## Components
 
-### C++ — Inference Engine (`cpp/`)
-- Custom tensor ops (matmul, softmax, GELU, layer norm)
-- Multi-head causal self-attention
-- Transformer decoder stack
-- C API for cgo interop
-- Binary weight save/load format
+### C++ — inference engine (`cpp/`)
 
-### Go — Agent (`go/`)
-- HTTP telemetry ingestion endpoint (`:7749/telemetry`)
-- Ollama API client with punished/rewarded modes
-- Automatic preference pair generation every 30s
-- DPO batch queue management
-- Status REST API (`/api/status`, `/api/context`, `/api/generate`)
+- Tensor operations: matmul, softmax, GELU, layer norm.
+- Transformer-style decoder stack.
+- C ABI for host-language integration.
+- Binary weight save/load format.
+- Experimental DPO/RL interfaces.
 
-### Rust — Telemetry Daemon (`rust/`)
-- Active app detection (AppleScript)
-- System stats (CPU, RAM via `ps`)
-- Top process monitoring
-- Recent file access (`lsof`)
-- Network summary (`netstat`)
-- Async HTTP publisher to Go agent
+### Go — local agent server (`go/`)
 
-### Python — Training Bridge (`training/`)
-- `generate.py`: Manual Ollama data generation
-- `dpo_trainer.py`: NumPy-based DPO trainer that exports to C++ weight format
+- Telemetry ingestion endpoint.
+- Context window builder.
+- Status and generation APIs.
+- Receipt/proof handler boundary.
+- OverAgent experimental endpoints.
 
-### OverML — ML Language & Package (`lang/overml/`)
-- Statically shape/dtype-checked language for ML (`Tensor<f32, [M, N]>`, checked at compile time)
-- `KvCache<dtype, [heads, capacity, head_dim]>`: a fixed-capacity ring buffer for attention caches — bounds KV memory by type instead of letting it grow with sequence length
-- Deterministic-by-default: seeded PRNG + run provenance hashing, no OS entropy
-- Compiles to a C-ABI shared library any host language can `import`/`dlopen`, with a reference Python (`ctypes`) binding included
-- `omlc` (single-file compiler/runner) and `omlpkg` (package manager: `oml.toml`/`oml.lock`)
-- See [`lang/overml/README.md`](lang/overml/README.md) and [`lang/overml/docs/DESIGN.md`](lang/overml/docs/DESIGN.md)
+### Rust — telemetry daemon (`rust/`)
+
+- Active app detection through macOS automation.
+- CPU/RAM/process/file/network telemetry.
+- Vector, DAG, article, blockchain, and RL experimental modules.
+- Async publisher to local Go agent.
+
+### Python — API and training bridge (`api/`, `training/`)
+
+- Cloud/API demo with truth-labeled runtime states.
+- Ollama-backed generation when available.
+- Disabled public shell execution by default.
+- Local training/export scripts.
+
+### OverML — deterministic ML package (`lang/overml/`)
+
+- Shape/dtype-checked tensor language.
+- Deterministic-by-default execution model.
+- Fixed-capacity `KvCache` for bounded attention-cache memory.
+- C ABI shared library for host-language import.
+
+---
+
+## Current truth table
+
+| Claim | Current label | Notes |
+|---|---|---|
+| Local-first agent architecture | `experimental` | Multi-language implementation exists. |
+| Fully production-ready LLM | `partial` | Native inference/training need stronger wiring and benchmarks. |
+| Cloud demo API | `experimental` | FastAPI surface exists with truth labels. |
+| Public terminal execution | `disabled_for_security` | Should remain disabled until a safe allowlist runner exists. |
+| Proof receipts | `partial` | Receipt interfaces exist; external proof daemon/anchoring must be configured. |
+| Solana/IPFS anchoring | `not_configured` by default | Do not claim live anchoring without signatures/CIDs. |
+| OverML language package | `experimental` | Strong standalone package direction. |
+| README visitor analytics | `aggregate_only` | Approximate badge + GitHub traffic, not individual identity. |
+
+---
+
+## Reproducibility checklist
+
+Before publishing a demo, release, fork, or investor packet, capture this:
+
+```text
+[ ] repo URL
+[ ] commit SHA
+[ ] branch name
+[ ] OS + architecture
+[ ] CMake version
+[ ] clang++ / Xcode version
+[ ] Go version
+[ ] Rust version
+[ ] Python version
+[ ] Node version
+[ ] local model/runtime used
+[ ] exact build commands
+[ ] exact test commands
+[ ] generated receipt path
+[ ] known failures
+[ ] truth labels updated
+```
+
+Suggested machine-readable run record:
+
+```json
+{
+  "protocol": "URAP-1",
+  "repo": "overandor/overllm",
+  "commit": "COMMIT_SHA",
+  "machine": "macOS ARM64",
+  "commands": [
+    "./build.sh",
+    "cargo test --manifest-path lang/overml/Cargo.toml",
+    "npm --prefix ui run build"
+  ],
+  "results": {
+    "native_build": "pass | fail | partial",
+    "overml_tests": "pass | fail | partial",
+    "ui_build": "pass | fail | partial",
+    "receipt_generated": true
+  },
+  "truth_label": "experimental"
+}
+```
+
+---
 
 ## Build
 
@@ -98,122 +373,110 @@ This telemetry is injected into every prompt, making OverLLM hyper-aware of your
 ```
 
 Requires:
-- macOS with Xcode / `clang++`
-- CMake (`brew install cmake`)
-- Go 1.26+ (`brew install go`)
-- Rust (`rustup`)
-- Ollama running locally
 
-## Quick Start
+- macOS ARM64 for the local desktop path.
+- Xcode command line tools / `clang++`.
+- CMake.
+- Go version compatible with `go/go.mod`.
+- Rust toolchain.
+- Python 3.
+- Ollama running locally when using local model generation.
+
+---
+
+## Quick start
 
 ```bash
-# Terminal 1: Ollama (if not already running)
+# Terminal 1: local model server, when used
 ollama serve
 
-# Terminal 2: Agent
+# Terminal 2: local agent
 ./overllm-agent
 
-# Terminal 3: Telemetry
+# Terminal 3: telemetry daemon
 ./overllm-telemetry
 
-# Terminal 4: Generate training data
+# Terminal 4: training and inference path
 python training/generate.py --count 20
-
-# Terminal 4: Train OverLLM
 python training/dpo_trainer.py --epochs 10 --export models/overllm.bin
-
-# Terminal 4: Run inference
 ./overllm_inference vocab.txt models/overllm.bin "What should I do next?"
 ```
 
+---
+
 ## HTTP API
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/telemetry` | POST | Ingest event from Rust daemon |
-| `/api/status` | GET | Agent status, queue size |
-| `/api/context` | GET | Current telemetry context window |
-| `/api/generate` | POST | Generate with full context via Ollama |
-| `/api/preference_queue` | GET | DPO batch queue status |
+| Endpoint | Method | Description | Truth label |
+|---|---:|---|---|
+| `/telemetry` | POST | Ingest local telemetry event | Experimental |
+| `/api/status` | GET | Agent/runtime status | Real if server is running |
+| `/api/context` | GET | Current context window | Experimental |
+| `/api/generate` | POST | Generate through configured runtime | Environment-dependent |
+| `/api/preference_queue` | GET | DPO batch queue status | Experimental |
+| `/api/proof/receipt` | POST | Receipt generation boundary | External proof daemon required |
+| `/api/overagent/*` | Mixed | Experimental autonomous-agent endpoints | Prototype |
 
-## Data Flow
+---
 
-1. Rust daemon polls macOS every 5s → sends events to Go agent
-2. Go agent accumulates a rolling 100-event context window
-3. Every 30s, Go queries Ollama twice:
-   - Without context → `rejected` (punished)
-   - With context → `chosen` (rewarded)
-4. Preference pair persisted to `~/.overllm/data/preferences.jsonl`
-5. Python DPO trainer loads pairs, trains model, exports `.bin` weights
-6. C++ engine loads `.bin` and runs fast local inference
+## Cloud deployment
 
-## Why Custom Code?
+The cloud demo is not the offline local agent. It is a separate web/API deployment target.
 
-Unlike frameworks that hide internals, OverLLM exposes every layer:
-- **C++ tensors**: No PyTorch, no CUDA dependencies, pure CPU
-- **Go orchestration**: Native concurrency, tiny binary, no Python runtime
-- **Rust telemetry**: Zero-cost abstractions, safe system access
-
-This stack — the local agent described above — compiles to ~50MB total and runs entirely offline on your Mac. (The separate cloud demo in `ui/`+`api/` does not; see "Two Modes" above.)
-
-## Roadmap
-
-- [x] DMG packaging for one-click install
-- [ ] Full backpropagation in C++ for end-to-end DPO training
-- [ ] Byte-pair encoding tokenizer
-- [ ] Quantization (Q4/Q8) for faster inference
-- [ ] Metal GPU backend for C++ engine
-- [ ] Click-level accessibility tracking (requires permission)
-- [ ] Automatic weight reloading without restart
-- [ ] Web deployment (Vercel + Hugging Face)
-
-## Deployment
-
-### Web Version
-
-This is the cloud demo from "Two Modes" above — full endpoint/feature list in [`NO_MOCK_FUNCTIONALITY.md`](NO_MOCK_FUNCTIONALITY.md). It requires `OPENAI_API_KEY` and is not the offline local agent.
-
-#### Frontend (Vercel)
 ```bash
 cd ui
 cp .env.example .env.local
-# Set VITE_API_URL to your deployed backend URL
-vercel deploy
+npm install
+npm run build
 ```
 
-#### Backend (Hugging Face Spaces)
-1. Go to https://huggingface.co/spaces
-2. Create a new Space with Docker runtime
-3. Clone the Space locally
-4. Copy the Dockerfile from this repository
-5. Push to the Space
-6. The Space will automatically build and deploy the Go backend
+Backend/API:
 
-**Note**: C++ inference and Rust telemetry are macOS-specific and not included in web deployment. The web version uses Ollama API for generation.
+```bash
+python -m pip install -r requirements.txt
+python api/main.py
+```
 
-### macOS Desktop
-- Build DMG: `./build_dmg.sh`
-- Requires macOS ARM64 with Ollama installed
-
-## Deploy to Render
-
-One-click deploy the Gate.io Alpha Engine (paper trading only):
+One-click Render deployment remains available for demo workflows:
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/overandor/overllm)
 
-Or manual steps:
-1. Go to [render.com](https://dashboard.render.com) → **New +** → **Web Service**
-2. Connect GitHub repo `overandor/overllm`
-3. Select branch `feat/overagent-autonomous`
-4. Render auto-detects `render.yaml` — click **Create Web Service**
-5. After deploy, update the Live URL in this README
+---
 
-**Public endpoints**:
-- Dashboard: `/`
-- Status + Truth Labels: `/api/status`
-- Live Predictions: `/api/predictions/live`
-- Performance: `/api/performance`
-- Receipts: `/api/receipts`
+## SEO adoption anchors for forks
+
+Forks should retain these phrases when accurate:
+
+```text
+OverLLM fork
+local-first AI coding agent
+reproducible LLM runtime
+proof-of-inference receipt
+agent work provenance
+C++ transformer runtime
+Go orchestration server
+Rust telemetry daemon
+OverML deterministic ML language
+URAP-1 adoption protocol
+```
+
+Do not copy claims that your fork has not reproduced.
+
+---
+
+## Roadmap
+
+- [ ] Add CI for native build, UI build, Python import checks, and OverML tests.
+- [ ] Fix telemetry schema compatibility across Rust and Go.
+- [ ] Replace mock proof endpoints with `not_configured` or real proof generation.
+- [ ] Publish a signed sample receipt.
+- [ ] Add one clean end-to-end demo: prompt → context → generation → receipt → dashboard.
+- [ ] Add fork adoption manifest template.
+- [ ] Add benchmark fixtures for deterministic regression testing.
+- [ ] Add a safe, explicit telemetry-consent flow.
+- [ ] Add quantization and Metal backend experiments.
+- [ ] Add BPE or equivalent tokenizer path.
+
+---
 
 ## License
 
