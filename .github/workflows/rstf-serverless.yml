@@ -1,0 +1,34 @@
+name: RSTF Serverless Functions CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api/rstf.js'
+      - 'lib/rstf-core.cjs'
+      - 'netlify/functions/rstf.js'
+      - 'tests/rstf-core.test.cjs'
+      - 'package.json'
+      - 'vercel.json'
+      - 'netlify.toml'
+  pull_request:
+    paths:
+      - 'api/rstf.js'
+      - 'lib/rstf-core.cjs'
+      - 'netlify/functions/rstf.js'
+      - 'tests/rstf-core.test.cjs'
+      - 'package.json'
+      - 'vercel.json'
+      - 'netlify.toml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Run serverless tests
+        run: node tests/rstf-core.test.cjs
