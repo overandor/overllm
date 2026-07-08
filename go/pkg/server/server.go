@@ -2,6 +2,7 @@ package server
 
 import (
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -28,6 +29,11 @@ type Server struct {
 	ProofHandlers   *proof.Handlers
 	VentureHandlers *venture.Handlers
 	Model           *localmodel.Runner
+	// AdminToken gates /api/overagent/keys (which can list every issued API
+	// key's raw secret and mint new ones). Read once from
+	// OVERLLM_ADMIN_TOKEN at startup; empty means the endpoint is disabled
+	// entirely rather than left open — see requireAdmin.
+	AdminToken string
 }
 
 func New(a *agent.Agent, addr string) *Server {
@@ -42,13 +48,38 @@ func New(a *agent.Agent, addr string) *Server {
 		log.Printf("Local model unavailable: %v", err)
 	}
 
+	adminToken := os.Getenv("OVERLLM_ADMIN_TOKEN")
+	if adminToken == "" {
+		log.Printf("[security] OVERLLM_ADMIN_TOKEN not set: /api/overagent/keys is disabled (was previously reachable with no authentication at all)")
+	}
+
 	return &Server{
 		Agent:           a,
 		Addr:            addr,
 		ProofHandlers:   proof.NewHandlers(proofDaemonURL),
 		VentureHandlers: venture.NewHandlers(a.DataDir),
 		Model:           model,
+		AdminToken:      adminToken,
 	}
+}
+
+// requireAdmin checks the Authorization: Bearer <token> header against
+// s.AdminToken, using constant-time comparison so response timing can't be
+// used to brute-force the token. It writes the appropriate error response
+// and returns false when the caller should not proceed. Fails closed: if
+// no admin token is configured, every request is rejected rather than
+// allowed through.
+func (s *Server) requireAdmin(w http.ResponseWriter, r *http.Request) bool {
+	if s.AdminToken == "" {
+		http.Error(w, "admin endpoint disabled: OVERLLM_ADMIN_TOKEN is not configured", http.StatusServiceUnavailable)
+		return false
+	}
+	got := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if got == "" || subtle.ConstantTimeCompare([]byte(got), []byte(s.AdminToken)) != 1 {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return false
+	}
+	return true
 }
 
 func (s *Server) RegisterRoutes() {
@@ -833,9 +864,36 @@ func (s *Server) handleOverAgent(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(s.Agent.OverAgent.GetMetrics())
 }
 
+// maskedAPIKey is what GET /api/overagent/keys returns: everything except
+// the raw secret, which — like any credential listing — should be shown in
+// full exactly once, at creation (the POST response), never again on
+// subsequent listings.
+type maskedAPIKey struct {
+	KeyPreview string    `json:"key_preview"`
+	Owner      string    `json:"owner"`
+	Created    time.Time `json:"created"`
+	Calls      int       `json:"calls"`
+	Revenue    float64   `json:"revenue"`
+	RateLimit  int       `json:"rate_limit"`
+	Active     bool      `json:"active"`
+}
+
+func maskKey(key string) string {
+	if len(key) <= 14 {
+		return "****"
+	}
+	return key[:10] + "..." + key[len(key)-4:]
+}
+
 func (s *Server) handleOverAgentKeys(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	// Deliberately no Access-Control-Allow-Origin: * here — this endpoint
+	// can list every issued key's owner/limits (GET) or mint new keys
+	// (POST); it isn't meant to be callable from an arbitrary web origin
+	// the way the read-only dashboard endpoints are.
 	w.Header().Set("Content-Type", "application/json")
+	if !s.requireAdmin(w, r) {
+		return
+	}
 	if s.Agent.OverAgent == nil {
 		http.Error(w, "overagent not initialized", 503)
 		return
@@ -843,8 +901,21 @@ func (s *Server) handleOverAgentKeys(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
+		raw := s.Agent.OverAgent.GetAPIKeys()
+		masked := make([]maskedAPIKey, 0, len(raw))
+		for _, k := range raw {
+			masked = append(masked, maskedAPIKey{
+				KeyPreview: maskKey(k.Key),
+				Owner:      k.Owner,
+				Created:    k.Created,
+				Calls:      k.Calls,
+				Revenue:    k.Revenue,
+				RateLimit:  k.RateLimit,
+				Active:     k.Active,
+			})
+		}
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"keys": s.Agent.OverAgent.GetAPIKeys(),
+			"keys": masked,
 		})
 	case http.MethodPost:
 		var req struct {
@@ -858,6 +929,8 @@ func (s *Server) handleOverAgentKeys(w http.ResponseWriter, r *http.Request) {
 		if req.RateLimit == 0 {
 			req.RateLimit = 100
 		}
+		// The full key is returned here, and only here — this is the one
+		// time the caller can see it.
 		key := s.Agent.OverAgent.IssueAPIKey(req.Owner, req.RateLimit)
 		json.NewEncoder(w).Encode(key)
 	default:

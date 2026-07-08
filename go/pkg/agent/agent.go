@@ -15,9 +15,18 @@ import (
 	"github.com/overllm/overllm-agent/pkg/webcrawler"
 )
 
+// TelemetryEvent's JSON tags must match rust/src/telemetry.rs's
+// TelemetryEvent exactly — the Rust daemon POSTs these directly to
+// /telemetry with no translation layer. In particular the field is
+// `event_type`, not `type`: Rust's struct has always serialized it that
+// way (serde has no rename attribute on it), so a Go tag of `json:"type"`
+// silently left every ingested event's Type as "" and made BuildContext's
+// switch on ev.Type never match anything — telemetry could flow in all day
+// and prompts would still get an empty context. See the "anonymized" field
+// too: Rust sends it but Go doesn't currently read it.
 type TelemetryEvent struct {
 	Timestamp int64  `json:"timestamp"`
-	Type      string `json:"type"`
+	Type      string `json:"event_type"`
 	Data      string `json:"data"`
 }
 
