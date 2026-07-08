@@ -2,7 +2,8 @@ use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::sync::atomic::{AtomicBool, Ordering};
 
-// Privacy controls
+// Privacy controls. Telemetry is disabled by default and must be enabled by the
+// daemon entrypoint, normally through OVERLLM_TELEMETRY=1.
 static TELEMETRY_ENABLED: AtomicBool = AtomicBool::new(false);
 static ANONYMIZE_DATA: AtomicBool = AtomicBool::new(true);
 
@@ -26,16 +27,14 @@ fn redact_sensitive(data: &str) -> String {
     if !should_anonymize() {
         return data.to_string();
     }
-    
-    // Redact file paths, usernames, and potentially sensitive strings
-    let redacted = data
+
+    // Redact file paths, usernames, and potentially sensitive strings.
+    data
         .replace(&std::env::var("USER").unwrap_or_default(), "[USER]")
         .replace(&std::env::var("HOME").unwrap_or_default(), "[HOME]")
         .chars()
         .map(|c| if c.is_ascii_alphanumeric() || c == ' ' || c == '.' || c == '_' || c == '-' { c } else { '*' })
-        .collect();
-    
-    redacted
+        .collect()
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -50,7 +49,7 @@ pub fn get_active_app() -> Option<TelemetryEvent> {
     if !is_telemetry_enabled() {
         return None;
     }
-    
+
     let script = r#"tell application "System Events" to get name of first application process whose frontmost is true"#;
     let output = Command::new("osascript")
         .args(["-e", script])
@@ -70,6 +69,10 @@ pub fn get_active_app() -> Option<TelemetryEvent> {
 }
 
 pub fn get_system_stats() -> Option<TelemetryEvent> {
+    if !is_telemetry_enabled() {
+        return None;
+    }
+
     let cpu = Command::new("sh")
         .args(["-c", "ps -A -o %cpu | awk '{s+=$1} END {print s}'"])
         .output()
