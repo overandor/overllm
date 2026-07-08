@@ -32,6 +32,18 @@ int main() {
   assert(homoglyph.canonical_text == "paypal");
   assert(homoglyph.bytes_saved > 0);
 
+  // Regression: monolingual non-Latin prose must not be treated as a
+  // homoglyph attack just because it contains letters that are in
+  // homoglyph_map(). "добро пожаловать" (Russian: "welcome") contains no
+  // Latin letters at all, so it must pass through unchanged.
+  const auto cyrillic = compute_fingerprint("добро пожаловать");
+  assert(cyrillic.canonical_text == "добро пожаловать");
+  assert(cyrillic.bytes_saved == 0);
+  assert(!cyrillic.changed);
+  for (const auto& transform : cyrillic.transforms) {
+    assert(transform != "homoglyph");
+  }
+
   const auto bidi = compute_fingerprint(std::string("safe") + "\xE2\x80\xAE" + "text");
   assert(bidi.canonical_text == "safetext");
   assert(bidi.bytes_saved == 3);

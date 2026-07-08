@@ -113,6 +113,27 @@ const std::unordered_map<char32_t, char32_t>& homoglyph_map() {
   return map;
 }
 
+bool is_ascii_latin_letter(char32_t cp) {
+  return (cp >= U'a' && cp <= U'z') || (cp >= U'A' && cp <= U'Z');
+}
+
+// Guards against the single most damaging false-positive mode: monolingual
+// non-Latin prose (plain Russian, Greek, etc.) contains plenty of
+// characters that are in homoglyph_map(), but there is no Latin string
+// being spoofed - it's just text in another script. A real homograph
+// attack mixes scripts ("аpple.com": Cyrillic а next to Latin p,p,l,e).
+// Only treat confusables as substitution evidence when the text also
+// contains ordinary Latin letters; otherwise leave those codepoints
+// unchanged. This mirrors the guard in api/semantic_fingerprint.py's
+// _normalize_homoglyphs (Python RSTF module) - without it, this collapses
+// every non-English sentence into a corrupted Latin/Cyrillic mix.
+bool has_latin_letter(const Codepoints& cps) {
+  for (char32_t cp : cps) {
+    if (is_ascii_latin_letter(cp)) return true;
+  }
+  return false;
+}
+
 std::string escape_json(std::string_view input) {
   std::ostringstream oss;
   for (unsigned char c : input) {
@@ -160,6 +181,7 @@ Fingerprint compute_fingerprint(std::string_view text, Options options) {
 
   const auto& upside = upside_down_map();
   const auto& homoglyph = homoglyph_map();
+  const bool allow_homoglyph_substitution = has_latin_letter(cps);
 
   for (char32_t cp : cps) {
     if (is_bidi_control(cp)) {
@@ -174,11 +196,13 @@ Fingerprint compute_fingerprint(std::string_view text, Options options) {
       continue;
     }
 
-    auto hg = homoglyph.find(cp);
-    if (hg != homoglyph.end()) {
-      saw_homoglyph = true;
-      normalized.push_back(hg->second);
-      continue;
+    if (allow_homoglyph_substitution) {
+      auto hg = homoglyph.find(cp);
+      if (hg != homoglyph.end()) {
+        saw_homoglyph = true;
+        normalized.push_back(hg->second);
+        continue;
+      }
     }
 
     normalized.push_back(cp);
