@@ -228,6 +228,58 @@ def _normalize_homoglyphs(text: str) -> tuple[bool, str, dict[str, int]]:
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Encoders. These apply each transform forward and exist to generate
+# reproducible benchmark fixtures (see tools/rstf_benchmark.py) from the same
+# tables the detectors use — they are not part of the detection API surface.
+# ---------------------------------------------------------------------------
+
+
+def encode_reversed(text: str) -> str:
+    return text[::-1]
+
+
+def encode_upside_down(text: str) -> str:
+    """Lowercases the input, then applies the same rotation+reversal a real
+    flip-text generator would. Case is intentionally lost, matching how the
+    detector's recovery is documented as lossless only for case-insensitive
+    input."""
+    lowered = text.lower()
+    mapped = "".join(_UPSIDE_DOWN_MAP.get(c, c) for c in lowered)
+    return mapped[::-1]
+
+
+def encode_homoglyph(text: str, rate: float = 1.0) -> str:
+    """Substitutes lowercase Latin letters with a Cyrillic/Greek confusable
+    where one is available in _CONFUSABLES. rate=1.0 substitutes every
+    eligible character; lower rates substitute a deterministic subset."""
+    reverse_confusables: dict[str, str] = {}
+    for confusable, latin in _CONFUSABLES.items():
+        reverse_confusables.setdefault(latin, confusable)
+
+    out_chars: list[str] = []
+    eligible_index = 0
+    for c in text:
+        replacement = reverse_confusables.get(c)
+        if replacement is not None:
+            eligible_index += 1
+            if rate >= 1.0 or (eligible_index % max(1, round(1 / rate))) == 0:
+                out_chars.append(replacement)
+                continue
+        out_chars.append(c)
+    return "".join(out_chars)
+
+
+def encode_bidi_override(text: str, start: int, end: int) -> str:
+    """Wraps text[start:end] so a human reading the rendered output sees the
+    original substring, but the stored character order is reversed within
+    the RLO/PDF span (mirrors how RTLO spoofing is actually constructed)."""
+    start = max(0, min(start, len(text)))
+    end = max(start, min(end, len(text)))
+    span = text[start:end][::-1]
+    return text[:start] + _RLO + span + _PDF + text[end:]
+
+
 def compute_fingerprint(raw_text: str) -> dict[str, Any]:
     raw_hash = _sha256_text(raw_text)
 
