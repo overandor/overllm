@@ -1,0 +1,13 @@
+{
+  "provider": "groq",
+  "model": "llama-3.1-8b-instant",
+  "examples_tested": 50,
+  "examples_successful": 50,
+  "examples_failed": 0,
+  "raw_prompt_tokens_total": 3032,
+  "canonical_prompt_tokens_total": 2985,
+  "tokens_saved_total": 47,
+  "savings_ratio": 0.01550131926121372,
+  "execution_time_seconds": 272.34945487976074,
+  "truth_label": "groq_usage_prompt_tokens_not_direct_anthropic_billing"
+}

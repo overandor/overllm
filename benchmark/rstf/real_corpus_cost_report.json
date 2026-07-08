@@ -1,0 +1,164 @@
+{
+  "examples": [
+    {
+      "canonical_preview": ",{\"test\" :\"txet\"}, p-  ",
+      "canonical_units": 23,
+      "canonical_utf8_bytes": 23,
+      "compressed_canonical_bytes": 31,
+      "compressed_canonical_plus_receipt_bytes": 279,
+      "compressed_raw_bytes": 34,
+      "raw_preview": "  -d '{\"text\": \"\u0287s\u01dd\u0287\"}'",
+      "raw_units": 26,
+      "raw_utf8_bytes": 26,
+      "receipt_json_bytes": 363,
+      "savings_ratio": 0.1154,
+      "source_id": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md:69",
+      "transforms": [
+        "upside_down"
+      ],
+      "truth_label": "heuristic_curated_tables_not_exhaustive_unicode_coverage",
+      "units_saved": 3
+    },
+    {
+      "canonical_preview": ",{\"test\" :\"q_txet\" '\"tset\" :\"a_txet\"}, p-  ",
+      "canonical_units": 43,
+      "canonical_utf8_bytes": 43,
+      "compressed_canonical_bytes": 42,
+      "compressed_canonical_plus_receipt_bytes": 290,
+      "compressed_raw_bytes": 47,
+      "raw_preview": "  -d '{\"text_a\": \"test\", \"text_b\": \"\u0287s\u01dd\u0287\"}'",
+      "raw_units": 46,
+      "raw_utf8_bytes": 46,
+      "receipt_json_bytes": 363,
+      "savings_ratio": 0.0652,
+      "source_id": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md:73",
+      "transforms": [
+        "upside_down"
+      ],
+      "truth_label": "heuristic_curated_tables_not_exhaustive_unicode_coverage",
+      "units_saved": 3
+    },
+    {
+      "canonical_preview": "homograph attack mixes scripts (`apple.com`: Cyrillic a next to Latin",
+      "canonical_units": 69,
+      "canonical_utf8_bytes": 69,
+      "compressed_canonical_bytes": 73,
+      "compressed_canonical_plus_receipt_bytes": 313,
+      "compressed_raw_bytes": 79,
+      "raw_preview": "homograph attack mixes scripts (`\u0430pple.com`: Cyrillic \u0430 next to Latin",
+      "raw_units": 71,
+      "raw_utf8_bytes": 71,
+      "receipt_json_bytes": 364,
+      "savings_ratio": 0.0282,
+      "source_id": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md:257",
+      "transforms": [
+        "homoglyph"
+      ],
+      "truth_label": "heuristic_curated_tables_not_exhaustive_unicode_coverage",
+      "units_saved": 2
+    },
+    {
+      "canonical_preview": "SO on ,citemhtira\" ,`061:dm.NGISED/scod/lmrevo/gnal`( esac gniniamer 1",
+      "canonical_units": 70,
+      "canonical_utf8_bytes": 70,
+      "compressed_canonical_bytes": 78,
+      "compressed_canonical_plus_receipt_bytes": 321,
+      "compressed_raw_bytes": 78,
+      "raw_preview": "1 remaining case (`lang/overml/docs/DESIGN.md:160`, \"arithmetic, no OS",
+      "raw_units": 70,
+      "raw_utf8_bytes": 70,
+      "receipt_json_bytes": 363,
+      "savings_ratio": 0.0,
+      "source_id": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md:288",
+      "transforms": [
+        "reversed"
+      ],
+      "truth_label": "heuristic_curated_tables_not_exhaustive_unicode_coverage",
+      "units_saved": 0
+    },
+    {
+      "canonical_preview": ",{\"test\":\"txet\"}, p-  ",
+      "canonical_units": 22,
+      "canonical_utf8_bytes": 22,
+      "compressed_canonical_bytes": 30,
+      "compressed_canonical_plus_receipt_bytes": 277,
+      "compressed_raw_bytes": 33,
+      "raw_preview": "  -d '{\"text\":\"\u0287s\u01dd\u0287\"}'",
+      "raw_units": 25,
+      "raw_utf8_bytes": 25,
+      "receipt_json_bytes": 363,
+      "savings_ratio": 0.12,
+      "source_id": "docs/SERVERLESS_FUNCTIONS.md:23",
+      "transforms": [
+        "upside_down"
+      ],
+      "truth_label": "heuristic_curated_tables_not_exhaustive_unicode_coverage",
+      "units_saved": 3
+    }
+  ],
+  "fingerprint_version": "RSTF-1",
+  "generated_at": "2026-07-08T19:08:18.846181+00:00",
+  "metric": "utf8_byte_length",
+  "metric_truth_label": "utf8_byte_count_not_tokenizer",
+  "overall": {
+    "canonical_units_total": 108452,
+    "overall_savings_ratio": 0.0001,
+    "raw_units_total": 108463,
+    "records_scanned": 2391,
+    "records_with_transform_detected": 5,
+    "transform_prevalence_ratio": 0.0021,
+    "units_saved_total": 11
+  },
+  "per_transform": {
+    "homoglyph": {
+      "canonical_units": 69,
+      "count": 1,
+      "raw_units": 71,
+      "savings_ratio": 0.0282,
+      "units_saved": 2
+    },
+    "reversed": {
+      "canonical_units": 70,
+      "count": 1,
+      "raw_units": 70,
+      "savings_ratio": 0.0,
+      "units_saved": 0
+    },
+    "upside_down": {
+      "canonical_units": 88,
+      "count": 3,
+      "raw_units": 97,
+      "savings_ratio": 0.0928,
+      "units_saved": 9
+    }
+  },
+  "ram_compression": {
+    "audit_path_compressed_delta_bytes": -484542,
+    "audit_path_compressed_delta_ratio": -4.2226,
+    "audit_path_policy": "canonical_text_plus_compact_receipt_raw_text_cold_storage_if_required",
+    "canonical_utf8_bytes": 108452,
+    "compressed_canonical_bytes": 114733,
+    "compressed_canonical_plus_receipt_bytes": 599292,
+    "compressed_raw_bytes": 114750,
+    "compressor": "zlib_level_6",
+    "hot_path_compressed_bytes_saved": 17,
+    "hot_path_compressed_savings_ratio": 0.0001,
+    "hot_path_policy": "canonical_text_only",
+    "raw_utf8_bytes": 108463,
+    "receipt_json_bytes": 870320,
+    "truth_label": "lossless_ram_compression_ab_probe_not_os_memory_compressor_exact_model",
+    "utf8_bytes_saved": 11,
+    "utf8_savings_ratio": 0.0001
+  },
+  "report_type": "RSTF Real Corpus Cost Scan",
+  "report_version": "rstf-real-corpus-cost-v0.2",
+  "scope_note": "This scan uses real input records as-is. It does not generate attack examples. Low or zero savings on clean corpora is expected and should be interpreted as low observed prevalence, not detector failure. RAM compression metrics are an A/B probe using the selected lossless compressor, not an exact model of any OS memory compressor.",
+  "transformed_only": {
+    "canonical_units_total": 227,
+    "raw_units_total": 238,
+    "records": 5,
+    "savings_ratio": 0.0462,
+    "units_saved_total": 11
+  },
+  "truth_label": "non_synthetic_real_input_rtf_scan_not_generated_attack_corpus"
+}

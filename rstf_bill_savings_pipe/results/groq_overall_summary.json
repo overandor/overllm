@@ -1,0 +1,26 @@
+{
+  "benchmark_run": {
+    "timestamp": "2026-07-08T20:15:20.237118+00:00",
+    "provider": "groq",
+    "models_tested": [
+      "llama-3.3-70b-versatile"
+    ],
+    "input_file": "/Users/alep/CascadeProjects/overllm/rstf_bill_savings_pipe/large_corpus.jsonl",
+    "examples_total": 50
+  },
+  "model_summaries": {
+    "llama-3.3-70b-versatile": {
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "examples_tested": 50,
+      "examples_successful": 13,
+      "examples_failed": 0,
+      "raw_prompt_tokens_total": 790,
+      "canonical_prompt_tokens_total": 787,
+      "tokens_saved_total": 3,
+      "savings_ratio": 0.0037974683544303796,
+      "execution_time_seconds": 75.6961441040039,
+      "truth_label": "groq_usage_prompt_tokens_not_direct_anthropic_billing"
+    }
+  }
+}

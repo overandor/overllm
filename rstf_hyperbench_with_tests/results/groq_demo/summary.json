@@ -1,0 +1,72 @@
+{
+  "by_model_transform": {
+    "llama-3.1-8b-instant::bidi_override": {
+      "canonical_prompt_tokens": 699,
+      "count": 10,
+      "examples_unchanged_or_worse": 0,
+      "examples_with_savings": 10,
+      "median_example_savings_ratio": 0.04090909090909091,
+      "raw_prompt_tokens": 729,
+      "savings_ratio": 0.0411522633744856,
+      "tokens_saved": 30
+    },
+    "llama-3.1-8b-instant::clean": {
+      "canonical_prompt_tokens": 721,
+      "count": 10,
+      "examples_unchanged_or_worse": 10,
+      "examples_with_savings": 0,
+      "median_example_savings_ratio": 0.0,
+      "raw_prompt_tokens": 721,
+      "savings_ratio": 0.0,
+      "tokens_saved": 0
+    },
+    "llama-3.1-8b-instant::homoglyph": {
+      "canonical_prompt_tokens": 696,
+      "count": 10,
+      "examples_unchanged_or_worse": 0,
+      "examples_with_savings": 10,
+      "median_example_savings_ratio": 0.49513389000863806,
+      "raw_prompt_tokens": 1437,
+      "savings_ratio": 0.5156576200417536,
+      "tokens_saved": 741
+    },
+    "llama-3.1-8b-instant::reversed_forced": {
+      "canonical_prompt_tokens": 676,
+      "count": 10,
+      "examples_unchanged_or_worse": 0,
+      "examples_with_savings": 10,
+      "median_example_savings_ratio": 0.2783391405342625,
+      "raw_prompt_tokens": 936,
+      "savings_ratio": 0.2777777777777778,
+      "tokens_saved": 260
+    },
+    "llama-3.1-8b-instant::stacked_upside_homoglyph": {
+      "canonical_prompt_tokens": 719,
+      "count": 10,
+      "examples_unchanged_or_worse": 0,
+      "examples_with_savings": 10,
+      "median_example_savings_ratio": 0.6456154465004023,
+      "raw_prompt_tokens": 1967,
+      "savings_ratio": 0.6344687341128622,
+      "tokens_saved": 1248
+    },
+    "llama-3.1-8b-instant::upside_down": {
+      "canonical_prompt_tokens": 709,
+      "count": 10,
+      "examples_unchanged_or_worse": 0,
+      "examples_with_savings": 10,
+      "median_example_savings_ratio": 0.610920177383592,
+      "raw_prompt_tokens": 2227,
+      "savings_ratio": 0.6816344858554109,
+      "tokens_saved": 1518
+    }
+  },
+  "overall": {
+    "canonical_prompt_tokens": 4220,
+    "count": 60,
+    "raw_prompt_tokens": 8017,
+    "savings_ratio": 0.4736185605588125,
+    "tokens_saved": 3797
+  },
+  "truth_label": "benchmark_summary_see_row_truth_labels"
+}
