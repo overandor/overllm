@@ -69,6 +69,46 @@ Do not use this:
 RSTF cuts every LLM bill by 78%.
 ```
 
+## Cost reduction numbers
+
+These results come from a 160-example synthetic RSTF benchmark covering four reversible/adversarial transform classes: reversed, upside_down, homoglyph, and bidi_override.
+
+### OpenAI Models / Encodings via tiktoken
+
+- **GPT-4o**: 75.6% input-token reduction
+  - 5,077 raw tokens → 1,237 canonical tokens; 3,840 tokens saved.
+  - Estimated input cost saved: $0.0096 at user-supplied pricing of $2.50 per 1M input tokens.
+- **GPT-4o-mini**: 75.6% input-token reduction
+  - 5,077 raw tokens → 1,237 canonical tokens; 3,840 tokens saved.
+  - Estimated input cost saved: $0.000576 at user-supplied pricing of $0.15 per 1M input tokens.
+- **GPT-4 / GPT-3.5-turbo**: 78.0% input-token reduction
+  - 5,662 raw tokens → 1,245 canonical tokens; 4,417 tokens saved.
+
+### Offline Byte Proxy
+
+- **UTF-8 byte-length proxy**: 26.2% byte reduction
+  - 9,361 raw bytes → 6,908 canonical bytes; 2,453 bytes saved.
+  - This is an offline byte-length proxy, not a model-specific tokenizer count and not proof of Llama, Mistral, or other local-model billing savings.
+
+### Reference Implementation
+
+- **OverLLM BPE**: 66.4% token reduction
+  - 7,245 raw tokens → 2,436 canonical tokens; 4,809 tokens saved.
+  - This is a real BPE measurement using OverLLM's small repo-trained vocabulary of 1,500 tokens, not production-provider billing.
+
+### Transform Breakdown
+
+- **upside_down**: 88.1% tiktoken reduction; 38.9% byte reduction; 75.0% OverLLM BPE reduction.
+- **homoglyph**: 79.2% tiktoken reduction; 39.2% byte reduction; 78.8% OverLLM BPE reduction.
+- **bidi_override**: 46.6% tiktoken reduction; 12.2% byte reduction; 43.0% OverLLM BPE reduction.
+- **reversed**: 44.8% tiktoken reduction; 0.0% byte reduction; 39.0% OverLLM BPE reduction.
+
+### Scope
+
+On this synthetic reversible-transform corpus, RSTF canonicalization reduced measured input tokens by 75.6–78.0% under selected tiktoken encodings and 66.4% under OverLLM's repo-trained BPE tokenizer. The offline UTF-8 proxy showed 26.2% byte reduction. These results demonstrate tokenizer-aware cost observability for transformed or adversarial Unicode text, not guaranteed savings on arbitrary production traffic or final provider invoices.
+
+Production savings depend on the prevalence of transformed inputs, the selected tokenizer/model, cached-input behavior, output tokens, tool usage, batching/service mode, and current provider pricing.
+
 ## Test
 
 ```bash
