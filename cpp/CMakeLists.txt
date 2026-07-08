@@ -22,3 +22,12 @@ add_executable(test_llm_client test_llm_client.cpp ${SOURCES})
 # tokenizer produces identical token IDs to the Python reference
 # implementation (tools/bpe_tokenizer.py) on the same trained vocabulary.
 add_executable(bpe_cli tools/bpe_cli.cpp src/tokenizer.cpp)
+
+# Real transformer training experiment: next-token cross-entropy training
+# on real tokenized text, reporting a per-epoch loss curve. Verifies the
+# forward/backward/AdamW implementation in src/model.cpp actually performs
+# gradient descent (loss decreases), unlike train_online.cpp's DPO loop,
+# which trains on uniformly random token pairs with no learnable signal.
+# Links only model.cpp + tensor_ops.cpp + tokenizer.cpp, independent of the
+# other engine components.
+add_executable(train_language_model tools/train_language_model.cpp src/model.cpp src/tensor_ops.cpp src/tokenizer.cpp)
