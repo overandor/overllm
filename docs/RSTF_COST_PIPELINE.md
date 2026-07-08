@@ -73,41 +73,52 @@ RSTF cuts every LLM bill by 78%.
 
 These results come from a 160-example synthetic RSTF benchmark covering four reversible/adversarial transform classes: reversed, upside_down, homoglyph, and bidi_override.
 
-### OpenAI Models / Encodings via tiktoken
+### OpenAI tiktoken measurements
 
-- **GPT-4o**: 75.6% input-token reduction
-  - 5,077 raw tokens → 1,237 canonical tokens; 3,840 tokens saved.
-  - Estimated input cost saved: $0.0096 at user-supplied pricing of $2.50 per 1M input tokens.
-- **GPT-4o-mini**: 75.6% input-token reduction
-  - 5,077 raw tokens → 1,237 canonical tokens; 3,840 tokens saved.
-  - Estimated input cost saved: $0.000576 at user-supplied pricing of $0.15 per 1M input tokens.
-- **GPT-4 / GPT-3.5-turbo**: 78.0% input-token reduction
-  - 5,662 raw tokens → 1,245 canonical tokens; 4,417 tokens saved.
+- **GPT-4o**: 75.6% input-token reduction, 5077 → 1237 tokens, 3840 saved.
+- **GPT-4o-mini**: 75.6% input-token reduction, 5077 → 1237 tokens, 3840 saved.
+- **GPT-4 / GPT-3.5-turbo**: 78.0% input-token reduction, 5662 → 1245 tokens, 4417 saved.
 
-### Offline Byte Proxy
+### Offline byte proxy
 
-- **UTF-8 byte-length proxy**: 26.2% byte reduction
-  - 9,361 raw bytes → 6,908 canonical bytes; 2,453 bytes saved.
-  - This is an offline byte-length proxy, not a model-specific tokenizer count and not proof of Llama, Mistral, or other local-model billing savings.
+- **UTF-8 byte proxy**: 26.2% byte reduction, 9361 → 6908 bytes, 2453 saved.
+- This is an upper-bound proxy only, not model-specific token savings.
 
-### Reference Implementation
+### Reference implementation
 
-- **OverLLM BPE**: 66.4% token reduction
-  - 7,245 raw tokens → 2,436 canonical tokens; 4,809 tokens saved.
-  - This is a real BPE measurement using OverLLM's small repo-trained vocabulary of 1,500 tokens, not production-provider billing.
+- **OverLLM BPE**: 66.4% token reduction, 7245 → 2436 tokens, 4809 saved.
+- Real BPE measurement using a small repo-trained vocabulary.
 
-### Transform Breakdown
+### Transform breakdown
 
-- **upside_down**: 88.1% tiktoken reduction; 38.9% byte reduction; 75.0% OverLLM BPE reduction.
-- **homoglyph**: 79.2% tiktoken reduction; 39.2% byte reduction; 78.8% OverLLM BPE reduction.
-- **bidi_override**: 46.6% tiktoken reduction; 12.2% byte reduction; 43.0% OverLLM BPE reduction.
-- **reversed**: 44.8% tiktoken reduction; 0.0% byte reduction; 39.0% OverLLM BPE reduction.
+- **upside_down**: 88.1% tiktoken, 38.9% bytes, 75.0% BPE.
+- **homoglyph**: 79.2% tiktoken, 39.2% bytes, 78.8% BPE.
+- **bidi_override**: 46.6% tiktoken, 12.2% bytes, 43.0% BPE.
+- **reversed**: 44.8% tiktoken, 0.0% bytes, 39.0% BPE.
 
 ### Scope
 
-On this synthetic reversible-transform corpus, RSTF canonicalization reduced measured input tokens by 75.6–78.0% under selected tiktoken encodings and 66.4% under OverLLM's repo-trained BPE tokenizer. The offline UTF-8 proxy showed 26.2% byte reduction. These results demonstrate tokenizer-aware cost observability for transformed or adversarial Unicode text, not guaranteed savings on arbitrary production traffic or final provider invoices.
+These are benchmark results on a synthetic reversible-transform corpus, not guaranteed production traffic savings. Production savings depend on the prevalence of transformed inputs, selected tokenizer/model, current provider pricing, cached input behavior, tools, batching, output tokens, and service mode.
 
-Production savings depend on the prevalence of transformed inputs, the selected tokenizer/model, cached-input behavior, output tokens, tool usage, batching/service mode, and current provider pricing.
+### Buyer-safe claim
+
+**Use this:**
+
+```text
+RSTF demonstrated 75.6–78.0% measured input-token reduction under selected tiktoken encodings on a 160-example synthetic adversarial corpus.
+```
+
+**Do not say:**
+
+```text
+RSTF reduces OpenAI bills by 78%.
+```
+
+**Say:**
+
+```text
+RSTF exposes and reduces token waste in transformed/adversarial Unicode inputs; production savings depend on the input distribution and provider billing rules.
+```
 
 ## Test
 
