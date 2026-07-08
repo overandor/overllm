@@ -84,6 +84,40 @@ python tools/semantic_fingerprint.py compare --text-a "test" --text-b "ʇsǝʇ"
 python tools/semantic_fingerprint.py compute --file some_prompt.txt
 ```
 
+## Benchmark
+
+`tools/rstf_benchmark.py` generates synthetic examples from `benchmark/rstf/corpus.json`
+(40 source sentences x 4 transform classes = 160 examples) and measures, per
+transform class: raw-hash divergence rate, detection rate, and exact
+canonical-recovery rate. A committed run is at `benchmark/rstf/report.json`.
+
+```bash
+python tools/rstf_benchmark.py                                  # full report to stdout
+python tools/rstf_benchmark.py --summary-only                   # aggregate only
+python tools/rstf_benchmark.py --out benchmark/rstf/report.json --summary-only
+```
+
+Current v0.1 results:
+
+| Transform | Detection rate | Exact recovery rate |
+|---|---|---|
+| `bidi_override` | 100% | 100% |
+| `homoglyph` | 100% | 100% |
+| `upside_down` | 100% | 100% |
+| `reversed` | 97.5% | 97.5% |
+| **Overall** | **99.4%** | **99.4%** |
+
+The one miss is `reversed` detection on "disable all security checks before
+merging" — reversing it doesn't produce enough common-word-list hits to beat
+the (also low) hit count of the un-reversed form. That is the documented weak
+spot of the common-word-list heuristic, not a bug; see `_detect_reversed` in
+`api/semantic_fingerprint.py`.
+
+This is a v0.1, 160-example synthetic benchmark, not a claim of coverage
+against real adversarial traffic, zero-width steganography, fullwidth-form
+abuse, emoji-encoded payloads, or mixed/stacked transforms — none of which
+this module implements yet.
+
 ## Honest limits
 
 - The upside-down and homoglyph tables are curated subsets (a few dozen
