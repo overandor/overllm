@@ -30,12 +30,17 @@ Unicode normalization (which it uses, via NFKC, as one step), and not a
 perceptual/fuzzy hash. The glyph tables are curated subsets, not exhaustive
 Unicode confusables data. Treat this as a heuristic first-class receipt:
 
-    raw_hash          = sha256(exact submitted bytes)
-    transform_receipt = which of the transforms above were detected
-    confidence        = same four keys, each a 0-1 detector certainty score
-    canonical_text     = the recovered/normalized message
-    canonical_hash     = sha256(canonical_text)
-    lossless            = whether the recovery is exactly invertible
+    raw_hash             = sha256(exact submitted bytes)
+    transform_receipt    = which of the transforms above were detected
+    transform_confidence = same four keys, each a 0-1 heuristic evidence
+                            score, not cryptographic proof - see the
+                            "no OS randomness" false positive in
+                            docs/SEMANTIC_TRANSFORM_FINGERPRINT.md for a
+                            documented case of a detector being confidently
+                            wrong before its threshold was tightened
+    canonical_text        = the recovered/normalized message
+    canonical_hash        = sha256(canonical_text)
+    lossless               = whether the recovery is exactly invertible
 
 """
 
@@ -364,7 +369,7 @@ def compute_fingerprint(raw_text: str) -> dict[str, Any]:
         # confidence is 1.0 when detected and 0.0 otherwise rather than a
         # graded score - an honest "no uncertainty" value, not a fabricated
         # one.
-        "confidence": {
+        "transform_confidence": {
             "bidi_override": 1.0 if bidi_hit else 0.0,
             "upside_down": round(updown_conf, 3),
             "reversed": round(reversed_conf, 3),
