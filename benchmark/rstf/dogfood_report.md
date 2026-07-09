@@ -7,9 +7,9 @@ Scanned this repository's own `.md` and `.py` files line-by-line - real text, no
 | Metric | Value |
 |---|---|
 | Files scanned | 105 |
-| Non-blank lines scanned | 13182 |
-| Total hits | 37 |
-| Expected hits (within RSTF's own module/docs/benchmark/test files) | 37 |
+| Non-blank lines scanned | 13245 |
+| Total hits | 44 |
+| Expected hits (within RSTF's own module/docs/benchmark/test files) | 44 |
 | **Unexpected hits (elsewhere in the repo)** | **0** |
 
 No unexpected hits outside RSTF's own files.
