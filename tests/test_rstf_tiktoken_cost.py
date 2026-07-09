@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-import importlib.util
-
 import pytest
 
 from tools import rstf_tiktoken_cost as ttc
 
+from conftest import tiktoken_encoding_reachable
+
 
 pytestmark = pytest.mark.skipif(
-    importlib.util.find_spec("tiktoken") is None,
-    reason="tiktoken not installed in this environment",
+    not tiktoken_encoding_reachable(),
+    reason="tiktoken not installed, or its encoding data is unreachable (egress-blocked) in this environment",
 )
 
 

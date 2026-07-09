@@ -129,7 +129,14 @@ def _detect_reversed(text: str) -> tuple[bool, float]:
     candidate_tokens = _tokenize(text[::-1])
     original_hits = sum(1 for t in original_tokens if t in _COMMON_WORDS)
     candidate_hits = sum(1 for t in candidate_tokens if t in _COMMON_WORDS)
-    if candidate_hits < 2 or candidate_hits <= original_hits:
+    # A margin of just +1 over original_hits is not enough either: short
+    # common words are prone to self-reversal collisions with *other* short
+    # common words ("no" <-> "on", "OS" <-> "so"), so two independent,
+    # legitimate uses of "no" plus one acronym can rack up a +1 margin in
+    # ordinary forward-reading text (found by the dogfood scan flagging
+    # "arithmetic, no OS randomness, no per-platform..." in
+    # lang/overml/docs/DESIGN.md as reversed). Require a +2 margin instead.
+    if candidate_hits < 2 or candidate_hits - original_hits < 2:
         return False, 0.0
     confidence = min(1.0, candidate_hits / max(1, len(candidate_tokens)))
     return True, confidence
