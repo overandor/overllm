@@ -108,18 +108,18 @@
 
 ## Defensible Claims (Technical Validation)
 
-### Claim 5: Reversible Canonicalization
-**Statement:** "RSTF canonicalization is reversible and preserves semantic meaning."
+### Claim 5: Deterministic Canonicalization with Audit Receipts
+**Statement:** "RSTF provides deterministic canonicalization for covered Unicode transform classes and emits raw/canonical hashes plus transform receipts for auditability."
 
 **Evidence:**
 - Multiple implementation languages (Python, C, C++)
 - SHA-256 hashing for audit trail
 - Transform receipts (list of applied transformations)
-- Zero false positives on clean text
-- Semantic preservation verified through testing
+- Zero false positives on the current clean-text test set
+- Semantic preservation verified on tested transform families, not universally guaranteed
 
-### Claim 6: Prompt Injection Detection
-**Statement:** "RSTF includes prompt injection detection with 30+ security patterns."
+### Claim 6: Prompt-Risk Pattern Detection
+**Statement:** "RSTF includes deterministic prompt-risk pattern detection with 30+ rules. This is a preflight signal, not a complete prompt-injection defense."
 
 **Evidence:**
 - 30+ regex patterns for injection detection
@@ -228,17 +228,17 @@ dollars_saved = tokens_saved / 1,000,000 × input_price_per_1M_tokens
 
 ## Best One-Line Investor Version
 
-"RSTF converts visually/semantically equivalent transformed Unicode into canonical text and has already shown 14.4% real provider-reported prompt-token savings on Groq plus 66–76% local tokenizer savings on larger synthetic adversarial corpora; direct Claude billing proof is the remaining validation step."
+"RSTF is a deterministic LLM input-integrity layer that canonicalizes covered Unicode transform classes, flags prompt-risk patterns, and emits audit receipts; it has verified Groq provider-token reductions on a small benchmark and stronger local tokenizer reductions on synthetic adversarial corpora, with Claude direct validation pending."
 
 ---
 
-## Bank-Safe Conclusion
+## Diligence-Safe Conclusion
 
 "RSTF has verified provider-side prompt-token savings on Groq, verified local tokenizer savings on GPT-4o/tiktoken and OverLLM BPE, and is ready for direct Claude count_tokens validation."
 
 ---
 
-## Investment Readiness Assessment
+## Diligence Readiness Assessment
 
 **Technical Diligence Readiness:** HIGH
 - Real provider validation (Groq)
@@ -247,13 +247,13 @@ dollars_saved = tokens_saved / 1,000,000 × input_price_per_1M_tokens
 - Reproducible test methodology
 - Chain of custody documentation
 
-**Revenue/Billing Diligence Readiness:** MEDIUM
+**Commercial Diligence Readiness:** EARLY
 - Token savings verified
 - Dollar savings not yet (requires paid traffic volume)
 - Claude billing not yet (requires Anthropic count_tokens)
 - Commercial potential: YES (as LLM gateway middleware / security-cost optimizer)
 
-**Overall Valuation Status:**
+**Overall Status:**
 - Technical proof: REAL
 - Provider-side usage proof: REAL on Groq
 - Direct money proof: NOT YET
