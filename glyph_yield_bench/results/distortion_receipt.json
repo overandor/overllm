@@ -1,0 +1,13 @@
+{
+  "receipt_id": "receipt_20260709171749_macro_glyph_001",
+  "glyph_id": "macro_glyph_001",
+  "operation": "distortion_test",
+  "timestamp": "2026-07-09T17:17:49.703724",
+  "checksum": "d9c937e82a900a4cb2d132b874d11441b0ec272474463f09864680fa4eb3f030",
+  "signature": "52e9543dc1d0b26e4a3f0087f9e7fce1ae3cbc540f9d031a43adc60d84cdbc52",
+  "metadata": {
+    "total_distortions": 5,
+    "successful": 5,
+    "identity_preserved": 5
+  }
+}

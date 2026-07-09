@@ -1,0 +1,13 @@
+{
+  "receipt_id": "receipt_20260709171749_macro_glyph_001",
+  "glyph_id": "macro_glyph_001",
+  "operation": "fabrication",
+  "timestamp": "2026-07-09T17:17:49.703695",
+  "checksum": "d9c937e82a900a4cb2d132b874d11441b0ec272474463f09864680fa4eb3f030",
+  "signature": "2cc9da8c7717e6e6500f01aec763dd73e49c8cdd0e7d3470c6fc508779a493ac",
+  "metadata": {
+    "creator": "GlyphYieldBench",
+    "version": "0.1",
+    "payload_size": 42
+  }
+}
