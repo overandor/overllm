@@ -50,4 +50,5 @@ training/
 *.jsonl
 .vercel
 lib/*.dylib
+lib/*.so
 models/*.bin
