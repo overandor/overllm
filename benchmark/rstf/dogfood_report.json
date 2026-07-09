@@ -1,11 +1,11 @@
 {
-  "expected_hits_within_rstf_own_files": 37,
+  "expected_hits_within_rstf_own_files": 44,
   "files_scanned": 105,
   "fingerprint_version": "RSTF-1",
   "hits": [
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 70,
+      "line": 71,
       "text": "\"a\": \"\u0250\", \"b\": \"q\", \"c\": \"\u0254\", \"d\": \"p\", \"e\": \"\u01dd\", \"f\": \"\u025f\", \"g\": \"\u0183\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -17,7 +17,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 71,
+      "line": 72,
       "text": "\"h\": \"\u0265\", \"i\": \"\u1d09\", \"j\": \"\u027e\", \"k\": \"\u029e\", \"l\": \"\u0283\", \"m\": \"\u026f\", \"n\": \"u\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -29,7 +29,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 73,
+      "line": 74,
       "text": "\"v\": \"\u028c\", \"w\": \"\u028d\", \"x\": \"x\", \"y\": \"\u028e\", \"z\": \"z\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -41,7 +41,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 74,
+      "line": 75,
       "text": "\"0\": \"0\", \"1\": \"1\", \"2\": \"\u1105\", \"3\": \"\u0190\", \"4\": \"\u3123\", \"5\": \"5\", \"6\": \"9\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -53,7 +53,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 75,
+      "line": 76,
       "text": "\"7\": \"\u3125\", \"8\": \"8\", \"9\": \"6\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -65,7 +65,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 154,
+      "line": 155,
       "text": "_RLO = \"\u202e\"",
       "transform_receipt": {
         "bidi_override": true,
@@ -77,7 +77,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 155,
+      "line": 156,
       "text": "_LRO = \"\u202d\"",
       "transform_receipt": {
         "bidi_override": true,
@@ -89,7 +89,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 156,
+      "line": 157,
       "text": "_PDF = \"\u202c\"",
       "transform_receipt": {
         "bidi_override": true,
@@ -101,7 +101,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 157,
+      "line": 158,
       "text": "_ISOLATE_STARTS = {\"\u2066\", \"\u2067\", \"\u2068\"}  # LRI, RLI, FSI",
       "transform_receipt": {
         "bidi_override": true,
@@ -113,7 +113,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 158,
+      "line": 159,
       "text": "_PDI = \"\u2069\"",
       "transform_receipt": {
         "bidi_override": true,
@@ -125,7 +125,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 159,
+      "line": 160,
       "text": "_BIDI_MARKS = {\"\u200e\", \"\u200f\", \"\u061c\"}  # LRM, RLM, ALM",
       "transform_receipt": {
         "bidi_override": true,
@@ -137,7 +137,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 214,
+      "line": 215,
       "text": "\"\u0430\": \"a\", \"\u0435\": \"e\", \"\u043e\": \"o\", \"\u0440\": \"p\", \"\u0441\": \"c\", \"\u0445\": \"x\", \"\u0443\": \"y\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -149,7 +149,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 215,
+      "line": 216,
       "text": "\"\u0456\": \"i\", \"\u0455\": \"s\", \"\u0458\": \"j\", \"\u04bb\": \"h\", \"\u0501\": \"d\", \"\u051b\": \"q\", \"\u0461\": \"w\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -161,7 +161,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 216,
+      "line": 217,
       "text": "\"\u0410\": \"A\", \"\u0412\": \"B\", \"\u0415\": \"E\", \"\u041a\": \"K\", \"\u041c\": \"M\", \"\u041d\": \"H\", \"\u041e\": \"O\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -173,7 +173,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 217,
+      "line": 218,
       "text": "\"\u0420\": \"P\", \"\u0421\": \"C\", \"\u0422\": \"T\", \"\u0425\": \"X\", \"\u0405\": \"S\", \"\u0406\": \"I\", \"\u0408\": \"J\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -185,7 +185,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 219,
+      "line": 220,
       "text": "\"\u03b1\": \"a\", \"\u03bf\": \"o\", \"\u03c1\": \"p\", \"\u03c5\": \"u\", \"\u03c4\": \"t\", \"\u03b9\": \"i\", \"\u03ba\": \"k\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -197,7 +197,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 220,
+      "line": 221,
       "text": "\"\u0391\": \"A\", \"\u0392\": \"B\", \"\u0395\": \"E\", \"\u0396\": \"Z\", \"\u0397\": \"H\", \"\u0399\": \"I\", \"\u039a\": \"K\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -209,7 +209,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 221,
+      "line": 222,
       "text": "\"\u039c\": \"M\", \"\u039d\": \"N\", \"\u039f\": \"O\", \"\u03a1\": \"P\", \"\u03a4\": \"T\", \"\u03a5\": \"Y\", \"\u03a7\": \"X\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -221,7 +221,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 230,
+      "line": 231,
       "text": "# (\"\u0430pple.com\": Cyrillic \u0430 next to Latin p,p,l,e). Only treat confusables",
       "transform_receipt": {
         "bidi_override": false,
@@ -245,7 +245,19 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 69,
+      "line": 40,
+      "text": "letter among five in \"\u0430pple\" scores 0.2); the raw substitution count is",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
+      "line": 84,
       "text": "-d '{\"text\": \"\u0287s\u01dd\u0287\"}'",
       "transform_receipt": {
         "bidi_override": false,
@@ -257,7 +269,7 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 73,
+      "line": 88,
       "text": "-d '{\"text_a\": \"test\", \"text_b\": \"\u0287s\u01dd\u0287\"}'",
       "transform_receipt": {
         "bidi_override": false,
@@ -269,7 +281,7 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 259,
+      "line": 274,
       "text": "homograph attack mixes scripts (`\u0430pple.com`: Cyrillic \u0430 next to Latin",
       "transform_receipt": {
         "bidi_override": false,
@@ -281,7 +293,7 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 285,
+      "line": 300,
       "text": "(`import os`, `os.getenv(...)`), because reversing `\"os\"` produces `\"so\"`,",
       "transform_receipt": {
         "bidi_override": false,
@@ -400,6 +412,78 @@
       "within_rstf_own_files": true
     },
     {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 89,
+      "text": "detected = compute_fingerprint(\"abc\u202edef\u202cghi\")",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 96,
+      "text": "# \"\u0430pple\" has one Cyrillic \"\u0430\" among 5 alphabetic characters (0.2).",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 97,
+      "text": "# \"\u0430\u0440\u0440l\u0435\" has four Cyrillic substitutions among 5 (0.8) - heavier",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 99,
+      "text": "partial = compute_fingerprint(\"\u0430pple\")",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 100,
+      "text": "heavier = compute_fingerprint(\"\u0430\u0440\u0440l\u0435\")",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 106,
+      "text": "result = compute_fingerprint(\"\u0430pple\")",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
       "file": "tools/bpe_parity_check.py",
       "line": 40,
       "text": "\"\u0287s\u01dd\u0287\",",
@@ -448,9 +532,9 @@
       "within_rstf_own_files": true
     }
   ],
-  "lines_scanned": 13182,
+  "lines_scanned": 13245,
   "report_version": "rstf-dogfood-scan-v0.1",
-  "total_hits": 37,
+  "total_hits": 44,
   "truth_label": "real_repo_text_not_a_customer_pilot_no_external_input_data",
   "unexpected_hits_elsewhere": 0
 }

@@ -68,3 +68,44 @@ def test_compare_reports_different_canonical_message_for_unrelated_text():
     comparison = compare_fingerprints("test", "completely different sentence")
     assert comparison["same_bytes"] is False
     assert comparison["same_canonical_message"] is False
+
+
+def test_confidence_keys_match_transform_receipt_keys():
+    # The confidence dict must stay symmetric with transform_receipt: same
+    # four keys, always present, regardless of what the input triggers.
+    result = compute_fingerprint("hello world")
+    assert set(result["confidence"].keys()) == set(result["transform_receipt"].keys())
+
+
+def test_confidence_is_zero_for_every_transform_on_plain_text():
+    result = compute_fingerprint("hello world")
+    assert all(v == 0.0 for v in result["confidence"].values())
+
+
+def test_bidi_override_confidence_is_binary_not_fabricated_fuzziness():
+    # bidi detection is a deterministic control-character scan, so its
+    # confidence is 1.0 when detected and 0.0 otherwise - never a graded
+    # value in between, unlike the other three transforms.
+    detected = compute_fingerprint("abc‮def‬ghi")
+    assert detected["confidence"]["bidi_override"] == 1.0
+    not_detected = compute_fingerprint("hello world")
+    assert not_detected["confidence"]["bidi_override"] == 0.0
+
+
+def test_homoglyph_confidence_scales_with_substitution_ratio():
+    # "аpple" has one Cyrillic "а" among 5 alphabetic characters (0.2).
+    # "аррlе" has four Cyrillic substitutions among 5 (0.8) - heavier
+    # substitution should score higher confidence, not just a flag.
+    partial = compute_fingerprint("аpple")
+    heavier = compute_fingerprint("аррlе")
+    assert 0.0 < partial["confidence"]["homoglyph_substitution"] < 1.0
+    assert heavier["confidence"]["homoglyph_substitution"] > partial["confidence"]["homoglyph_substitution"]
+
+
+def test_homoglyph_substitution_count_is_a_separate_top_level_field():
+    result = compute_fingerprint("аpple")
+    assert result["homoglyph_substitution_count"] == 1
+    # It must not be nested inside confidence anymore - confidence values
+    # are all 0-1 floats now, not a mix of floats and raw counts.
+    assert "homoglyph_substitutions" not in result["confidence"]
+    assert isinstance(result["confidence"]["homoglyph_substitution"], float)

@@ -23,10 +23,23 @@ RSTF is a receipt format for that gap:
 ```text
 raw_hash          = sha256(exact submitted bytes)
 transform_receipt = { bidi_override, upside_down, reversed, homoglyph_substitution }
+confidence        = same four keys, each a 0-1 float scoring detector certainty
 canonical_text     = recovered/normalized message
 canonical_hash     = sha256(canonical_text)
 lossless            = whether the recovery is exactly invertible
 ```
+
+`confidence` is not a second boolean receipt — it's the graded signal each
+detector already computes internally to decide *how sure* it is, kept
+symmetric with `transform_receipt`'s four keys so every transform has a
+comparable score, detected or not. `bidi_override`'s detector is a
+deterministic control-character scan (no fuzziness exists to score), so its
+confidence is always exactly 1.0 when detected and 0.0 otherwise, not a
+graded value like the other three. `homoglyph_substitution`'s confidence is
+the ratio of substituted to total alphabetic characters (e.g. one Cyrillic
+letter among five in "аpple" scores 0.2); the raw substitution count is
+still available separately as `homoglyph_substitution_count`, since "how
+confident" and "how many characters" are different questions.
 
 ## What it actually detects and recovers
 
@@ -57,6 +70,8 @@ compute_fingerprint("ʇsǝʇ")
   "canonical_text": "test",
   "canonical_hash": "<sha256 of 'test'>",
   "transform_receipt": {"bidi_override": false, "upside_down": true, "reversed": false, "homoglyph_substitution": false},
+  "confidence": {"bidi_override": 0.0, "upside_down": 1.0, "reversed": 0.0, "homoglyph_substitution": 0.0},
+  "homoglyph_substitution_count": 0,
   "lossless": true
 }
 ```
