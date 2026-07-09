@@ -10,8 +10,8 @@ Fingerprint version: `RSTF-1` | Tokenizer vocab size: `1500` | Merges: `1244`
 |---|---|
 | Examples | 160 |
 | Raw tokens (total) | 7245 |
-| Canonical tokens (total) | 2436 |
-| Token savings ratio | 66.4% |
+| Canonical tokens (total) | 2448 |
+| Token savings ratio | 66.2% |
 
 ## Per-transform
 
@@ -19,6 +19,6 @@ Fingerprint version: `RSTF-1` | Tokenizer vocab size: `1500` | Merges: `1244`
 |---|---|---|---|---|
 | `bidi_override` | 40 | 1026 | 585 | 43.0% |
 | `homoglyph` | 40 | 2764 | 585 | 78.8% |
-| `reversed` | 40 | 1117 | 681 | 39.0% |
+| `reversed` | 40 | 1117 | 693 | 38.0% |
 | `upside_down` | 40 | 2338 | 585 | 75.0% |
 

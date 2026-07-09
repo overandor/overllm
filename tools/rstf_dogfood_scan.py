@@ -66,6 +66,19 @@ RSTF_OWN_PATHS_PREFIXES = (
     "cpp/rstf/",
     "docs/OVERLLM_UNDERWRITING_PACKAGE.md",
     "docs/RSTF_TRAINING_BOOTCAMP.md",
+    "tools/rstf_tiktoken_cost.py",
+    "tools/rstf_cost_pipeline.py",
+    "tools/rstf_real_corpus_cost.py",
+    "tools/rstf_memory_efficient.py",
+    "tools/rstf_unified_cost_benchmark.py",
+    "tests/test_rstf_tiktoken_cost.py",
+    "tests/test_rstf_cost_pipeline.py",
+    "tests/test_rstf_real_corpus_cost.py",
+    "docs/RSTF_TIKTOKEN_COST.md",
+    "docs/RSTF_COST_PIPELINE.md",
+    "docs/RSTF_RAM_COMPRESSION.md",
+    "docs/RSTF_REAL_CORPUS_COST.md",
+    "docs/SERVERLESS_FUNCTIONS.md",
 )
 
 

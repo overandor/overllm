@@ -14,16 +14,16 @@ def test_scan_covers_a_meaningful_amount_of_real_text():
     assert report["lines_scanned"] > 1000
 
 
-def test_unexpected_hits_stay_at_the_known_residual_case():
+def test_unexpected_hits_stay_at_zero():
     # After fixing the "import os" false-positive bug (19 -> 1 unrelated
-    # hits), the one remaining hit is a documented, understood limitation:
-    # short high-frequency word pairs like no/on are near-mirror-images of
-    # each other, so text with multiple "no"s can outscore itself when
-    # reversed. This is a ceiling, not a target — if this regresses upward,
-    # something got worse; if new unrelated hits appear elsewhere, that's a
-    # new real finding worth investigating, not routinely raising the bar.
+    # hits) and then the "no"/"on" self-reversal false-positive bug (1 -> 0),
+    # there are no known residual unexpected hits left. This is a ceiling,
+    # not a target — if this regresses upward, something got worse (either a
+    # new detector false positive, or a new RSTF-example-containing file
+    # that needs adding to RSTF_OWN_PATHS_PREFIXES); investigate, don't
+    # routinely raise the bar.
     report = run_scan()
-    assert report["unexpected_hits_elsewhere"] <= 1
+    assert report["unexpected_hits_elsewhere"] == 0
 
 
 def test_rstf_own_files_are_correctly_excluded_from_unexpected_hits():
