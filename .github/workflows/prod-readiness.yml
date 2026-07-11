@@ -80,12 +80,21 @@ jobs:
               r'guaranteed\s+collateral',
               r'production-ready\s+by\s+default',
           ]
+          negations = ('no ', 'not ', 'never ', 'without ', "isn't ", "aren't ", "won't ", "don't ", "doesn't ")
           for path in [Path('README.md'), *required]:
               if not path.exists():
                   continue
-              text = path.read_text(encoding='utf-8', errors='ignore').lower()
+              raw_text = path.read_text(encoding='utf-8', errors='ignore')
+              # Blockquote lines conventionally cite banned phrases as
+              # examples of what not to write (see docs/OPERATIONS_RUNBOOK.md's
+              # "Do not use:" list), not assert them - exclude from the scan.
+              lines = [line for line in raw_text.splitlines() if not line.lstrip().startswith('>')]
+              text = '\n'.join(lines).lower()
               for pattern in unsafe_claims:
-                  if re.search(pattern, text):
+                  for m in re.finditer(pattern, text):
+                      preceding = text[max(0, m.start() - 12):m.start()]
+                      if any(preceding.endswith(neg) for neg in negations):
+                          continue
                       raise SystemExit(f'unsafe claim {pattern!r} found in {path}')
           print('production readiness guardrails OK')
           PY

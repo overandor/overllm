@@ -1185,11 +1185,11 @@
       "transform": "homoglyph"
     },
     {
-      "canonical_tokens": 17,
+      "canonical_tokens": 29,
       "raw_tokens": 29,
       "source_id": 37,
-      "token_savings_ratio": 0.4138,
-      "tokens_saved": 12,
+      "token_savings_ratio": 0.0,
+      "tokens_saved": 0,
       "transform": "reversed"
     },
     {
@@ -1285,10 +1285,10 @@
   "metric": "overllm_bpe_token_count",
   "metric_note": "Real token counts from OverLLM's own trained BPE tokenizer (tools/bpe_tokenizer.py, C++ mirror in cpp/src/tokenizer.cpp, parity-verified by tools/bpe_parity_check.py). This is OverLLM's own tokenizer trained on this repo's own docs (a few tens of KB), not GPT-4/Claude/Llama's production tokenizer - absolute counts do not represent production API billing, but the measurement method (a real, working byte-level BPE tokenizer) is genuine, not a byte-length proxy.",
   "overall": {
-    "canonical_tokens_total": 2436,
+    "canonical_tokens_total": 2448,
     "count": 160,
     "raw_tokens_total": 7245,
-    "token_savings_ratio": 0.6638
+    "token_savings_ratio": 0.6621
   },
   "per_transform": {
     "bidi_override": {
@@ -1304,10 +1304,10 @@
       "token_savings_ratio": 0.7884
     },
     "reversed": {
-      "canonical_tokens_total": 681,
+      "canonical_tokens_total": 693,
       "count": 40,
       "raw_tokens_total": 1117,
-      "token_savings_ratio": 0.3903
+      "token_savings_ratio": 0.3796
     },
     "upside_down": {
       "canonical_tokens_total": 585,

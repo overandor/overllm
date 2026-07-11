@@ -68,3 +68,66 @@ def test_compare_reports_different_canonical_message_for_unrelated_text():
     comparison = compare_fingerprints("test", "completely different sentence")
     assert comparison["same_bytes"] is False
     assert comparison["same_canonical_message"] is False
+
+
+def test_transform_confidence_keys_match_transform_receipt_keys():
+    # transform_confidence must stay symmetric with transform_receipt: same
+    # four keys, always present, regardless of what the input triggers.
+    # transform_receipt itself is unchanged/still boolean - this is an
+    # additive field, not a replacement.
+    result = compute_fingerprint("hello world")
+    assert set(result["transform_confidence"].keys()) == set(result["transform_receipt"].keys())
+    assert all(isinstance(v, bool) for v in result["transform_receipt"].values())
+
+
+def test_transform_confidence_is_zero_for_every_transform_on_plain_text():
+    result = compute_fingerprint("hello world")
+    assert result["transform_receipt"] == {
+        "bidi_override": False,
+        "upside_down": False,
+        "reversed": False,
+        "homoglyph_substitution": False,
+    }
+    assert all(v == 0.0 for v in result["transform_confidence"].values())
+
+
+def test_selected_transform_produces_a_nonzero_evidence_score():
+    # Acceptance criterion: detection of a transform must produce a nonzero
+    # score for that transform specifically, not just a True flag.
+    upside_down = compute_fingerprint("ʇsǝʇ")
+    assert upside_down["transform_receipt"]["upside_down"] is True
+    assert upside_down["transform_confidence"]["upside_down"] > 0.0
+
+    reversed_text = compute_fingerprint("the cat sat on the mat"[::-1])
+    assert reversed_text["transform_receipt"]["reversed"] is True
+    assert reversed_text["transform_confidence"]["reversed"] > 0.0
+
+
+def test_bidi_override_confidence_is_binary_not_fabricated_fuzziness():
+    # bidi detection is a deterministic control-character scan, so its
+    # evidence score is 1.0 when detected and 0.0 otherwise - never a
+    # graded value in between, unlike the other three transforms.
+    detected = compute_fingerprint("abc‮def‬ghi")
+    assert detected["transform_confidence"]["bidi_override"] == 1.0
+    not_detected = compute_fingerprint("hello world")
+    assert not_detected["transform_confidence"]["bidi_override"] == 0.0
+
+
+def test_homoglyph_confidence_scales_with_substitution_ratio():
+    # "аpple" has one Cyrillic "а" among 5 alphabetic characters (0.2).
+    # "аррlе" has four Cyrillic substitutions among 5 (0.8) - heavier
+    # substitution should score higher confidence, not just a flag.
+    partial = compute_fingerprint("аpple")
+    heavier = compute_fingerprint("аррlе")
+    assert 0.0 < partial["transform_confidence"]["homoglyph_substitution"] < 1.0
+    assert heavier["transform_confidence"]["homoglyph_substitution"] > partial["transform_confidence"]["homoglyph_substitution"]
+
+
+def test_homoglyph_substitution_count_is_a_separate_top_level_field():
+    result = compute_fingerprint("аpple")
+    assert result["homoglyph_substitution_count"] == 1
+    # It must not be nested inside transform_confidence anymore -
+    # transform_confidence values are all 0-1 floats now, not a mix of
+    # floats and raw counts.
+    assert "homoglyph_substitutions" not in result["transform_confidence"]
+    assert isinstance(result["transform_confidence"]["homoglyph_substitution"], float)

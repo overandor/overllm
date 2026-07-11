@@ -147,7 +147,7 @@ source_id,transform,raw_diverged,detected,recovered_exact,canonical_text,expecte
 36,upside_down,True,True,True,the feature flag was enabled for all users,the feature flag was enabled for all users
 36,bidi_override,True,True,True,the feature flag was enabled for all users,the feature flag was enabled for all users
 36,homoglyph,True,True,True,the feature flag was enabled for all users,the feature flag was enabled for all users
-37,reversed,True,True,True,the code review found a minor formatting issue,the code review found a minor formatting issue
+37,reversed,True,False,False,eussi gnittamrof ronim a dnuof weiver edoc eht,the code review found a minor formatting issue
 37,upside_down,True,True,True,the code review found a minor formatting issue,the code review found a minor formatting issue
 37,bidi_override,True,True,True,the code review found a minor formatting issue,the code review found a minor formatting issue
 37,homoglyph,True,True,True,the code review found a minor formatting issue,the code review found a minor formatting issue

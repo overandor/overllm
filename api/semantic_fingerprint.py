@@ -30,11 +30,17 @@ Unicode normalization (which it uses, via NFKC, as one step), and not a
 perceptual/fuzzy hash. The glyph tables are curated subsets, not exhaustive
 Unicode confusables data. Treat this as a heuristic first-class receipt:
 
-    raw_hash          = sha256(exact submitted bytes)
-    transform_receipt = which of the transforms above were detected
-    canonical_text     = the recovered/normalized message
-    canonical_hash     = sha256(canonical_text)
-    lossless            = whether the recovery is exactly invertible
+    raw_hash             = sha256(exact submitted bytes)
+    transform_receipt    = which of the transforms above were detected
+    transform_confidence = same four keys, each a 0-1 heuristic evidence
+                            score, not cryptographic proof - see the
+                            "no OS randomness" false positive in
+                            docs/SEMANTIC_TRANSFORM_FINGERPRINT.md for a
+                            documented case of a detector being confidently
+                            wrong before its threshold was tightened
+    canonical_text        = the recovered/normalized message
+    canonical_hash        = sha256(canonical_text)
+    lossless               = whether the recovery is exactly invertible
 
 """
 
@@ -129,7 +135,14 @@ def _detect_reversed(text: str) -> tuple[bool, float]:
     candidate_tokens = _tokenize(text[::-1])
     original_hits = sum(1 for t in original_tokens if t in _COMMON_WORDS)
     candidate_hits = sum(1 for t in candidate_tokens if t in _COMMON_WORDS)
-    if candidate_hits < 2 or candidate_hits <= original_hits:
+    # A margin of just +1 over original_hits is not enough either: short
+    # common words are prone to self-reversal collisions with *other* short
+    # common words ("no" <-> "on", "OS" <-> "so"), so two independent,
+    # legitimate uses of "no" plus one acronym can rack up a +1 margin in
+    # ordinary forward-reading text (found by the dogfood scan flagging
+    # "arithmetic, no OS randomness, no per-platform..." in
+    # lang/overml/docs/DESIGN.md as reversed). Require a +2 margin instead.
+    if candidate_hits < 2 or candidate_hits - original_hits < 2:
         return False, 0.0
     confidence = min(1.0, candidate_hits / max(1, len(candidate_tokens)))
     return True, confidence
@@ -215,7 +228,7 @@ _CONFUSABLES: dict[str, str] = {
 }
 
 
-def _normalize_homoglyphs(text: str) -> tuple[bool, str, dict[str, int]]:
+def _normalize_homoglyphs(text: str) -> tuple[bool, str, dict[str, int], float]:
     # Guard against the single most damaging false-positive mode: monolingual
     # non-Latin prose (plain Russian, Greek, etc.) contains plenty of letters
     # that are in _CONFUSABLES, but there is no Latin string being spoofed —
@@ -229,18 +242,26 @@ def _normalize_homoglyphs(text: str) -> tuple[bool, str, dict[str, int]]:
     # into corrupted text.
     has_latin_letter = any(c.isascii() and c.isalpha() for c in text)
     if not has_latin_letter:
-        return False, text, {}
+        return False, text, {}, 0.0
 
     hits: dict[str, int] = {}
     out_chars: list[str] = []
+    alpha_count = 0
     for c in text:
+        if c.isalpha():
+            alpha_count += 1
         replacement = _CONFUSABLES.get(c)
         if replacement is not None:
             hits[c] = hits.get(c, 0) + 1
             out_chars.append(replacement)
         else:
             out_chars.append(c)
-    return (len(hits) > 0), "".join(out_chars), hits
+    substitution_count = sum(hits.values())
+    # Mirrors _detect_upside_down's ratio-based confidence: how much of the
+    # text's alphabetic content was actually substituted, not just whether
+    # any substitution happened at all.
+    confidence = min(1.0, substitution_count / alpha_count) if alpha_count else 0.0
+    return (len(hits) > 0), "".join(out_chars), hits, confidence
 
 
 # ---------------------------------------------------------------------------
@@ -319,7 +340,7 @@ def compute_fingerprint(raw_text: str) -> dict[str, Any]:
         orientation = "reversed"
         audit_trace.append("string_reversed")
 
-    glyph_hit, canonical_text, glyph_hits = _normalize_homoglyphs(working_text)
+    glyph_hit, canonical_text, glyph_hits, glyph_conf = _normalize_homoglyphs(working_text)
     if glyph_hit:
         audit_trace.append(f"homoglyphs_normalized:{sum(glyph_hits.values())}")
 
@@ -341,11 +362,20 @@ def compute_fingerprint(raw_text: str) -> dict[str, Any]:
         "orientation": orientation,
         "transform_detected": bidi_hit or orientation != "none" or glyph_hit,
         "lossless": not glyph_hit,
-        "confidence": {
+        # Keys match transform_receipt's keys exactly, each a 0-1 float, so
+        # every detected-or-not transform has a comparable confidence value.
+        # bidi_override's detector is a deterministic control-character scan
+        # (no fuzzy heuristic exists for it, unlike the other three), so its
+        # confidence is 1.0 when detected and 0.0 otherwise rather than a
+        # graded score - an honest "no uncertainty" value, not a fabricated
+        # one.
+        "transform_confidence": {
+            "bidi_override": 1.0 if bidi_hit else 0.0,
             "upside_down": round(updown_conf, 3),
             "reversed": round(reversed_conf, 3),
-            "homoglyph_substitutions": sum(glyph_hits.values()),
+            "homoglyph_substitution": round(glyph_conf, 3),
         },
+        "homoglyph_substitution_count": sum(glyph_hits.values()),
         "audit_trace": audit_trace,
         "truth_label": "heuristic_curated_tables_not_exhaustive_unicode_coverage",
     }

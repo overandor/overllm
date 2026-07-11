@@ -21,12 +21,36 @@ text."
 RSTF is a receipt format for that gap:
 
 ```text
-raw_hash          = sha256(exact submitted bytes)
-transform_receipt = { bidi_override, upside_down, reversed, homoglyph_substitution }
-canonical_text     = recovered/normalized message
-canonical_hash     = sha256(canonical_text)
-lossless            = whether the recovery is exactly invertible
+raw_hash             = sha256(exact submitted bytes)
+transform_receipt    = { bidi_override, upside_down, reversed, homoglyph_substitution }
+transform_confidence = same four keys, each a 0-1 float scoring detector certainty
+canonical_text        = recovered/normalized message
+canonical_hash        = sha256(canonical_text)
+lossless               = whether the recovery is exactly invertible
 ```
+
+**`transform_confidence` scores are heuristic evidence scores, not
+cryptographic proof.** `transform_receipt` stays the stable boolean field —
+existing consumers reading it are unaffected. `transform_confidence` is a
+separate, additive field carrying the graded signal each detector already
+computes internally to decide *how sure* it is, kept symmetric with
+`transform_receipt`'s four keys so every transform has a comparable score,
+detected or not. `bidi_override`'s detector is a deterministic
+control-character scan (no fuzziness exists to score), so its confidence is
+always exactly 1.0 when detected and 0.0 otherwise, not a graded value like
+the other three. `homoglyph_substitution`'s confidence is the ratio of
+substituted to total alphabetic characters (e.g. one Cyrillic letter among
+five in "аpple" scores 0.2); the raw substitution count is still available
+separately as `homoglyph_substitution_count`, since "how confident" and
+"how many characters" are different questions.
+
+A high evidence score is a measured signal, not a guarantee: the
+`_detect_reversed` false positive documented in the dogfood scan section
+below ("arithmetic, no OS randomness...") was a case where the detector
+was confidently wrong, before its threshold was tightened in response.
+`transform_confidence` records how strongly the heuristic believed its own
+call at fingerprint time — it does not retroactively certify that call was
+correct.
 
 ## What it actually detects and recovers
 
@@ -57,6 +81,8 @@ compute_fingerprint("ʇsǝʇ")
   "canonical_text": "test",
   "canonical_hash": "<sha256 of 'test'>",
   "transform_receipt": {"bidi_override": false, "upside_down": true, "reversed": false, "homoglyph_substitution": false},
+  "transform_confidence": {"bidi_override": 0.0, "upside_down": 1.0, "reversed": 0.0, "homoglyph_substitution": 0.0},
+  "homoglyph_substitution_count": 0,
   "lossless": true
 }
 ```
@@ -115,15 +141,17 @@ Current v0.1 results:
 | `bidi_override` | 100% | 100% |
 | `homoglyph` | 100% | 100% |
 | `upside_down` | 100% | 100% |
-| `reversed` | 82.5% | 82.5% |
-| **Overall (160 positive examples)** | **95.6%** | **95.6%** |
+| `reversed` | 80.0% | 80.0% |
+| **Overall (160 positive examples)** | **95.0%** | **95.0%** |
 | **Control group (40 unmodified sentences)** | **0% false positive rate** | — |
 
-`reversed`'s detection rate was deliberately traded down from an earlier
-97.5% — see the dogfood scan section below for why. The remaining misses are
-short/technical sentences where reversing them doesn't produce two or more
-common-word hits (the current, tightened bar); see `_detect_reversed` in
-`api/semantic_fingerprint.py`.
+`reversed`'s detection rate was deliberately traded down twice: first from
+97.5% to 82.5% (see the dogfood scan section below for the `import os`
+false-positive fix), then from 82.5% to 80.0% (see below for the
+`no`/`on` self-reversal false-positive fix). The remaining misses are
+short/technical sentences where reversing them doesn't produce a strong
+enough common-word signal (the current, tightened bar); see
+`_detect_reversed` in `api/semantic_fingerprint.py`.
 
 This is a v0.1, 160-example synthetic benchmark plus a 40-example control
 group, not a claim of coverage against real adversarial traffic, zero-width
@@ -206,11 +234,11 @@ Committed runs: `benchmark/rstf/bpe_token_cost_report.md` / `.json`,
 | `homoglyph` | 78.8% |
 | `upside_down` | 75.0% |
 | `bidi_override` | 43.0% |
-| `reversed` | **39.0%** |
-| **Overall** | **66.4%** |
+| `reversed` | **38.0%** |
+| **Overall** | **66.2%** |
 
 **The key finding this real tokenizer reveals that the byte proxy structurally
-cannot**: `reversed` shows real, substantial token savings (39.0%), not 0%.
+cannot**: `reversed` shows real, substantial token savings (38.0%), not 0%.
 UTF-8 byte length cannot change under reordering — that's simple arithmetic.
 But BPE token count *can*, because merges are learned from forward-reading
 corpus text (common substrings like "the", " to", "tion"). Reversing a
@@ -276,35 +304,49 @@ python tools/rstf_dogfood_scan.py --out-md benchmark/rstf/dogfood_report.md
 
 Committed run: `benchmark/rstf/dogfood_report.md` / `.json`.
 
-**This scan also found a real bug, which was fixed.** The first run found 19
-lines across `api/main.py`, `api/financeable.py`, `api/vercel.py`,
-`training/dpo_trainer.py`, and elsewhere flagged as `reversed` text — every
-one was ordinary code containing the substring `os` (`import os`,
-`os.getenv(...)`), because reversing `"os"` produces `"so"`, which is itself
-a common word, and the detector previously accepted a single short-word
-match as sufficient evidence. `_detect_reversed` was tightened to require
-at least 3 tokens in the source text and at least 2 post-reversal
-common-word hits (not 1), which cut this to 1 remaining unrelated hit. That
-1 remaining case (`lang/overml/docs/DESIGN.md:160`, "arithmetic, no OS
-randomness...") is a harder, structural edge case: "no" and "on" are both
-extremely common English words that are near-mirror-images of each other, so
-text using "no" multiple times can out-score itself when reversed. Fixing
-that fully would need a real language model or n-gram frequency table, not a
-~60-word list — documented as a known residual limitation rather than chased
-further, since each additional tightening pass trades away real detection
-rate (see the benchmark section above).
+**This scan found two real bugs, both fixed, not just documented.** The
+first run found 19 lines across `api/main.py`, `api/financeable.py`,
+`api/vercel.py`, `training/dpo_trainer.py`, and elsewhere flagged as
+`reversed` text — every one was ordinary code containing the substring `os`
+(`import os`, `os.getenv(...)`), because reversing `"os"` produces `"so"`,
+which is itself a common word, and the detector previously accepted a
+single short-word match as sufficient evidence. `_detect_reversed` was
+tightened to require at least 3 tokens in the source text and at least 2
+post-reversal common-word hits (not 1), which cut this to 1 remaining
+unrelated hit: `lang/overml/docs/DESIGN.md`, "arithmetic, no OS
+randomness, no per-platform float rounding differences." — flagged (and
+its `canonical_text` corrupted into character-reversed gibberish) because
+two independent, legitimate uses of "no" reverse into "on" (itself a common
+word) and the acronym "OS" reverses into "so" (also a common word), giving
+a +1 margin over the source text's own common-word count purely by
+coincidence. A rerun after other repo content changed re-surfaced this
+exact case, so `_detect_reversed` was tightened again to require the
+post-reversal common-word count to exceed the source text's own count by a
+margin of at least 2, not just 1. This eliminated the false positive
+(verified: `unexpected_hits_elsewhere` went from 1 to 0) at a cost of 1
+additional detection out of 40 in the `reversed` benchmark category (see
+above). Short common-word self-reversal collisions (`no`/`on` is the
+sharpest example — most 2-letter common words don't reverse into another
+common word) remain a structural weak point of a word-list heuristic in
+general; a real language model or n-gram frequency table would close it
+more completely, but is out of scope for this module.
 
 ## Honest limits
 
 - The upside-down and homoglyph tables are curated subsets (a few dozen
   entries each), not the full Unicode confusables/rotation space. Text using
   glyphs outside these tables will not be detected.
-- `_detect_reversed` uses a ~60-word common-word list and requires >=3 tokens
-  and >=2 post-reversal hits; it is a weak signal on short or unusual text,
-  intentionally tightened after the dogfood scan found it flagging ordinary
-  code. A known residual false positive remains on text that repeats short
-  near-mirror-image common words (e.g. "no"/"on") — see the dogfood scan
-  section above.
+- `_detect_reversed` uses a ~60-word common-word list, requires >=3 tokens in
+  the source text, and requires the post-reversal common-word count to beat
+  the source text's own count by a margin of >=2 (not just a raw count of
+  >=2); it is a weak signal on short or unusual text, intentionally
+  tightened twice after the dogfood scan found it flagging ordinary code and
+  then, on a rerun, text repeating short near-mirror-image common words
+  (e.g. "no"/"on") — see the dogfood scan section above. This is a
+  general property of a fixed word list, not a fully closed problem: any
+  short common word that happens to reverse into a different common word is
+  a latent false-positive source, though "no"/"on" was the only such
+  collision found in this repo's own text.
 - `_normalize_homoglyphs` requires the text to contain both Latin letters and
   a confusable character before flagging, to avoid flagging monolingual
   non-Latin prose (found by the independent adversarial eval, see above). A

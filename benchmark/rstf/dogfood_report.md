@@ -6,14 +6,10 @@ Scanned this repository's own `.md` and `.py` files line-by-line - real text, no
 
 | Metric | Value |
 |---|---|
-| Files scanned | 77 |
-| Non-blank lines scanned | 10010 |
-| Total hits | 36 |
-| Expected hits (within RSTF's own module/docs/benchmark/test files) | 35 |
-| **Unexpected hits (elsewhere in the repo)** | **1** |
+| Files scanned | 135 |
+| Non-blank lines scanned | 17686 |
+| Total hits | 78 |
+| Expected hits (within RSTF's own module/docs/benchmark/test files) | 78 |
+| **Unexpected hits (elsewhere in the repo)** | **0** |
 
-## Unexpected hits — needs review
-
-| file | line | text | transform_receipt |
-|---|---|---|---|
-| lang/overml/docs/DESIGN.md | 195 | 'arithmetic, no OS randomness, no per-platform float rounding differences.' | `{'bidi_override': False, 'upside_down': False, 'reversed': True, 'homoglyph_substitution': False}` |
+No unexpected hits outside RSTF's own files.

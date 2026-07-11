@@ -1,11 +1,11 @@
 {
-  "expected_hits_within_rstf_own_files": 35,
-  "files_scanned": 77,
+  "expected_hits_within_rstf_own_files": 78,
+  "files_scanned": 135,
   "fingerprint_version": "RSTF-1",
   "hits": [
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 70,
+      "line": 76,
       "text": "\"a\": \"\u0250\", \"b\": \"q\", \"c\": \"\u0254\", \"d\": \"p\", \"e\": \"\u01dd\", \"f\": \"\u025f\", \"g\": \"\u0183\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -17,7 +17,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 71,
+      "line": 77,
       "text": "\"h\": \"\u0265\", \"i\": \"\u1d09\", \"j\": \"\u027e\", \"k\": \"\u029e\", \"l\": \"\u0283\", \"m\": \"\u026f\", \"n\": \"u\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -29,7 +29,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 73,
+      "line": 79,
       "text": "\"v\": \"\u028c\", \"w\": \"\u028d\", \"x\": \"x\", \"y\": \"\u028e\", \"z\": \"z\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -41,7 +41,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 74,
+      "line": 80,
       "text": "\"0\": \"0\", \"1\": \"1\", \"2\": \"\u1105\", \"3\": \"\u0190\", \"4\": \"\u3123\", \"5\": \"5\", \"6\": \"9\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -53,7 +53,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 75,
+      "line": 81,
       "text": "\"7\": \"\u3125\", \"8\": \"8\", \"9\": \"6\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -65,7 +65,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 147,
+      "line": 160,
       "text": "_RLO = \"\u202e\"",
       "transform_receipt": {
         "bidi_override": true,
@@ -77,7 +77,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 148,
+      "line": 161,
       "text": "_LRO = \"\u202d\"",
       "transform_receipt": {
         "bidi_override": true,
@@ -89,7 +89,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 149,
+      "line": 162,
       "text": "_PDF = \"\u202c\"",
       "transform_receipt": {
         "bidi_override": true,
@@ -101,7 +101,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 150,
+      "line": 163,
       "text": "_ISOLATE_STARTS = {\"\u2066\", \"\u2067\", \"\u2068\"}  # LRI, RLI, FSI",
       "transform_receipt": {
         "bidi_override": true,
@@ -113,7 +113,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 151,
+      "line": 164,
       "text": "_PDI = \"\u2069\"",
       "transform_receipt": {
         "bidi_override": true,
@@ -125,7 +125,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 152,
+      "line": 165,
       "text": "_BIDI_MARKS = {\"\u200e\", \"\u200f\", \"\u061c\"}  # LRM, RLM, ALM",
       "transform_receipt": {
         "bidi_override": true,
@@ -137,7 +137,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 207,
+      "line": 220,
       "text": "\"\u0430\": \"a\", \"\u0435\": \"e\", \"\u043e\": \"o\", \"\u0440\": \"p\", \"\u0441\": \"c\", \"\u0445\": \"x\", \"\u0443\": \"y\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -149,7 +149,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 208,
+      "line": 221,
       "text": "\"\u0456\": \"i\", \"\u0455\": \"s\", \"\u0458\": \"j\", \"\u04bb\": \"h\", \"\u0501\": \"d\", \"\u051b\": \"q\", \"\u0461\": \"w\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -161,7 +161,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 209,
+      "line": 222,
       "text": "\"\u0410\": \"A\", \"\u0412\": \"B\", \"\u0415\": \"E\", \"\u041a\": \"K\", \"\u041c\": \"M\", \"\u041d\": \"H\", \"\u041e\": \"O\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -173,7 +173,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 210,
+      "line": 223,
       "text": "\"\u0420\": \"P\", \"\u0421\": \"C\", \"\u0422\": \"T\", \"\u0425\": \"X\", \"\u0405\": \"S\", \"\u0406\": \"I\", \"\u0408\": \"J\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -185,7 +185,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 212,
+      "line": 225,
       "text": "\"\u03b1\": \"a\", \"\u03bf\": \"o\", \"\u03c1\": \"p\", \"\u03c5\": \"u\", \"\u03c4\": \"t\", \"\u03b9\": \"i\", \"\u03ba\": \"k\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -197,7 +197,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 213,
+      "line": 226,
       "text": "\"\u0391\": \"A\", \"\u0392\": \"B\", \"\u0395\": \"E\", \"\u0396\": \"Z\", \"\u0397\": \"H\", \"\u0399\": \"I\", \"\u039a\": \"K\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -209,7 +209,7 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 214,
+      "line": 227,
       "text": "\"\u039c\": \"M\", \"\u039d\": \"N\", \"\u039f\": \"O\", \"\u03a1\": \"P\", \"\u03a4\": \"T\", \"\u03a5\": \"Y\", \"\u03a7\": \"X\",",
       "transform_receipt": {
         "bidi_override": false,
@@ -221,24 +221,12 @@
     },
     {
       "file": "api/semantic_fingerprint.py",
-      "line": 223,
+      "line": 236,
       "text": "# (\"\u0430pple.com\": Cyrillic \u0430 next to Latin p,p,l,e). Only treat confusables",
       "transform_receipt": {
         "bidi_override": false,
         "homoglyph_substitution": true,
         "reversed": false,
-        "upside_down": false
-      },
-      "within_rstf_own_files": true
-    },
-    {
-      "file": "benchmark/rstf/dogfood_report.md",
-      "line": 19,
-      "text": "| lang/overml/docs/DESIGN.md | 160 | 'arithmetic, no OS randomness, no per-platform float rounding differences.' | `{'bidi_override': False, 'upside_down': False, 'reversed': True, 'homoglyph_substitu",
-      "transform_receipt": {
-        "bidi_override": false,
-        "homoglyph_substitution": false,
-        "reversed": true,
         "upside_down": false
       },
       "within_rstf_own_files": true
@@ -256,8 +244,68 @@
       "within_rstf_own_files": true
     },
     {
+      "file": "docs/RSTF_COMPREHENSIVE_PROOF_ALL_RESULTS.md",
+      "line": 331,
+      "text": "**Raw Text:** \"\u02d9\u0183op \u028ez\u0250l \u01dd\u0265\u0287 \u0279\u01dd\u028co sdu\u026f\u027e xo\u025f u\u028do\u0279q \u029e\u0254\u1d09nb \u01dd\u0265\u22a5\" (upside-down sentence)",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/RSTF_COURT_READY_COST_REDUCTION_EVIDENCE.md",
+      "line": 49,
+      "text": "- Homoglyph mapping: \u0410\u2192A, \u0412\u2192B, \u0415\u2192E, etc. (40+ mappings)",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/RSTF_ENTERPRISE_POSITIONING.md",
+      "line": 25,
+      "text": "- Homoglyphs (\u0410pple \u2192 Apple)",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/RSTF_SEED_INVESTMENT_PITCH.md",
+      "line": 29,
+      "text": "- Homoglyph substitution (\u0410pple \u2192 Apple)",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 69,
+      "line": 43,
+      "text": "five in \"\u0430pple\" scores 0.2); the raw substitution count is still available",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
+      "line": 95,
       "text": "-d '{\"text\": \"\u0287s\u01dd\u0287\"}'",
       "transform_receipt": {
         "bidi_override": false,
@@ -269,7 +317,7 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 73,
+      "line": 99,
       "text": "-d '{\"text_a\": \"test\", \"text_b\": \"\u0287s\u01dd\u0287\"}'",
       "transform_receipt": {
         "bidi_override": false,
@@ -281,7 +329,7 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 257,
+      "line": 285,
       "text": "homograph attack mixes scripts (`\u0430pple.com`: Cyrillic \u0430 next to Latin",
       "transform_receipt": {
         "bidi_override": false,
@@ -293,8 +341,8 @@
     },
     {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
-      "line": 288,
-      "text": "1 remaining case (`lang/overml/docs/DESIGN.md:160`, \"arithmetic, no OS",
+      "line": 311,
+      "text": "(`import os`, `os.getenv(...)`), because reversing `\"os\"` produces `\"so\"`,",
       "transform_receipt": {
         "bidi_override": false,
         "homoglyph_substitution": false,
@@ -304,16 +352,376 @@
       "within_rstf_own_files": true
     },
     {
-      "file": "lang/overml/docs/DESIGN.md",
-      "line": 195,
-      "text": "arithmetic, no OS randomness, no per-platform float rounding differences.",
+      "file": "docs/SERVERLESS_FUNCTIONS.md",
+      "line": 23,
+      "text": "-d '{\"text\":\"\u0287s\u01dd\u0287\"}'",
       "transform_receipt": {
         "bidi_override": false,
         "homoglyph_substitution": false,
-        "reversed": true,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 32,
+      "text": "(\"upside_down\", \"\u0287s\u01dd\u0287\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 33,
+      "text": "(\"upside_down\", \"\u0287\u0265\u0131s \u0131s \u0250 \u0287\u01dds\u0287\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 34,
+      "text": "(\"upside_down\", \"\u02d9\u0183op \u028ez\u0250l \u01dd\u0265\u0287 \u0279\u01dd\u028co sdu\u026f\u027e xo\u025f u\u028do\u0279q \u029e\u0254\u1d09nb \u01dd\u0265\u22a5\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 35,
+      "text": "(\"homoglyph\", \"\u0410pple\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
         "upside_down": false
       },
-      "within_rstf_own_files": false
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 36,
+      "text": "(\"homoglyph\", \"\u0412anana\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 37,
+      "text": "(\"homoglyph\", \"\u0421herry\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 38,
+      "text": "(\"homoglyph\", \"\u0422omato\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 39,
+      "text": "(\"homoglyph\", \"\u0425ray\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 41,
+      "text": "(\"homoglyph\", \"\u0422h\u0435 q\u00fc\u0131ck \u042crown fox\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 42,
+      "text": "(\"homoglyph\", \"\u0441us\u0288om\u0435r s\u0435rvi\u0441\u0435\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 43,
+      "text": "(\"homoglyph\", \"\u0440rodu\u0441t m\u0430n\u0430g\u0435m\u0435nt\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 44,
+      "text": "(\"homoglyph\", \"s\u043eftw\u0430r\u0435 \u0435ngin\u0435\u0435ring\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 9,
+      "text": "\"\u0250\": \"a\", \"\u0251\": \"a\", \"\u1d47\": \"b\", \"\u0254\": \"c\", \"\u01dd\": \"e\", \"\u025f\": \"f\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 10,
+      "text": "\"\u0183\": \"g\", \"\u0265\": \"h\", \"\u1d09\": \"i\", \"\u0131\": \"i\", \"\u027e\": \"j\", \"\u029e\": \"k\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 11,
+      "text": "\"\u026f\": \"m\", \"\u0279\": \"r\", \"\u0287\": \"t\", \"\u028c\": \"v\", \"\u028d\": \"w\", \"\u028e\": \"y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 18,
+      "text": "\"\u0410\": \"A\", \"\u0412\": \"B\", \"\u0415\": \"E\", \"\u041a\": \"K\", \"\u041c\": \"M\", \"\u041d\": \"H\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 19,
+      "text": "\"\u041e\": \"O\", \"\u0420\": \"P\", \"\u0421\": \"C\", \"\u0422\": \"T\", \"\u0425\": \"X\", \"\u0423\": \"Y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 20,
+      "text": "\"\u0430\": \"a\", \"\u0435\": \"e\", \"\u043e\": \"o\", \"\u0440\": \"p\", \"\u0441\": \"c\", \"\u0445\": \"x\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 21,
+      "text": "\"\u0443\": \"y\", \"\u0456\": \"i\", \"\u0458\": \"j\", \"\u04cf\": \"l\", \"\u0455\": \"s\", \"\u0501\": \"d\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 22,
+      "text": "\"\u0391\": \"A\", \"\u0392\": \"B\", \"\u0395\": \"E\", \"\u0396\": \"Z\", \"\u0397\": \"H\", \"\u0399\": \"I\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 23,
+      "text": "\"\u039a\": \"K\", \"\u039c\": \"M\", \"\u039d\": \"N\", \"\u039f\": \"O\", \"\u03a1\": \"P\", \"\u03a4\": \"T\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 24,
+      "text": "\"\u03a7\": \"X\", \"\u03a5\": \"Y\", \"\u03bf\": \"o\", \"\u03c1\": \"p\", \"\u03bd\": \"v\", \"\u03c7\": \"x\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 25,
+      "text": "\"\u03b9\": \"i\", \"\u03b1\": \"a\", \"\u03b2\": \"b\", \"\u03b3\": \"y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 9,
+      "text": "\"a\":\"\u0250\",\"b\":\"\u1d47\",\"c\":\"\u0254\",\"e\":\"\u01dd\",\"f\":\"\u025f\",\"g\":\"\u0183\",\"h\":\"\u0265\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 10,
+      "text": "\"i\":\"\u1d09\",\"j\":\"\u027e\",\"k\":\"\u029e\",\"m\":\"\u026f\",\"r\":\"\u0279\",\"t\":\"\u0287\",\"v\":\"\u028c\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 11,
+      "text": "\"w\":\"\u028d\",\"y\":\"\u028e\",\".\":\"\u02d9\",\"!\":\"\u00a1\",\"?\":\"\u00bf\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 20,
+      "text": "\"A\":\"\u0410\",\"B\":\"\u0412\",\"E\":\"\u0415\",\"K\":\"\u041a\",\"M\":\"\u041c\",\"H\":\"\u041d\",\"O\":\"\u041e\",\"P\":\"\u0420\",\"C\":\"\u0421\",\"T\":\"\u0422\",\"X\":\"\u0425\",\"Y\":\"\u0423\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 21,
+      "text": "\"a\":\"\u0430\",\"e\":\"\u0435\",\"o\":\"\u043e\",\"p\":\"\u0440\",\"c\":\"\u0441\",\"x\":\"\u0445\",\"y\":\"\u0443\",\"i\":\"\u0456\",\"j\":\"\u0458\",\"l\":\"\u04cf\",\"s\":\"\u0455\",\"d\":\"\u0501\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 25,
+      "text": "\"\u0391\":\"A\",\"\u0392\":\"B\",\"\u0395\":\"E\",\"\u0396\":\"Z\",\"\u0397\":\"H\",\"\u0399\":\"I\",\"\u039a\":\"K\",\"\u039c\":\"M\",\"\u039d\":\"N\",\"\u039f\":\"O\",\"\u03a1\":\"P\",\"\u03a4\":\"T\",\"\u03a7\":\"X\",\"\u03a5\":\"Y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 26,
+      "text": "\"\u03bf\":\"o\",\"\u03c1\":\"p\",\"\u03bd\":\"v\",\"\u03c7\":\"x\",\"\u03b9\":\"i\",\"\u03b1\":\"a\",\"\u03b2\":\"b\",\"\u03b3\":\"y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
     },
     {
       "file": "tests/test_bpe_tokenizer.py",
@@ -352,6 +760,30 @@
       "within_rstf_own_files": true
     },
     {
+      "file": "tests/test_rstf_real_corpus_cost.py",
+      "line": 31,
+      "text": "real_cost.TextRecord(source_id=\"realish:1\", text=\"\u0287s\u01dd\u0287 \u01dd\u0183\u0250ss\u01dd\u026f\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_rstf_real_corpus_cost.py",
+      "line": 54,
+      "text": "records=[real_cost.TextRecord(source_id=\"x\", text=\"\u0287s\u01dd\u0287 \u01dd\u0183\u0250ss\u01dd\u026f\")],",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
       "file": "tests/test_semantic_fingerprint.py",
       "line": 44,
       "text": "raw = \"abc\u202edef\u202cghi\"",
@@ -379,6 +811,78 @@
       "file": "tests/test_semantic_fingerprint.py",
       "line": 53,
       "text": "raw = \"\u0430pple\"",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 110,
+      "text": "detected = compute_fingerprint(\"abc\u202edef\u202cghi\")",
+      "transform_receipt": {
+        "bidi_override": true,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 117,
+      "text": "# \"\u0430pple\" has one Cyrillic \"\u0430\" among 5 alphabetic characters (0.2).",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 118,
+      "text": "# \"\u0430\u0440\u0440l\u0435\" has four Cyrillic substitutions among 5 (0.8) - heavier",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 120,
+      "text": "partial = compute_fingerprint(\"\u0430pple\")",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 121,
+      "text": "heavier = compute_fingerprint(\"\u0430\u0440\u0440l\u0435\")",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "tests/test_semantic_fingerprint.py",
+      "line": 127,
+      "text": "result = compute_fingerprint(\"\u0430pple\")",
       "transform_receipt": {
         "bidi_override": false,
         "homoglyph_substitution": true,
@@ -436,9 +940,9 @@
       "within_rstf_own_files": true
     }
   ],
-  "lines_scanned": 10010,
+  "lines_scanned": 17686,
   "report_version": "rstf-dogfood-scan-v0.1",
-  "total_hits": 36,
+  "total_hits": 78,
   "truth_label": "real_repo_text_not_a_customer_pilot_no_external_input_data",
-  "unexpected_hits_elsewhere": 1
+  "unexpected_hits_elsewhere": 0
 }

@@ -1821,11 +1821,11 @@
       "transform": "homoglyph"
     },
     {
-      "canonical_text": "the code review found a minor formatting issue",
-      "detected": true,
+      "canonical_text": "eussi gnittamrof ronim a dnuof weiver edoc eht",
+      "detected": false,
       "expected_canonical_text": "the code review found a minor formatting issue",
       "raw_diverged": true,
-      "recovered_exact": true,
+      "recovered_exact": false,
       "source_id": 37,
       "transform": "reversed"
     },
@@ -1932,8 +1932,8 @@
   "fingerprint_version": "RSTF-1",
   "overall": {
     "count": 160,
-    "detection_rate": 0.956,
-    "exact_recovery_rate": 0.956,
+    "detection_rate": 0.95,
+    "exact_recovery_rate": 0.95,
     "raw_hash_divergence_rate": 1.0
   },
   "per_transform": {
@@ -1951,8 +1951,8 @@
     },
     "reversed": {
       "count": 40,
-      "detection_rate": 0.825,
-      "exact_recovery_rate": 0.825,
+      "detection_rate": 0.8,
+      "exact_recovery_rate": 0.8,
       "raw_hash_divergence_rate": 1.0
     },
     "upside_down": {
