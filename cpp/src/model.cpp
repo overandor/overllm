@@ -1,4 +1,4 @@
-#include "overllm.h"
+#include "model_internal.h"
 #include "tensor_ops.h"
 #include <cmath>
 #include <cstdio>
@@ -12,109 +12,60 @@
 
 namespace overllm {
 
-struct Linear {
-    std::vector<float> weight;
-    std::vector<float> bias;
-    std::vector<float> grad_weight;
-    std::vector<float> grad_bias;
-    std::vector<float> m_weight;  // Adam momentum
-    std::vector<float> v_weight;  // Adam velocity
-    std::vector<float> m_bias;
-    std::vector<float> v_bias;
-    int in_features, out_features;
-    Linear(int in_f, int out_f) : in_features(in_f), out_features(out_f) {
-        weight.resize(in_f * out_f);
-        bias.resize(out_f);
-        grad_weight.resize(in_f * out_f, 0.0f);
-        grad_bias.resize(out_f, 0.0f);
-        m_weight.resize(in_f * out_f, 0.0f);
-        v_weight.resize(in_f * out_f, 0.0f);
-        m_bias.resize(out_f, 0.0f);
-        v_bias.resize(out_f, 0.0f);
-        float scale = std::sqrt(2.0f / (in_f + out_f));
-        std::mt19937 gen(42 + in_f * 1000 + out_f);
-        std::normal_distribution<float> d(0.0f, scale);
-        for (auto& w : weight) w = d(gen);
-        for (auto& b : bias) b = 0.0f;
-    }
-};
+Linear::Linear(int in_f, int out_f) : in_features(in_f), out_features(out_f) {
+    weight.resize(in_f * out_f);
+    bias.resize(out_f);
+    grad_weight.resize(in_f * out_f, 0.0f);
+    grad_bias.resize(out_f, 0.0f);
+    m_weight.resize(in_f * out_f, 0.0f);
+    v_weight.resize(in_f * out_f, 0.0f);
+    m_bias.resize(out_f, 0.0f);
+    v_bias.resize(out_f, 0.0f);
+    float scale = std::sqrt(2.0f / (in_f + out_f));
+    std::mt19937 gen(42 + in_f * 1000 + out_f);
+    std::normal_distribution<float> d(0.0f, scale);
+    for (auto& w : weight) w = d(gen);
+    for (auto& b : bias) b = 0.0f;
+}
 
-struct Attention {
-    int n_heads, d_model, d_head;
-    Linear Wq, Wk, Wv, Wo;
-    Attention(int dm, int nh) : n_heads(nh), d_model(dm), d_head(dm/nh),
-        Wq(dm,dm), Wk(dm,dm), Wv(dm,dm), Wo(dm,dm) {}
-};
+TransformerBlock::TransformerBlock(int d_model, int n_heads, int d_ff)
+    : attn(d_model, n_heads), ffn(d_model, d_ff) {
+    ln1_gamma.resize(d_model, 1.0f); ln1_beta.resize(d_model, 0.0f);
+    ln2_gamma.resize(d_model, 1.0f); ln2_beta.resize(d_model, 0.0f);
+    grad_ln1_gamma.resize(d_model, 0.0f); grad_ln1_beta.resize(d_model, 0.0f);
+    grad_ln2_gamma.resize(d_model, 0.0f); grad_ln2_beta.resize(d_model, 0.0f);
+    m_ln1_gamma.resize(d_model, 0.0f); v_ln1_gamma.resize(d_model, 0.0f);
+    m_ln1_beta.resize(d_model, 0.0f); v_ln1_beta.resize(d_model, 0.0f);
+    m_ln2_gamma.resize(d_model, 0.0f); v_ln2_gamma.resize(d_model, 0.0f);
+    m_ln2_beta.resize(d_model, 0.0f); v_ln2_beta.resize(d_model, 0.0f);
+}
 
-struct FFN {
-    Linear W1, W2;
-    std::vector<float> hidden;
-    FFN(int d_model, int d_ff) : W1(d_model, d_ff), W2(d_ff, d_model) {}
-};
+Model::Model(const OverLLMConfig& cfg) : config(cfg), output_proj(cfg.d_model, cfg.vocab_size) {
+    embedding.resize(cfg.vocab_size * cfg.d_model);
+    pos_embedding.resize(cfg.max_seq_len * cfg.d_model);
+    float emb_scale = 1.0f / std::sqrt(cfg.d_model);
+    std::mt19937 gen(42);
+    std::normal_distribution<float> d(0.0f, emb_scale);
+    for (auto& e : embedding) e = d(gen);
+    for (auto& e : pos_embedding) e = d(gen);
+    for (int i = 0; i < cfg.n_layers; ++i) blocks.emplace_back(cfg.d_model, cfg.n_heads, cfg.d_ff);
+    ln_final_gamma.resize(cfg.d_model, 1.0f); ln_final_beta.resize(cfg.d_model, 0.0f);
+    grad_ln_final_gamma.resize(cfg.d_model, 0.0f); grad_ln_final_beta.resize(cfg.d_model, 0.0f);
+    m_ln_final_gamma.resize(cfg.d_model, 0.0f); v_ln_final_gamma.resize(cfg.d_model, 0.0f);
+    m_ln_final_beta.resize(cfg.d_model, 0.0f); v_ln_final_beta.resize(cfg.d_model, 0.0f);
+    grad_embedding.resize(embedding.size(), 0.0f);
+    grad_pos_embedding.resize(pos_embedding.size(), 0.0f);
+    m_embedding.resize(embedding.size(), 0.0f);
+    v_embedding.resize(embedding.size(), 0.0f);
+    m_pos_embedding.resize(pos_embedding.size(), 0.0f);
+    v_pos_embedding.resize(pos_embedding.size(), 0.0f);
+}
 
-struct TransformerBlock {
-    Attention attn;
-    FFN ffn;
-    std::vector<float> ln1_gamma, ln1_beta, ln2_gamma, ln2_beta;
-    std::vector<float> grad_ln1_gamma, grad_ln1_beta, grad_ln2_gamma, grad_ln2_beta;
-    std::vector<float> m_ln1_gamma, v_ln1_gamma, m_ln1_beta, v_ln1_beta;
-    std::vector<float> m_ln2_gamma, v_ln2_gamma, m_ln2_beta, v_ln2_beta;
-    std::vector<float> attn_out, ffn_out, residual1, residual2;
-    
-    // Activation storage for backward pass
-    std::vector<float> q, k, v, attn_scores, ln1_out, ln2_out;
-    
-    TransformerBlock(int d_model, int n_heads, int d_ff)
-        : attn(d_model, n_heads), ffn(d_model, d_ff) {
-        ln1_gamma.resize(d_model, 1.0f); ln1_beta.resize(d_model, 0.0f);
-        ln2_gamma.resize(d_model, 1.0f); ln2_beta.resize(d_model, 0.0f);
-        grad_ln1_gamma.resize(d_model, 0.0f); grad_ln1_beta.resize(d_model, 0.0f);
-        grad_ln2_gamma.resize(d_model, 0.0f); grad_ln2_beta.resize(d_model, 0.0f);
-        m_ln1_gamma.resize(d_model, 0.0f); v_ln1_gamma.resize(d_model, 0.0f);
-        m_ln1_beta.resize(d_model, 0.0f); v_ln1_beta.resize(d_model, 0.0f);
-        m_ln2_gamma.resize(d_model, 0.0f); v_ln2_gamma.resize(d_model, 0.0f);
-        m_ln2_beta.resize(d_model, 0.0f); v_ln2_beta.resize(d_model, 0.0f);
-    }
-};
-
-struct Model {
-    OverLLMConfig config;
-    std::vector<float> embedding, pos_embedding;
-    std::vector<TransformerBlock> blocks;
-    Linear output_proj;
-    std::vector<float> ln_final_gamma, ln_final_beta;
-    std::vector<float> grad_ln_final_gamma, grad_ln_final_beta;
-    std::vector<float> m_ln_final_gamma, v_ln_final_gamma, m_ln_final_beta, v_ln_final_beta;
-    std::vector<float> grad_embedding, grad_pos_embedding;
-    std::vector<float> m_embedding, v_embedding, m_pos_embedding, v_pos_embedding;
-    int t_step = 0;
-    
-    // Activation storage for backward pass
-    std::vector<float> ln_final_out;
-
-    Model(const OverLLMConfig& cfg) : config(cfg), output_proj(cfg.d_model, cfg.vocab_size) {
-        embedding.resize(cfg.vocab_size * cfg.d_model);
-        pos_embedding.resize(cfg.max_seq_len * cfg.d_model);
-        float emb_scale = 1.0f / std::sqrt(cfg.d_model);
-        std::mt19937 gen(42);
-        std::normal_distribution<float> d(0.0f, emb_scale);
-        for (auto& e : embedding) e = d(gen);
-        for (auto& e : pos_embedding) e = d(gen);
-        for (int i = 0; i < cfg.n_layers; ++i) blocks.emplace_back(cfg.d_model, cfg.n_heads, cfg.d_ff);
-        ln_final_gamma.resize(cfg.d_model, 1.0f); ln_final_beta.resize(cfg.d_model, 0.0f);
-        grad_ln_final_gamma.resize(cfg.d_model, 0.0f); grad_ln_final_beta.resize(cfg.d_model, 0.0f);
-        m_ln_final_gamma.resize(cfg.d_model, 0.0f); v_ln_final_gamma.resize(cfg.d_model, 0.0f);
-        m_ln_final_beta.resize(cfg.d_model, 0.0f); v_ln_final_beta.resize(cfg.d_model, 0.0f);
-        grad_embedding.resize(embedding.size(), 0.0f);
-        grad_pos_embedding.resize(pos_embedding.size(), 0.0f);
-        m_embedding.resize(embedding.size(), 0.0f);
-        v_embedding.resize(embedding.size(), 0.0f);
-        m_pos_embedding.resize(pos_embedding.size(), 0.0f);
-        v_pos_embedding.resize(pos_embedding.size(), 0.0f);
-    }
-};
-
-static void forward_impl(Model* m, const int* tokens, int n_tokens, float* out_logits) {
+// Runs token+positional embedding through every transformer block and the
+// final LayerNorm, populating every activation buffer backward_impl_seq
+// needs (this is the "graph" both forward_impl and forward_impl_seq share -
+// they differ only in how much of the output projection they compute).
+static void run_body(Model* m, const int* tokens, int n_tokens) {
     const auto& cfg = m->config;
     int d = cfg.d_model, seq = n_tokens;
     std::vector<float> x(seq * d);
@@ -126,11 +77,16 @@ static void forward_impl(Model* m, const int* tokens, int n_tokens, float* out_l
         blk.attn_out.resize(seq*d); blk.ffn_out.resize(seq*d);
         blk.residual1.resize(seq*d); blk.residual2.resize(seq*d);
         blk.ffn.hidden.resize(seq*cfg.d_ff);
+        blk.ffn.pre_act.resize(seq*cfg.d_ff);
         blk.q.resize(seq*d); blk.k.resize(seq*d); blk.v.resize(seq*d);
-        blk.ln1_out.resize(seq*d); blk.ln2_out.resize(seq*d);
+        blk.ln2_out.resize(seq*d);
+        blk.attn_concat.resize(seq*d);
 
-        // Store input to first layer norm
-        for (int i = 0; i < seq*d; ++i) blk.ln1_out[i] = x[i];
+        int dh = blk.attn.d_head, nh = blk.attn.n_heads;
+        // .assign, not .resize: stale entries from a longer previous
+        // sequence must not leak through as nonzero "attention" to future
+        // positions that never actually computed them this call.
+        blk.attn_scores.assign((size_t)nh*seq*seq, 0.0f);
 
         matmul(x.data(), blk.attn.Wq.weight.data(), blk.q.data(), seq, d, d);
         add_bias(blk.q.data(), blk.attn.Wq.bias.data(), seq, d);
@@ -139,12 +95,11 @@ static void forward_impl(Model* m, const int* tokens, int n_tokens, float* out_l
         matmul(x.data(), blk.attn.Wv.weight.data(), blk.v.data(), seq, d, d);
         add_bias(blk.v.data(), blk.attn.Wv.bias.data(), seq, d);
 
-        std::vector<float> attn_out(seq*d, 0.0f);
-        int dh = blk.attn.d_head, nh = blk.attn.n_heads;
+        std::vector<float> attn_concat_local(seq*d, 0.0f);
         float scale = 1.0f / std::sqrt((float)dh);
         for (int h = 0; h < nh; ++h) {
             for (int i = 0; i < seq; ++i) {
-                std::vector<float> scores(seq, 0.0f);
+                std::vector<float> scores(i+1, 0.0f);
                 for (int j = 0; j <= i; ++j) {
                     float dot = 0.0f;
                     for (int k = 0; k < dh; ++k) {
@@ -157,206 +112,229 @@ static void forward_impl(Model* m, const int* tokens, int n_tokens, float* out_l
                 float sum_exp = 0.0f;
                 for (int j = 0; j <= i; ++j) { scores[j] = std::exp(scores[j]-maxs); sum_exp += scores[j]; }
                 for (int j = 0; j <= i; ++j) scores[j] /= sum_exp;
-                for (int j = i+1; j < seq; ++j) scores[j] = 0.0f;
+                for (int j = 0; j <= i; ++j) blk.attn_scores[(size_t)h*seq*seq + i*seq + j] = scores[j];
                 for (int k = 0; k < dh; ++k) {
                     float val = 0.0f;
-                    for (int j = 0; j < seq; ++j) val += scores[j] * blk.v[j*d + h*dh + k];
-                    attn_out[i*d + h*dh + k] = val;
+                    for (int j = 0; j <= i; ++j) val += scores[j] * blk.v[j*d + h*dh + k];
+                    attn_concat_local[i*d + h*dh + k] = val;
                 }
             }
         }
-        matmul(attn_out.data(), blk.attn.Wo.weight.data(), blk.attn_out.data(), seq, d, d);
+        blk.attn_concat = attn_concat_local;
+        matmul(attn_concat_local.data(), blk.attn.Wo.weight.data(), blk.attn_out.data(), seq, d, d);
         add_bias(blk.attn_out.data(), blk.attn.Wo.bias.data(), seq, d);
         for (int i = 0; i < seq*d; ++i) blk.residual1[i] = x[i];
         add(x.data(), blk.attn_out.data(), x.data(), seq*d);
         layer_norm(x.data(), x.data(), blk.ln1_gamma.data(), blk.ln1_beta.data(), seq, d, 1e-5f);
 
-        // Store input to second layer norm
+        // Post-LN1 value = FFN's actual input ("y1").
         for (int i = 0; i < seq*d; ++i) blk.ln2_out[i] = x[i];
 
-        matmul(x.data(), blk.ffn.W1.weight.data(), blk.ffn.hidden.data(), seq, cfg.d_ff, d);
-        add_bias(blk.ffn.hidden.data(), blk.ffn.W1.bias.data(), seq, cfg.d_ff);
-        gelu(blk.ffn.hidden.data(), blk.ffn.hidden.data(), seq*cfg.d_ff);
+        matmul(x.data(), blk.ffn.W1.weight.data(), blk.ffn.pre_act.data(), seq, cfg.d_ff, d);
+        add_bias(blk.ffn.pre_act.data(), blk.ffn.W1.bias.data(), seq, cfg.d_ff);
+        gelu(blk.ffn.hidden.data(), blk.ffn.pre_act.data(), seq*cfg.d_ff);
         matmul(blk.ffn.hidden.data(), blk.ffn.W2.weight.data(), blk.ffn_out.data(), seq, d, cfg.d_ff);
         add_bias(blk.ffn_out.data(), blk.ffn.W2.bias.data(), seq, d);
         for (int i = 0; i < seq*d; ++i) blk.residual2[i] = x[i];
         add(x.data(), blk.ffn_out.data(), x.data(), seq*d);
         layer_norm(x.data(), x.data(), blk.ln2_gamma.data(), blk.ln2_beta.data(), seq, d, 1e-5f);
     }
-    
-    // Store final layer norm input
+
     m->ln_final_out.resize(seq*d);
     for (int i = 0; i < seq*d; ++i) m->ln_final_out[i] = x[i];
-    
+
     layer_norm(x.data(), x.data(), m->ln_final_gamma.data(), m->ln_final_beta.data(), seq, d, 1e-5f);
-    matmul(x.data() + (seq-1)*d, m->output_proj.weight.data(), out_logits, 1, cfg.vocab_size, d);
+    m->ln_final_normalized.resize(seq*d);
+    for (int i = 0; i < seq*d; ++i) m->ln_final_normalized[i] = x[i];
+}
+
+void forward_impl(Model* m, const int* tokens, int n_tokens, float* out_logits) {
+    run_body(m, tokens, n_tokens);
+    const auto& cfg = m->config;
+    int d = cfg.d_model, seq = n_tokens;
+    matmul(m->ln_final_normalized.data() + (size_t)(seq-1)*d, m->output_proj.weight.data(), out_logits, 1, cfg.vocab_size, d);
     add_bias(out_logits, m->output_proj.bias.data(), 1, cfg.vocab_size);
 }
 
-static void backward_impl(Model* m, const int* tokens, int n_tokens, const float* dlogits) {
+void forward_impl_seq(Model* m, const int* tokens, int n_tokens, float* out_logits) {
+    run_body(m, tokens, n_tokens);
+    const auto& cfg = m->config;
+    int d = cfg.d_model, seq = n_tokens;
+    matmul(m->ln_final_normalized.data(), m->output_proj.weight.data(), out_logits, seq, cfg.vocab_size, d);
+    add_bias(out_logits, m->output_proj.bias.data(), seq, cfg.vocab_size);
+}
+
+// Full, correct backward pass: real causal multi-head attention backprop
+// (softmax-with-causal-mask backward + per-head dQ/dK/dV, accumulated over
+// every query position that attended to a given key/value), correctly
+// reconstructed LayerNorm inputs, correct GELU/Wo/output-projection
+// activands, and bias-gradient accumulation for every sublayer. See
+// docs/TRANSFORMER_LEARNING.md for the bugs this replaces.
+void backward_impl_seq(Model* m, const int* tokens, int n_tokens, const float* dlogits) {
     if (!m || !tokens || !dlogits || n_tokens <= 0) return;
 
     const auto& cfg = m->config;
     int d = cfg.d_model, seq = n_tokens;
     int vocab = cfg.vocab_size;
 
-    // Safety checks
     if (seq > cfg.max_seq_len) seq = cfg.max_seq_len;
-    for (int i = 0; i < n_tokens; ++i) {
+    for (int i = 0; i < seq; ++i) {
         if (tokens[i] < 0 || tokens[i] >= vocab) return;
     }
+    if (m->ln_final_normalized.size() < (size_t)seq*d) return;  // forward wasn't run on a matching sequence
 
-    // Start with gradient from logits
-    std::vector<float> dx(seq * d, 0.0f);
-
-    // Backward through output projection (only last token)
-    int last_token = tokens[seq-1];
-    const float* x_last = m->embedding.data() + last_token*d;
-
-    // dW_out = x_last^T * dlogits
-    for (int i = 0; i < d; ++i) {
-        for (int j = 0; j < vocab; ++j) {
-            int idx = i*vocab + j;
-            if (idx < (int)m->output_proj.grad_weight.size()) {
-                m->output_proj.grad_weight[idx] += x_last[i] * dlogits[j];
-            }
+    // ---- Output projection backward, every position ----
+    std::vector<float> dx((size_t)seq*d, 0.0f);
+    for (int t = 0; t < seq; ++t) {
+        const float* x_final_t = m->ln_final_normalized.data() + (size_t)t*d;
+        const float* dlogits_t = dlogits + (size_t)t*vocab;
+        for (int i = 0; i < d; ++i) {
+            float sum = 0.0f;
+            for (int j = 0; j < vocab; ++j)
+                sum += dlogits_t[j] * m->output_proj.weight[(size_t)i*vocab + j];
+            dx[(size_t)t*d + i] = sum;
         }
+        for (int i = 0; i < d; ++i)
+            for (int j = 0; j < vocab; ++j)
+                m->output_proj.grad_weight[(size_t)i*vocab + j] += x_final_t[i] * dlogits_t[j];
+        for (int j = 0; j < vocab; ++j)
+            m->output_proj.grad_bias[j] += dlogits_t[j];
     }
 
-    // dbias = dlogits
-    for (int j = 0; j < vocab; ++j) {
-        if (j < (int)m->output_proj.grad_bias.size()) {
-            m->output_proj.grad_bias[j] += dlogits[j];
-        }
-    }
-
-    // dlast_token = dlogits * W_out^T
-    for (int i = 0; i < d; ++i) {
-        float sum = 0.0f;
-        for (int j = 0; j < vocab; ++j) {
-            int idx = i*vocab + j;
-            if (idx < (int)m->output_proj.weight.size()) {
-                sum += dlogits[j] * m->output_proj.weight[idx];
-            }
-        }
-        dx[(seq-1)*d + i] = sum;
-    }
-
-    // Backward through final layer norm with proper bounds checking
-    if (!m->ln_final_out.empty() && m->ln_final_out.size() >= (size_t)(seq * d)) {
-        std::vector<float> dln_final_out(seq * d);
+    // ---- Final LayerNorm backward ----
+    {
+        std::vector<float> dln_final_out((size_t)seq*d);
         layer_norm_backward(m->ln_final_out.data(), m->ln_final_gamma.data(), m->ln_final_beta.data(),
-                           dx.data(), dln_final_out.data(), m->grad_ln_final_gamma.data(),
-                           m->grad_ln_final_beta.data(), seq, d, 1e-5f);
-        
-        // Copy gradient back to dx with bounds checking
-        for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dln_final_out.size(); ++i) {
-            dx[i] = dln_final_out[i];
-        }
+                             dx.data(), dln_final_out.data(), m->grad_ln_final_gamma.data(),
+                             m->grad_ln_final_beta.data(), seq, d, 1e-5f);
+        dx.swap(dln_final_out);
     }
 
-    // Backward through transformer blocks with proper bounds checking
+    // ---- Transformer blocks, reverse order ----
     for (int blk_idx = cfg.n_layers - 1; blk_idx >= 0; --blk_idx) {
         auto& blk = m->blocks[blk_idx];
-        
-        // Backward through second layer norm if activations are stored
-        if (!blk.ln2_out.empty() && blk.ln2_out.size() >= (size_t)(seq * d)) {
-            std::vector<float> dln2_out(seq * d);
-            layer_norm_backward(blk.ln2_out.data(), blk.ln2_gamma.data(), blk.ln2_beta.data(),
-                               dx.data(), dln2_out.data(), blk.grad_ln2_gamma.data(),
-                               blk.grad_ln2_beta.data(), seq, d, 1e-5f);
-            
-            // Add residual gradient with bounds checking
-            for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dln2_out.size(); ++i) {
-                dln2_out[i] += dx[i];
-            }
-            
-            // Backward through FFN W2 with bounds checking
-            if (!blk.ffn.hidden.empty() && blk.ffn.hidden.size() >= (size_t)(seq * cfg.d_ff)) {
-                std::vector<float> dffn_hidden(seq * cfg.d_ff);
-                matmul_backward(blk.ffn.hidden.data(), blk.ffn.W2.weight.data(), dln2_out.data(),
-                              dffn_hidden.data(), blk.ffn.W2.grad_weight.data(), seq, d, cfg.d_ff);
-                
-                // Backward through GELU with bounds checking
-                std::vector<float> dgelu_out(seq * cfg.d_ff);
-                gelu_backward(blk.ffn.hidden.data(), blk.ffn.hidden.data(), dffn_hidden.data(),
-                             dgelu_out.data(), seq * cfg.d_ff);
-                
-                // Backward through FFN W1 with bounds checking
-                if (!blk.ln2_out.empty() && blk.ln2_out.size() >= (size_t)(seq * d)) {
-                    std::vector<float> dffn_in(seq * d);
-                    matmul_backward(blk.ln2_out.data(), blk.ffn.W1.weight.data(), dgelu_out.data(),
-                                  dffn_in.data(), blk.ffn.W1.grad_weight.data(), seq, cfg.d_ff, d);
-                    
-                    // Update dx with bounds checking
-                    for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dffn_in.size(); ++i) {
-                        dx[i] = dffn_in[i];
+        int dh = blk.attn.d_head, nh = blk.attn.n_heads;
+
+        // --- FFN / LN2 branch ---
+        // Reconstruct the actual pre-LN2 input (forward applied LN2
+        // in-place after this add; nothing saves it directly).
+        std::vector<float> s2((size_t)seq*d);
+        for (int i = 0; i < seq*d; ++i) s2[i] = blk.residual2[i] + blk.ffn_out[i];
+
+        std::vector<float> dln2_out((size_t)seq*d);
+        layer_norm_backward(s2.data(), blk.ln2_gamma.data(), blk.ln2_beta.data(),
+                             dx.data(), dln2_out.data(), blk.grad_ln2_gamma.data(),
+                             blk.grad_ln2_beta.data(), seq, d, 1e-5f);
+
+        std::vector<float> dffn_hidden((size_t)seq*cfg.d_ff);
+        matmul_backward(blk.ffn.hidden.data(), blk.ffn.W2.weight.data(), dln2_out.data(),
+                         dffn_hidden.data(), blk.ffn.W2.grad_weight.data(), seq, d, cfg.d_ff);
+        for (int t = 0; t < seq; ++t)
+            for (int j = 0; j < d; ++j)
+                blk.ffn.W2.grad_bias[j] += dln2_out[(size_t)t*d + j];
+
+        std::vector<float> dgelu_out((size_t)seq*cfg.d_ff);
+        gelu_backward(blk.ffn.hidden.data(), blk.ffn.pre_act.data(), dffn_hidden.data(), dgelu_out.data(), seq*cfg.d_ff);
+
+        std::vector<float> dffn_in((size_t)seq*d);
+        matmul_backward(blk.ln2_out.data(), blk.ffn.W1.weight.data(), dgelu_out.data(),
+                         dffn_in.data(), blk.ffn.W1.grad_weight.data(), seq, cfg.d_ff, d);
+        for (int t = 0; t < seq; ++t)
+            for (int j = 0; j < cfg.d_ff; ++j)
+                blk.ffn.W1.grad_bias[j] += dgelu_out[(size_t)t*cfg.d_ff + j];
+
+        // Merge residual branch (dln2_out, already correct via
+        // layer_norm_backward's ddst argument) with the FFN branch exactly
+        // once - the pre-fix code both double-counted this and then
+        // discarded it via an overwrite.
+        for (int i = 0; i < seq*d; ++i) dx[i] = dln2_out[i] + dffn_in[i];
+
+        // --- Attention / LN1 branch ---
+        std::vector<float> s1((size_t)seq*d);
+        for (int i = 0; i < seq*d; ++i) s1[i] = blk.residual1[i] + blk.attn_out[i];
+
+        std::vector<float> dln1_out((size_t)seq*d);
+        layer_norm_backward(s1.data(), blk.ln1_gamma.data(), blk.ln1_beta.data(),
+                             dx.data(), dln1_out.data(), blk.grad_ln1_gamma.data(),
+                             blk.grad_ln1_beta.data(), seq, d, 1e-5f);
+
+        std::vector<float> dattn_concat((size_t)seq*d);
+        matmul_backward(blk.attn_concat.data(), blk.attn.Wo.weight.data(), dln1_out.data(),
+                         dattn_concat.data(), blk.attn.Wo.grad_weight.data(), seq, d, d);
+        for (int t = 0; t < seq; ++t)
+            for (int j = 0; j < d; ++j)
+                blk.attn.Wo.grad_bias[j] += dln1_out[(size_t)t*d + j];
+
+        // --- Real causal multi-head attention backward ---
+        std::vector<float> dQ((size_t)seq*d, 0.0f), dK((size_t)seq*d, 0.0f), dV((size_t)seq*d, 0.0f);
+        float scale = 1.0f / std::sqrt((float)dh);
+        for (int h = 0; h < nh; ++h) {
+            for (int i = 0; i < seq; ++i) {
+                std::vector<float> dP(i+1, 0.0f);
+                for (int j = 0; j <= i; ++j) {
+                    float g = 0.0f;
+                    for (int k = 0; k < dh; ++k)
+                        g += dattn_concat[(size_t)i*d + h*dh + k] * blk.v[(size_t)j*d + h*dh + k];
+                    dP[j] = g;
+                    float p_ij = blk.attn_scores[(size_t)h*seq*seq + i*seq + j];
+                    for (int k = 0; k < dh; ++k)
+                        // dV[j] accumulates a contribution from EVERY query
+                        // i >= j across this whole h/i loop, not just i==j -
+                        // that's the causal-mask direction that's easy to
+                        // get backwards.
+                        dV[(size_t)j*d + h*dh + k] += p_ij * dattn_concat[(size_t)i*d + h*dh + k];
+                }
+                std::vector<float> dScoresRaw(i+1, 0.0f);
+                softmax_backward(&blk.attn_scores[(size_t)h*seq*seq + (size_t)i*seq], dP.data(), dScoresRaw.data(), 1, i+1);
+                for (int j = 0; j <= i; ++j) {
+                    float g = dScoresRaw[j] * scale;
+                    for (int k = 0; k < dh; ++k) {
+                        dQ[(size_t)i*d + h*dh + k] += g * blk.k[(size_t)j*d + h*dh + k];
+                        dK[(size_t)j*d + h*dh + k] += g * blk.q[(size_t)i*d + h*dh + k];
                     }
                 }
             }
         }
-        
-        // Backward through first layer norm if activations are stored
-        if (!blk.ln1_out.empty() && blk.ln1_out.size() >= (size_t)(seq * d)) {
-            std::vector<float> dln1_out(seq * d);
-            layer_norm_backward(blk.ln1_out.data(), blk.ln1_gamma.data(), blk.ln1_beta.data(),
-                               dx.data(), dln1_out.data(), blk.grad_ln1_gamma.data(),
-                               blk.grad_ln1_beta.data(), seq, d, 1e-5f);
-            
-            // Add residual gradient with bounds checking
-            for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dln1_out.size(); ++i) {
-                dln1_out[i] += dx[i];
-            }
-            
-            // Backward through attention Wo with bounds checking
-            if (!blk.attn_out.empty() && blk.attn_out.size() >= (size_t)(seq * d)) {
-                std::vector<float> dattn_out(seq * d);
-                matmul_backward(blk.attn_out.data(), blk.attn.Wo.weight.data(), dln1_out.data(),
-                              dattn_out.data(), blk.attn.Wo.grad_weight.data(), seq, d, d);
-                
-                // Update dx with bounds checking
-                for (int i = 0; i < seq*d && i < (int)dx.size() && i < (int)dattn_out.size(); ++i) {
-                    dx[i] = dattn_out[i];
-                }
-            }
-        }
-        
-        // Backward through attention Q, K, V (simplified with bounds checking)
-        for (int i = 0; i < d; ++i) {
+
+        std::vector<float> du_q((size_t)seq*d), du_k((size_t)seq*d), du_v((size_t)seq*d);
+        matmul_backward(blk.residual1.data(), blk.attn.Wq.weight.data(), dQ.data(), du_q.data(), blk.attn.Wq.grad_weight.data(), seq, d, d);
+        matmul_backward(blk.residual1.data(), blk.attn.Wk.weight.data(), dK.data(), du_k.data(), blk.attn.Wk.grad_weight.data(), seq, d, d);
+        matmul_backward(blk.residual1.data(), blk.attn.Wv.weight.data(), dV.data(), du_v.data(), blk.attn.Wv.grad_weight.data(), seq, d, d);
+        for (int t = 0; t < seq; ++t) {
             for (int j = 0; j < d; ++j) {
-                float sum = 0.0f;
-                for (int t = 0; t < seq; ++t) {
-                    if (t*d + j < seq*d && t*d + j < (int)blk.ln1_out.size() && t*d + i < (int)dx.size()) {
-                        sum += dx[t*d + j] * blk.ln1_out[t*d + i];
-                    }
-                }
-                int idx = i*d + j;
-                if (idx < (int)blk.attn.Wq.grad_weight.size()) {
-                    blk.attn.Wq.grad_weight[idx] += sum;
-                }
-                if (idx < (int)blk.attn.Wk.grad_weight.size()) {
-                    blk.attn.Wk.grad_weight[idx] += sum;
-                }
-                if (idx < (int)blk.attn.Wv.grad_weight.size()) {
-                    blk.attn.Wv.grad_weight[idx] += sum;
-                }
+                blk.attn.Wq.grad_bias[j] += dQ[(size_t)t*d + j];
+                blk.attn.Wk.grad_bias[j] += dK[(size_t)t*d + j];
+                blk.attn.Wv.grad_bias[j] += dV[(size_t)t*d + j];
             }
         }
+
+        for (int i = 0; i < seq*d; ++i)
+            dx[i] = dln1_out[i] + du_q[i] + du_k[i] + du_v[i];
     }
 
-    // Backward through embeddings
+    // ---- Embeddings ----
     for (int t = 0; t < seq; ++t) {
         int token = tokens[t];
         for (int j = 0; j < d; ++j) {
-            int idx = token*d+j;
-            if (idx < (int)m->grad_embedding.size() && t*d + j < seq*d) {
-                m->grad_embedding[idx] += dx[t*d + j];
-            }
-            if (t*d + j < (int)m->grad_pos_embedding.size()) {
-                m->grad_pos_embedding[t*d + j] += dx[t*d + j];
-            }
+            m->grad_embedding[(size_t)token*d+j] += dx[(size_t)t*d + j];
+            m->grad_pos_embedding[(size_t)t*d + j] += dx[(size_t)t*d + j];
         }
     }
+}
+
+// Existing single-last-position contract, now internally correct: routes
+// through backward_impl_seq with a dlogits buffer that's zero everywhere
+// except the last position's slice, so DPO/RL/every existing caller gets
+// the fixed gradient computation for free with no signature change.
+void backward_impl(Model* m, const int* tokens, int n_tokens, const float* dlogits) {
+    if (!m || !tokens || !dlogits || n_tokens <= 0) return;
+    const auto& cfg = m->config;
+    int seq = n_tokens;
+    if (seq > cfg.max_seq_len) seq = cfg.max_seq_len;
+    int vocab = cfg.vocab_size;
+    std::vector<float> full_dlogits((size_t)seq*vocab, 0.0f);
+    for (int j = 0; j < vocab; ++j) full_dlogits[(size_t)(seq-1)*vocab + j] = dlogits[j];
+    backward_impl_seq(m, tokens, seq, full_dlogits.data());
 }
 
 } // namespace overllm
@@ -411,6 +389,20 @@ int overllm_backward(OverLLMModel* model, const int* tokens, int n_tokens, const
     return 0;
 }
 
+int overllm_forward_seq(OverLLMModel* model, const int* tokens, int n_tokens, float* logits) {
+    Model* m = (Model*)model;
+    if (n_tokens > m->config.max_seq_len) n_tokens = m->config.max_seq_len;
+    forward_impl_seq(m, tokens, n_tokens, logits);
+    return 0;
+}
+
+int overllm_backward_seq(OverLLMModel* model, const int* tokens, int n_tokens, const float* dlogits) {
+    Model* m = (Model*)model;
+    if (n_tokens > m->config.max_seq_len) n_tokens = m->config.max_seq_len;
+    backward_impl_seq(m, tokens, n_tokens, dlogits);
+    return 0;
+}
+
 int overllm_sample_argmax(const float* logits, int vocab_size) { return argmax(logits, vocab_size); }
 int overllm_sample_temperature(const float* logits, int vocab_size, float temp) {
     return sample_temperature(logits, vocab_size, temp, (unsigned)std::rand());
@@ -453,13 +445,13 @@ float overllm_dpo_step(OverLLMModel* model,
     }
     dlogits_c[c_target] -= dloss;
     dlogits_r[r_target] += dloss;
-    
+
     // Use full backward pass
     overllm_zero_grad(model);
     std::vector<float> combined_dlogits(vs);
     for (int i = 0; i < vs; ++i) combined_dlogits[i] = dlogits_c[i] + dlogits_r[i];
     overllm_backward(model, chosen_tokens, chosen_len, combined_dlogits.data());
-    
+
     return loss;
 }
 
@@ -467,7 +459,7 @@ void overllm_adamw_step(OverLLMModel* model, float lr, float beta1, float beta2,
     Model* m = (Model*)model;
     m->t_step++;
     float lr_t = lr * std::sqrt(1.0f - std::pow(beta2, m->t_step)) / (1.0f - std::pow(beta1, m->t_step));
-    
+
     // Helper to update a parameter with AdamW
     auto update_param = [&](std::vector<float>& param, std::vector<float>& grad, std::vector<float>& m_param, std::vector<float>& v_param) {
         for (size_t i = 0; i < param.size(); ++i) {
@@ -478,11 +470,11 @@ void overllm_adamw_step(OverLLMModel* model, float lr, float beta1, float beta2,
             param[i] -= lr_t * (m_hat / (std::sqrt(v_hat) + eps) + weight_decay * param[i]);
         }
     };
-    
+
     // Update embeddings
     update_param(m->embedding, m->grad_embedding, m->m_embedding, m->v_embedding);
     update_param(m->pos_embedding, m->grad_pos_embedding, m->m_pos_embedding, m->v_pos_embedding);
-    
+
     // Update blocks
     for (auto& blk : m->blocks) {
         update_param(blk.attn.Wq.weight, blk.attn.Wq.grad_weight, blk.attn.Wq.m_weight, blk.attn.Wq.v_weight);
@@ -502,11 +494,11 @@ void overllm_adamw_step(OverLLMModel* model, float lr, float beta1, float beta2,
         update_param(blk.ln2_gamma, blk.grad_ln2_gamma, blk.m_ln2_gamma, blk.v_ln2_gamma);
         update_param(blk.ln2_beta, blk.grad_ln2_beta, blk.m_ln2_beta, blk.v_ln2_beta);
     }
-    
+
     // Update final layer norm
     update_param(m->ln_final_gamma, m->grad_ln_final_gamma, m->m_ln_final_gamma, m->v_ln_final_gamma);
     update_param(m->ln_final_beta, m->grad_ln_final_beta, m->m_ln_final_beta, m->v_ln_final_beta);
-    
+
     // Update output projection
     update_param(m->output_proj.weight, m->output_proj.grad_weight, m->output_proj.m_weight, m->output_proj.v_weight);
     update_param(m->output_proj.bias, m->output_proj.grad_bias, m->output_proj.m_bias, m->output_proj.v_bias);
@@ -562,7 +554,7 @@ void overllm_zero_grad(OverLLMModel* model) {
     std::fill(m->grad_ln_final_beta.begin(), m->grad_ln_final_beta.end(), 0.0f);
     std::fill(m->output_proj.grad_weight.begin(), m->output_proj.grad_weight.end(), 0.0f);
     std::fill(m->output_proj.grad_bias.begin(), m->output_proj.grad_bias.end(), 0.0f);
-    
+
     for (auto& blk : m->blocks) {
         std::fill(blk.attn.Wq.grad_weight.begin(), blk.attn.Wq.grad_weight.end(), 0.0f);
         std::fill(blk.attn.Wq.grad_bias.begin(), blk.attn.Wq.grad_bias.end(), 0.0f);
@@ -609,7 +601,7 @@ float overllm_get_action_prob(OverLLMModel* model, const int* tokens, int n_toke
     int vs = m->config.vocab_size;
     std::vector<float> logits(vs);
     overllm_forward(model, tokens, n_tokens, logits.data());
-    
+
     float max_logit = logits[0];
     for (int i = 1; i < vs; ++i) if (logits[i] > max_logit) max_logit = logits[i];
     float sum_exp = 0.0f;
@@ -630,24 +622,24 @@ float overllm_rl_step(OverLLMModel* model,
                       float gamma, float lr) {
     Model* m = (Model*)model;
     int vs = m->config.vocab_size;
-    
+
     // Get action probability for state
     float state_prob = overllm_get_action_prob(model, state_tokens, state_len, action);
-    
+
     // Get max Q-value for next state (simplified - use argmax)
     std::vector<float> next_logits(vs);
     overllm_forward(model, next_state_tokens, next_state_len, next_logits.data());
     int next_action = argmax(next_logits.data(), vs);
     float next_prob = overllm_get_action_prob(model, next_state_tokens, next_state_len, next_action);
-    
+
     // TD error: reward + gamma * next_value - current_value
     float td_error = reward + gamma * next_prob - state_prob;
-    
+
     // Use full backward pass with policy gradient
     overllm_zero_grad(model);
     std::vector<float> state_logits(vs);
     overllm_forward(model, state_tokens, state_len, state_logits.data());
-    
+
     // Compute policy gradient
     std::vector<float> dlogits(vs);
     for (int i = 0; i < vs; ++i) {
@@ -655,9 +647,9 @@ float overllm_rl_step(OverLLMModel* model,
         dlogits[i] = (i == action ? 1.0f : 0.0f) - prob;
         dlogits[i] *= td_error * lr;
     }
-    
+
     overllm_backward(model, state_tokens, state_len, dlogits.data());
-    
+
     return td_error;
 }
 

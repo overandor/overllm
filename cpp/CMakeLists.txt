@@ -31,3 +31,22 @@ add_executable(bpe_cli tools/bpe_cli.cpp src/tokenizer.cpp)
 # Links only model.cpp + tensor_ops.cpp + tokenizer.cpp, independent of the
 # other engine components.
 add_executable(train_language_model tools/train_language_model.cpp src/model.cpp src/tensor_ops.cpp src/tokenizer.cpp)
+
+# Numerical gradient check: verifies backward_impl_seq's analytical
+# gradients against finite-difference estimates for a probed set of
+# parameters (attention Q/K/V weights/biases, output projection at a
+# non-last position, FFN, layer norms, embeddings). This is the actual
+# correctness proof for the backward pass - see
+# docs/TRANSFORMER_LEARNING.md for the bugs it verifies are fixed. Needs
+# direct access to Model/TransformerBlock internals (model_internal.h) and
+# tensor_ops.h, both in src/, not the public include/ directory other tools
+# use, hence the extra include path.
+add_executable(gradient_check tools/gradient_check.cpp src/model.cpp src/tensor_ops.cpp)
+target_include_directories(gradient_check PRIVATE ${CMAKE_SOURCE_DIR}/src)
+# -ffast-math permits float reassociation that adds noise to a
+# finite-difference comparison; override the project-wide flag (set at
+# line 8) for this one target so the check isn't fighting compiler-induced
+# precision loss on top of legitimate float32 error. The trailing flag
+# wins for GCC/Clang, so appending -fno-fast-math after the inherited
+# flags is sufficient - no need to strip -ffast-math itself.
+target_compile_options(gradient_check PRIVATE -fno-fast-math)
