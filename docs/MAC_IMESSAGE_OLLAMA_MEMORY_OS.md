@@ -2,6 +2,8 @@
 
 This is the strongest commercial wedge for OverLLM: a Mac-native messaging copilot that uses iMessage as the user-owned communication surface, Ollama as the local reasoning engine, and a memory ledger as the intelligence layer.
 
+See also: [`docs/COMPETITIVE_LANDSCAPE_IMESSAGE_LENDING.md`](COMPETITIVE_LANDSCAPE_IMESSAGE_LENDING.md) for how the microbusiness-lending demand-evidence use case of this data source compares to adjacent categories (cash-flow underwriting, platform-native lenders, alt-data credit scorers, conversation intelligence, iMessage analytics tools, and privacy-preserving analytics).
+
 This is not a spam bot. It is a consent-aware local operator for the user's own conversations, leads, follow-ups, service workflows, and revenue evidence.
 
 ## Product definition

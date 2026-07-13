@@ -2,6 +2,8 @@
 
 Status: financing and diligence package, not a securities offering.
 
+See also: [`docs/COMPETITIVE_LANDSCAPE_IMESSAGE_LENDING.md`](COMPETITIVE_LANDSCAPE_IMESSAGE_LENDING.md) for the competitive white-space analysis behind the iMessage-derived demand evidence wedge described in `docs/MAC_IMESSAGE_OLLAMA_MEMORY_OS.md`.
+
 ## Executive thesis
 
 OverLLM becomes financeable when it is presented as a reproducible software asset with measurable technical evidence, not as an abstract LLM idea. The current underwritable wedge is **RSTF canonicalization**: a normalization layer that detects and recovers text transformed through upside-down glyphs, homoglyph substitution, bidi controls, and explicit transform receipts before expensive model execution.

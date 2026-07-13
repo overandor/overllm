@@ -249,9 +249,9 @@
       "text": "**Raw Text:** \"\u02d9\u0183op \u028ez\u0250l \u01dd\u0265\u0287 \u0279\u01dd\u028co sdu\u026f\u027e xo\u025f u\u028do\u0279q \u029e\u0254\u1d09nb \u01dd\u0265\u22a5\" (upside-down sentence)",
       "transform_receipt": {
         "bidi_override": false,
-        "homoglyph_substitution": false,
+        "homoglyph_substitution": true,
         "reversed": false,
-        "upside_down": true
+        "upside_down": false
       },
       "within_rstf_own_files": true
     },
