@@ -1,0 +1,15 @@
+{
+  "receipt_id": "receipt_20260709171749_macro_glyph_001",
+  "glyph_id": "macro_glyph_001",
+  "operation": "benchmark",
+  "timestamp": "2026-07-09T17:17:49.703744",
+  "checksum": "d9c937e82a900a4cb2d132b874d11441b0ec272474463f09864680fa4eb3f030",
+  "signature": "aad9d06e19a297923ffe7b05ff72d522049c6e0b0b0ff8b53f593c93785a5816",
+  "metadata": {
+    "human_readability": 0.95,
+    "machine_recovery": 1.0,
+    "provenance_survival": 1.0,
+    "semantic_density": 0.008571428571428572,
+    "overall_success": true
+  }
+}

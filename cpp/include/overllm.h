@@ -23,8 +23,17 @@ OverLLMModel* overllm_load_model(const char* weights_path, const OverLLMConfig* 
 void overllm_free_model(OverLLMModel* model);
 
 // Inference
+// logits/dlogits are vocab_size floats - the LAST token position only.
 int overllm_forward(OverLLMModel* model, const int* tokens, int n_tokens, float* logits);
 int overllm_backward(OverLLMModel* model, const int* tokens, int n_tokens, const float* dlogits);
+
+// Multi-position variants for real next-token-per-position pretraining:
+// logits/dlogits are n_tokens*vocab_size floats, one slice per position.
+// Call overllm_forward_seq before overllm_backward_seq on the same
+// tokens/n_tokens - backward reads activations forward saved internally.
+int overllm_forward_seq(OverLLMModel* model, const int* tokens, int n_tokens, float* logits);
+int overllm_backward_seq(OverLLMModel* model, const int* tokens, int n_tokens, const float* dlogits);
+
 int overllm_sample_argmax(const float* logits, int vocab_size);
 int overllm_sample_temperature(const float* logits, int vocab_size, float temp);
 

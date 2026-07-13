@@ -1,0 +1,100 @@
+{
+  "report_type": "RSTF Real Provider Cost Savings",
+  "generated_at": "2026-07-08T19:54:19Z",
+  "description": "Real provider-reported token cost savings using Groq API and comparison with synthetic tokenizer benchmarks",
+  
+  "groq_provider_results": {
+    "provider": "Groq",
+    "model": "llama-3.1-8b-instant",
+    "test_corpus": "6 RSTF examples (upside_down, homoglyph, reversed, clean)",
+    "method": "groq_chat_completion_usage",
+    "results": {
+      "examples": 6,
+      "raw_prompt_tokens_total": 389,
+      "canonical_prompt_tokens_total": 333,
+      "tokens_saved_total": 56,
+      "savings_ratio": 0.144,
+      "savings_percent": "14.4%",
+      "examples_with_savings": 4,
+      "examples_unchanged_or_worse": 2
+    },
+    "truth_label": "groq_usage_prompt_tokens_not_claude",
+    "claim": "Groq usage accounting showed 14.4% prompt-token reduction on the selected Groq-hosted model for this benchmark."
+  },
+  
+  "synthetic_tokenizer_comparison": {
+    "test_corpus": "160 synthetic RSTF adversarial examples (reversed, upside_down, homoglyph, bidi_override)",
+    "tiktoken_gpt4o": {
+      "model": "gpt-4o",
+      "tokenizer": "tiktoken (o200k_base)",
+      "raw_tokens": 5077,
+      "canonical_tokens": 1237,
+      "tokens_saved": 3840,
+      "savings_percent": "75.6%",
+      "estimated_cost_saved_usd": 0.0096,
+      "pricing_per_1m_tokens": 2.50,
+      "truth_label": "real_tiktoken_count_for_selected_model_or_encoding_not_provider_bill"
+    },
+    "overllm_bpe": {
+      "model": "OverLLM BPE reference implementation",
+      "tokenizer": "OverLLM BPE small repo-trained vocab",
+      "raw_tokens": 7245,
+      "canonical_tokens": 2436,
+      "tokens_saved": 4809,
+      "savings_percent": "66.4%",
+      "vocab_size": 1500,
+      "truth_label": "real_tokenizer_measurement_small_repo_trained_vocab_not_production_scale"
+    },
+    "utf8_byte_proxy": {
+      "model": "Tokenizer unavailable/offline fallback",
+      "tokenizer": "UTF-8 byte length upper-bound proxy",
+      "raw_bytes": 9361,
+      "canonical_bytes": 6908,
+      "bytes_saved": 2453,
+      "savings_percent": "26.2%",
+      "truth_label": "synthetic_examples_utf8_byte_upper_bound_proxy_not_real_tokenizer_counts"
+    }
+  },
+  
+  "transform_breakdown": {
+    "upside_down": {
+      "tiktoken_savings": "88.1%",
+      "bpe_savings": "75.0%",
+      "byte_proxy_savings": "38.9%"
+    },
+    "homoglyph": {
+      "tiktoken_savings": "79.2%",
+      "bpe_savings": "78.8%",
+      "byte_proxy_savings": "39.2%"
+    },
+    "reversed": {
+      "tiktoken_savings": "44.8%",
+      "bpe_savings": "39.0%",
+      "byte_proxy_savings": "0.0%"
+    },
+    "bidi_override": {
+      "tiktoken_savings": "46.6%",
+      "bpe_savings": "43.0%",
+      "byte_proxy_savings": "12.2%"
+    }
+  },
+  
+  "key_findings": [
+    "Groq provider accounting showed 14.4% real token savings on 6 test examples",
+    "Synthetic tiktoken benchmark showed 75.6% savings on 160 adversarial examples",
+    "OverLLM BPE tokenizer showed 66.4% savings on synthetic corpus",
+    "Upside-down transforms produce the largest savings (88.1% tiktoken)",
+    "Real provider savings (14.4%) lower than synthetic benchmarks due to different test corpus and model tokenization",
+    "Synthetic benchmarks use 160 examples, Groq test used 6 examples",
+    "Different tokenizers (Groq Llama vs tiktoken GPT-4o) produce different savings rates"
+  ],
+  
+  "production_disclaimer": "Groq results are real provider usage accounting on a small test corpus. Synthetic benchmarks use 160 adversarial examples and may not represent production traffic patterns. Actual savings depend on your specific input distribution, model choice, and provider pricing.",
+  
+  "truth_labels": {
+    "groq": "groq_usage_prompt_tokens_not_claude",
+    "tiktoken": "real_tiktoken_count_for_selected_model_or_encoding_not_provider_bill",
+    "bpe": "real_tokenizer_measurement_small_repo_trained_vocab_not_production_scale",
+    "byte_proxy": "synthetic_examples_utf8_byte_upper_bound_proxy_not_real_tokenizer_counts"
+  }
+}

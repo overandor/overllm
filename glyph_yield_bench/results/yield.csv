@@ -1,0 +1,4 @@
+timestamp,glyph_id,total_distortions,successful_distortions,identity_preserved,human_readability,machine_recovery,provenance_survival,semantic_density,overall_success
+2026-07-09T17:17:25.237601,macro_glyph_001,5,5,5,0.95,1.0,0.5,0.008571428571428572,True
+2026-07-09T17:17:41.022979,macro_glyph_001,5,5,5,0.95,1.0,1.0,0.008571428571428572,True
+2026-07-09T17:17:49.704241,macro_glyph_001,5,5,5,0.95,1.0,1.0,0.008571428571428572,True

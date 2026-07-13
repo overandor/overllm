@@ -1,6 +1,6 @@
 {
-  "expected_hits_within_rstf_own_files": 44,
-  "files_scanned": 105,
+  "expected_hits_within_rstf_own_files": 78,
+  "files_scanned": 135,
   "fingerprint_version": "RSTF-1",
   "hits": [
     {
@@ -244,6 +244,54 @@
       "within_rstf_own_files": true
     },
     {
+      "file": "docs/RSTF_COMPREHENSIVE_PROOF_ALL_RESULTS.md",
+      "line": 331,
+      "text": "**Raw Text:** \"\u02d9\u0183op \u028ez\u0250l \u01dd\u0265\u0287 \u0279\u01dd\u028co sdu\u026f\u027e xo\u025f u\u028do\u0279q \u029e\u0254\u1d09nb \u01dd\u0265\u22a5\" (upside-down sentence)",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/RSTF_COURT_READY_COST_REDUCTION_EVIDENCE.md",
+      "line": 49,
+      "text": "- Homoglyph mapping: \u0410\u2192A, \u0412\u2192B, \u0415\u2192E, etc. (40+ mappings)",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/RSTF_ENTERPRISE_POSITIONING.md",
+      "line": 25,
+      "text": "- Homoglyphs (\u0410pple \u2192 Apple)",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "docs/RSTF_SEED_INVESTMENT_PITCH.md",
+      "line": 29,
+      "text": "- Homoglyph substitution (\u0410pple \u2192 Apple)",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
       "file": "docs/SEMANTIC_TRANSFORM_FINGERPRINT.md",
       "line": 43,
       "text": "five in \"\u0430pple\" scores 0.2); the raw substitution count is still available",
@@ -312,6 +360,366 @@
         "homoglyph_substitution": false,
         "reversed": false,
         "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 32,
+      "text": "(\"upside_down\", \"\u0287s\u01dd\u0287\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 33,
+      "text": "(\"upside_down\", \"\u0287\u0265\u0131s \u0131s \u0250 \u0287\u01dds\u0287\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 34,
+      "text": "(\"upside_down\", \"\u02d9\u0183op \u028ez\u0250l \u01dd\u0265\u0287 \u0279\u01dd\u028co sdu\u026f\u027e xo\u025f u\u028do\u0279q \u029e\u0254\u1d09nb \u01dd\u0265\u22a5\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 35,
+      "text": "(\"homoglyph\", \"\u0410pple\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 36,
+      "text": "(\"homoglyph\", \"\u0412anana\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 37,
+      "text": "(\"homoglyph\", \"\u0421herry\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 38,
+      "text": "(\"homoglyph\", \"\u0422omato\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 39,
+      "text": "(\"homoglyph\", \"\u0425ray\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 41,
+      "text": "(\"homoglyph\", \"\u0422h\u0435 q\u00fc\u0131ck \u042crown fox\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 42,
+      "text": "(\"homoglyph\", \"\u0441us\u0288om\u0435r s\u0435rvi\u0441\u0435\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 43,
+      "text": "(\"homoglyph\", \"\u0440rodu\u0441t m\u0430n\u0430g\u0435m\u0435nt\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/generate_large_corpus.py",
+      "line": 44,
+      "text": "(\"homoglyph\", \"s\u043eftw\u0430r\u0435 \u0435ngin\u0435\u0435ring\"),",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 9,
+      "text": "\"\u0250\": \"a\", \"\u0251\": \"a\", \"\u1d47\": \"b\", \"\u0254\": \"c\", \"\u01dd\": \"e\", \"\u025f\": \"f\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 10,
+      "text": "\"\u0183\": \"g\", \"\u0265\": \"h\", \"\u1d09\": \"i\", \"\u0131\": \"i\", \"\u027e\": \"j\", \"\u029e\": \"k\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 11,
+      "text": "\"\u026f\": \"m\", \"\u0279\": \"r\", \"\u0287\": \"t\", \"\u028c\": \"v\", \"\u028d\": \"w\", \"\u028e\": \"y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 18,
+      "text": "\"\u0410\": \"A\", \"\u0412\": \"B\", \"\u0415\": \"E\", \"\u041a\": \"K\", \"\u041c\": \"M\", \"\u041d\": \"H\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 19,
+      "text": "\"\u041e\": \"O\", \"\u0420\": \"P\", \"\u0421\": \"C\", \"\u0422\": \"T\", \"\u0425\": \"X\", \"\u0423\": \"Y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 20,
+      "text": "\"\u0430\": \"a\", \"\u0435\": \"e\", \"\u043e\": \"o\", \"\u0440\": \"p\", \"\u0441\": \"c\", \"\u0445\": \"x\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 21,
+      "text": "\"\u0443\": \"y\", \"\u0456\": \"i\", \"\u0458\": \"j\", \"\u04cf\": \"l\", \"\u0455\": \"s\", \"\u0501\": \"d\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 22,
+      "text": "\"\u0391\": \"A\", \"\u0392\": \"B\", \"\u0395\": \"E\", \"\u0396\": \"Z\", \"\u0397\": \"H\", \"\u0399\": \"I\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 23,
+      "text": "\"\u039a\": \"K\", \"\u039c\": \"M\", \"\u039d\": \"N\", \"\u039f\": \"O\", \"\u03a1\": \"P\", \"\u03a4\": \"T\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 24,
+      "text": "\"\u03a7\": \"X\", \"\u03a5\": \"Y\", \"\u03bf\": \"o\", \"\u03c1\": \"p\", \"\u03bd\": \"v\", \"\u03c7\": \"x\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_bill_savings_pipe/rstf_core.py",
+      "line": 25,
+      "text": "\"\u03b9\": \"i\", \"\u03b1\": \"a\", \"\u03b2\": \"b\", \"\u03b3\": \"y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 9,
+      "text": "\"a\":\"\u0250\",\"b\":\"\u1d47\",\"c\":\"\u0254\",\"e\":\"\u01dd\",\"f\":\"\u025f\",\"g\":\"\u0183\",\"h\":\"\u0265\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 10,
+      "text": "\"i\":\"\u1d09\",\"j\":\"\u027e\",\"k\":\"\u029e\",\"m\":\"\u026f\",\"r\":\"\u0279\",\"t\":\"\u0287\",\"v\":\"\u028c\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 11,
+      "text": "\"w\":\"\u028d\",\"y\":\"\u028e\",\".\":\"\u02d9\",\"!\":\"\u00a1\",\"?\":\"\u00bf\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": false,
+        "reversed": false,
+        "upside_down": true
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 20,
+      "text": "\"A\":\"\u0410\",\"B\":\"\u0412\",\"E\":\"\u0415\",\"K\":\"\u041a\",\"M\":\"\u041c\",\"H\":\"\u041d\",\"O\":\"\u041e\",\"P\":\"\u0420\",\"C\":\"\u0421\",\"T\":\"\u0422\",\"X\":\"\u0425\",\"Y\":\"\u0423\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 21,
+      "text": "\"a\":\"\u0430\",\"e\":\"\u0435\",\"o\":\"\u043e\",\"p\":\"\u0440\",\"c\":\"\u0441\",\"x\":\"\u0445\",\"y\":\"\u0443\",\"i\":\"\u0456\",\"j\":\"\u0458\",\"l\":\"\u04cf\",\"s\":\"\u0455\",\"d\":\"\u0501\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 25,
+      "text": "\"\u0391\":\"A\",\"\u0392\":\"B\",\"\u0395\":\"E\",\"\u0396\":\"Z\",\"\u0397\":\"H\",\"\u0399\":\"I\",\"\u039a\":\"K\",\"\u039c\":\"M\",\"\u039d\":\"N\",\"\u039f\":\"O\",\"\u03a1\":\"P\",\"\u03a4\":\"T\",\"\u03a7\":\"X\",\"\u03a5\":\"Y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
+      },
+      "within_rstf_own_files": true
+    },
+    {
+      "file": "rstf_hyperbench_with_tests/rstf_core.py",
+      "line": 26,
+      "text": "\"\u03bf\":\"o\",\"\u03c1\":\"p\",\"\u03bd\":\"v\",\"\u03c7\":\"x\",\"\u03b9\":\"i\",\"\u03b1\":\"a\",\"\u03b2\":\"b\",\"\u03b3\":\"y\",",
+      "transform_receipt": {
+        "bidi_override": false,
+        "homoglyph_substitution": true,
+        "reversed": false,
+        "upside_down": false
       },
       "within_rstf_own_files": true
     },
@@ -532,9 +940,9 @@
       "within_rstf_own_files": true
     }
   ],
-  "lines_scanned": 13279,
+  "lines_scanned": 17686,
   "report_version": "rstf-dogfood-scan-v0.1",
-  "total_hits": 44,
+  "total_hits": 78,
   "truth_label": "real_repo_text_not_a_customer_pilot_no_external_input_data",
   "unexpected_hits_elsewhere": 0
 }

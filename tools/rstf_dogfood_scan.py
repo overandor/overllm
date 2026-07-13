@@ -79,6 +79,12 @@ RSTF_OWN_PATHS_PREFIXES = (
     "docs/RSTF_RAM_COMPRESSION.md",
     "docs/RSTF_REAL_CORPUS_COST.md",
     "docs/SERVERLESS_FUNCTIONS.md",
+    "docs/RSTF_COMPREHENSIVE_PROOF_ALL_RESULTS.md",
+    "docs/RSTF_COURT_READY_COST_REDUCTION_EVIDENCE.md",
+    "docs/RSTF_ENTERPRISE_POSITIONING.md",
+    "docs/RSTF_SEED_INVESTMENT_PITCH.md",
+    "rstf_bill_savings_pipe/",
+    "rstf_hyperbench_with_tests/",
 )
 
 

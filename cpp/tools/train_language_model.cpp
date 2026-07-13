@@ -10,8 +10,19 @@
 //
 // This uses real text (tokenized with the real trained BPE tokenizer from
 // tools/bpe_tokenizer.py) and a real training objective (next-token
-// cross-entropy via overllm_forward/overllm_backward's public API), and
-// prints per-epoch average loss to stdout/JSON so the result is checkable.
+// cross-entropy at every position of each window, via
+// overllm_forward_seq/overllm_backward_seq's public API), and prints
+// per-epoch average loss to stdout/JSON so the result is checkable.
+//
+// Uses the multi-position API (not overllm_forward/overllm_backward's
+// single-last-position contract) so every position in a window gets a real
+// training signal per forward/backward call, the way real GPT pretraining
+// batches contiguous context windows - not a workaround for a forward pass
+// that used to only compute one token's logits at a time. See
+// docs/TRANSFORMER_LEARNING.md for the backward-pass correctness bugs this
+// replaces (the old single-position path's attention gradients were wrong;
+// overllm_forward_seq/overllm_backward_seq were added and numerically
+// verified via cpp/tools/gradient_check.cpp specifically to fix this).
 //
 // Scope honesty: the corpus is small (repeats a handful of real sentences
 // from benchmark/rstf/corpus.json) and the model is small (d_model=64,
@@ -144,29 +155,53 @@ int main(int argc, char** argv) {
 
     OverLLMModel* model = overllm_load_model("", &cfg);
 
-    std::vector<float> logits(cfg.vocab_size);
-    std::vector<float> dlogits(cfg.vocab_size);
+    // Non-overlapping windows of up to context_window+1 tokens: input is the
+    // window minus its last token, targets are the window shifted by one.
+    // Every position in the window gets a real next-token loss/gradient
+    // from a single forward_seq/backward_seq call (causal attention already
+    // ensures position i's logits only depend on input_tokens[0..i], so
+    // this is exactly the standard chunked-context pretraining setup, not
+    // an approximation of it).
     std::vector<float> epoch_losses;
 
     for (int epoch = 0; epoch < epochs; ++epoch) {
         double epoch_loss_sum = 0.0;
         int steps = 0;
 
-        for (size_t target_pos = 1; target_pos < corpus_tokens.size(); ++target_pos) {
-            size_t start = target_pos > static_cast<size_t>(context_window)
-                ? target_pos - context_window : 0;
-            std::vector<int> prefix(corpus_tokens.begin() + start, corpus_tokens.begin() + target_pos);
-            int target = corpus_tokens[target_pos];
+        for (size_t start = 0; start + 1 < corpus_tokens.size(); ) {
+            size_t window_len = std::min(static_cast<size_t>(context_window) + 1,
+                                          corpus_tokens.size() - start);
+            if (window_len < 2) break;
+            int seq = static_cast<int>(window_len - 1);
+
+            std::vector<int> input_tokens(corpus_tokens.begin() + start,
+                                           corpus_tokens.begin() + start + seq);
+            std::vector<int> targets(corpus_tokens.begin() + start + 1,
+                                      corpus_tokens.begin() + start + seq + 1);
+
+            std::vector<float> logits(static_cast<size_t>(seq) * cfg.vocab_size);
+            std::vector<float> dlogits(static_cast<size_t>(seq) * cfg.vocab_size);
 
             overllm_zero_grad(model);
-            overllm_forward(model, prefix.data(), static_cast<int>(prefix.size()), logits.data());
-            float loss = softmax_cross_entropy_grad(logits, target, dlogits);
-            overllm_backward(model, prefix.data(), static_cast<int>(prefix.size()), dlogits.data());
+            overllm_forward_seq(model, input_tokens.data(), seq, logits.data());
+
+            double window_loss_sum = 0.0;
+            for (int i = 0; i < seq; ++i) {
+                std::vector<float> logits_i(logits.begin() + (size_t)i * cfg.vocab_size,
+                                             logits.begin() + (size_t)(i + 1) * cfg.vocab_size);
+                std::vector<float> dlogits_i;
+                float loss_i = softmax_cross_entropy_grad(logits_i, targets[i], dlogits_i);
+                std::copy(dlogits_i.begin(), dlogits_i.end(), dlogits.begin() + (size_t)i * cfg.vocab_size);
+                window_loss_sum += loss_i;
+            }
+
+            overllm_backward_seq(model, input_tokens.data(), seq, dlogits.data());
             overllm_clip_gradients(model, 1.0f);
             overllm_adamw_step(model, 0.001f, 0.9f, 0.999f, 1e-8f, 0.0f);
 
-            epoch_loss_sum += loss;
-            ++steps;
+            epoch_loss_sum += window_loss_sum;
+            steps += seq;
+            start += window_len;
         }
 
         float avg_loss = static_cast<float>(epoch_loss_sum / steps);
